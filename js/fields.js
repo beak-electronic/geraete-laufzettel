@@ -191,12 +191,30 @@ export function drawInitialsStampInRect(ctx, text, rect, colorCss, scaleX, scale
 }
 
 /** Dialog title: prefer template label; SN rows use prefix „SN“ + full left designation. */
+/** Short dialog title: „SN Endstufe“ from „… BG Endstufe …“ (first word after BG). */
+export function shortSnHintLabel(label) {
+  const s = String(label || '').trim();
+  if (!s) return '';
+  const bg = s.match(/\bBG\s+(\S+)/i);
+  if (bg) return `SN ${bg[1]}`;
+  const art = s.match(/^(?:SN\s+)?(?:\d{2,3}\.\d{3}\s+)?(\S+)/i);
+  if (art && art[1].toUpperCase() !== 'SN') return `SN ${art[1]}`;
+  if (/^Seriennummer\b/i.test(s)) {
+    return shortSnHintLabel(s.replace(/^Seriennummer\b/i, 'SN'));
+  }
+  return s;
+}
+
 export function fieldDialogTitle(field, fallback = 'Eingabe') {
   const label = String(field?.label || '').trim();
   if (label) {
     // Legacy labels „Seriennummer …“ → „SN …“
     if (/^Seriennummer\b/i.test(label)) {
-      return label.replace(/^Seriennummer\b/i, 'SN').replace(/^SN\s+SN\b/, 'SN');
+      return shortSnHintLabel(label.replace(/^Seriennummer\b/i, 'SN').replace(/^SN\s+SN\b/, 'SN'));
+    }
+    // Scannable BG cells: never show full Baugruppe name on screen
+    if (field?.type === 'scan_or_manual' || /\bBG\b/i.test(label) || /^SN\s+\d{2,3}\.\d{3}\b/i.test(label)) {
+      return shortSnHintLabel(label);
     }
     return label;
   }

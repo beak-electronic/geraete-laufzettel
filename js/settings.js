@@ -25,7 +25,7 @@ function clampIndex(i) {
 
 export function loadSettings() {
   let initials = localStorage.getItem(LS_INITIALS);
-  if (!initials || !initials.trim()) initials = 'DK';
+  if (!initials || !initials.trim()) initials = 'TK';
   const colorIndex = clampIndex(parseInt(localStorage.getItem(LS_COLOR) || '0', 10));
   const lastColRaw = localStorage.getItem(LS_LAST_COL_DATE_ONLY);
   // Default ON (date only) when unset
