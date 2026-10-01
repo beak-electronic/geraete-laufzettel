@@ -1,0 +1,1018 @@
+{
+  "id": "200.420",
+  "label": "200.420",
+  "pages": {
+    "1": {
+      "page": 1,
+      "style": {
+        "fill_hex": "#ADD8E6",
+        "alpha": 0.59,
+        "stroke": null,
+        "label_mode": "number",
+        "number_color_hex": "#2F6FAE",
+        "omit_text_hint": true,
+        "omit_crosshair": true
+      },
+      "fields": [
+        {
+          "id": "sn_right_1",
+          "number": 1,
+          "page": 1,
+          "label": "SN 101.185 BG Endstufe BDA 1300 V0.4",
+          "type": "scan_or_manual",
+          "value": null,
+          "rect_pt": [
+            414.16,
+            342.1,
+            559.8,
+            363.8
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "101.185 BG Endstufe BDA 1300 V0.4"
+        },
+        {
+          "id": "sn_right_2",
+          "number": 2,
+          "page": 1,
+          "label": "SN 101.116 BG Kabel BDA 1300 HV V1",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            369.7,
+            559.8,
+            391.4
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "101.116 BG Kabel BDA 1300 HV V1"
+        },
+        {
+          "id": "sn_right_3",
+          "number": 3,
+          "page": 1,
+          "label": "SN 101.177 BG Kabel BDA 1300 OUT V1",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            397.3,
+            559.8,
+            419.0
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "101.177 BG Kabel BDA 1300 OUT V1"
+        },
+        {
+          "id": "sn_right_4",
+          "number": 4,
+          "page": 1,
+          "label": "SN 101.169 BG LCD Baugruppe BDA 1300 V1",
+          "type": "scan_or_manual",
+          "value": null,
+          "rect_pt": [
+            414.16,
+            424.9,
+            559.8,
+            446.6
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "101.169 BG LCD Baugruppe BDA 1300 V1"
+        },
+        {
+          "id": "sn_right_5",
+          "number": 5,
+          "page": 1,
+          "label": "SN 101.114 BG Lüfter 80-25-2 V2",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            452.5,
+            559.8,
+            474.2
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "101.114 BG Lüfter 80-25-2 V2"
+        },
+        {
+          "id": "sn_right_6",
+          "number": 6,
+          "page": 1,
+          "label": "SN 101.052 BG Netzschalter BBA 500 V1",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            480.1,
+            559.8,
+            501.8
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "101.052 BG Netzschalter BBA 500 V1"
+        },
+        {
+          "id": "sn_right_7",
+          "number": 7,
+          "page": 1,
+          "label": "SN 101.101 BG Netzteil BDA 1300-230 V0",
+          "type": "scan_or_manual",
+          "value": null,
+          "rect_pt": [
+            414.16,
+            507.7,
+            559.8,
+            529.4
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "101.101 BG Netzteil BDA 1300-230 V0"
+        },
+        {
+          "id": "sn_right_8",
+          "number": 8,
+          "page": 1,
+          "label": "SN 101.050 BG Poti BBA 500 V1",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            535.3,
+            559.8,
+            557.0
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "101.050 BG Poti BBA 500 V1"
+        },
+        {
+          "id": "sn_right_9",
+          "number": 9,
+          "page": 1,
+          "label": "SN 101.054 BG Schalter Phase-UI BBAXX V1",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            562.9,
+            559.8,
+            584.6
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "101.054 BG Schalter Phase-UI BBAXX V1"
+        },
+        {
+          "id": "sn_right_10",
+          "number": 10,
+          "page": 1,
+          "label": "SN 100.119 Verpackung 2 HE Export 2.7 (V1)",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            590.5,
+            559.8,
+            612.2
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "100.119 Verpackung 2 HE Export 2.7 (V1)"
+        },
+        {
+          "id": "software_path_ok",
+          "number": 11,
+          "page": 1,
+          "label": "Software Pfad bestätigt (Wert)",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            413.5,
+            636.8,
+            560.0,
+            650.0
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        },
+        {
+          "id": "sw_date_attiny",
+          "number": 12,
+          "page": 1,
+          "label": "Software Datum: BDA1300-ATTINY.hex",
+          "type": "manual_date",
+          "value": null,
+          "rect_pt": [
+            228.38,
+            675.8,
+            408.16,
+            689.0
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        },
+        {
+          "id": "sw_date_atmega",
+          "number": 13,
+          "page": 1,
+          "label": "Software Datum: BDA1300-ATMEGA.hex",
+          "type": "manual_date",
+          "value": null,
+          "rect_pt": [
+            228.38,
+            695.2,
+            408.16,
+            708.4
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        },
+        {
+          "id": "pm_p1_14",
+          "number": 14,
+          "page": 1,
+          "label": "Prüfmittel verwendet (right): Rohde & Schwarz Audio Analyzer",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            729.0,
+            559.8,
+            744.5
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        },
+        {
+          "id": "pm_p1_15",
+          "number": 15,
+          "page": 1,
+          "label": "Prüfmittel verwendet (right): Oszilloskop HM 1507",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            748.2,
+            559.8,
+            763.7
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        },
+        {
+          "id": "pm_p1_16",
+          "number": 16,
+          "page": 1,
+          "label": "Prüfmittel verwendet (right): BEAK Lastwiderstand 4R",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            767.4,
+            559.8,
+            782.9
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        },
+        {
+          "id": "pm_p1_17",
+          "number": 17,
+          "page": 1,
+          "label": "Prüfmittel verwendet (right): Digitalmultimeter HP 34461 A",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            786.6,
+            559.8,
+            802.1
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        },
+        {
+          "id": "buchungsdatum_lager",
+          "number": 18,
+          "page": 1,
+          "label": "Buchungsdatum Lager",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            125.0,
+            270.5,
+            315.0,
+            292.5
+          ],
+          "align": "left",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        },
+        {
+          "id": "sachbearbeiter_lager",
+          "number": 19,
+          "page": 1,
+          "label": "Sachbearbeiter Lager",
+          "type": "tap_lager_clerk",
+          "value": null,
+          "rect_pt": [
+            125.0,
+            300.5,
+            315.0,
+            322.5
+          ],
+          "align": "left",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        }
+      ]
+    },
+    "2": {
+      "page": 2,
+      "style": {
+        "fill_hex": "#ADD8E6",
+        "alpha": 0.59,
+        "stroke": null,
+        "label_mode": "number",
+        "number_color_hex": "#2F6FAE",
+        "omit_text_hint": true,
+        "omit_crosshair": true
+      },
+      "fields": [
+        {
+          "id": "pm_p2_1",
+          "number": 1,
+          "page": 2,
+          "label": "Prüfmittel verwendet: Digitalmultimeter HP 34461 A",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            96.96,
+            559.8,
+            111.96
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        },
+        {
+          "id": "pm_p2_2",
+          "number": 2,
+          "page": 2,
+          "label": "Prüfmittel verwendet: Stelltransformator EA-STT 2000",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            116.16,
+            559.8,
+            131.16
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        },
+        {
+          "id": "pm_p2_3",
+          "number": 3,
+          "page": 2,
+          "label": "Prüfmittel verwendet: BEAK Trenntransformator",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            135.36,
+            559.8,
+            150.36
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        },
+        {
+          "id": "pm_p2_4",
+          "number": 4,
+          "page": 2,
+          "label": "Prüfmittel verwendet: iPad mit Aufbauanleitung und Prüfanweisung",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            154.56,
+            559.8,
+            169.56
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        },
+        {
+          "id": "pm_p2_5",
+          "number": 5,
+          "page": 2,
+          "label": "Prüfmittel verwendet: Hochspannungsprüfgeräte LG1800B",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            173.76,
+            559.8,
+            188.76
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        },
+        {
+          "id": "mon_date_6",
+          "number": 6,
+          "page": 2,
+          "label": "Montage Datum: Montage Chassis",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            209.64,
+            452.17,
+            223.64
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        },
+        {
+          "id": "mon_sig_7",
+          "number": 7,
+          "page": 2,
+          "label": "Montage Unterschrift: Montage Chassis",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            209.64,
+            559.81,
+            223.64
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        },
+        {
+          "id": "mon_date_8",
+          "number": 8,
+          "page": 2,
+          "label": "Montage Datum: Montage Baugruppen",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            228.84,
+            452.17,
+            242.84
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        },
+        {
+          "id": "mon_sig_9",
+          "number": 9,
+          "page": 2,
+          "label": "Montage Unterschrift: Montage Baugruppen",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            228.84,
+            559.81,
+            242.84
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        },
+        {
+          "id": "mon_date_10",
+          "number": 10,
+          "page": 2,
+          "label": "Montage Datum: Montage Trafo",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            248.04,
+            452.17,
+            262.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        },
+        {
+          "id": "mon_sig_11",
+          "number": 11,
+          "page": 2,
+          "label": "Montage Unterschrift: Montage Trafo",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            248.04,
+            559.81,
+            262.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        },
+        {
+          "id": "mon_date_12",
+          "number": 12,
+          "page": 2,
+          "label": "Montage Datum: komplette Verkabelung",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            267.24,
+            452.17,
+            281.24
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        },
+        {
+          "id": "mon_sig_13",
+          "number": 13,
+          "page": 2,
+          "label": "Montage Unterschrift: komplette Verkabelung",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            267.24,
+            559.81,
+            281.24
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        },
+        {
+          "id": "mon_date_14",
+          "number": 14,
+          "page": 2,
+          "label": "Montage Datum: Endmontage (Etikett an Rückseite) - Warranty Seal",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            286.44,
+            452.17,
+            300.44
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        },
+        {
+          "id": "mon_sig_15",
+          "number": 15,
+          "page": 2,
+          "label": "Montage Unterschrift: Endmontage (Etikett an Rückseite) - Warranty Seal",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            286.44,
+            559.81,
+            300.44
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        },
+        {
+          "id": "mon_date_16",
+          "number": 16,
+          "page": 2,
+          "label": "Montage Datum: Verpackung für Versand",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            305.64,
+            452.17,
+            319.64
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        },
+        {
+          "id": "mon_sig_17",
+          "number": 17,
+          "page": 2,
+          "label": "Montage Unterschrift: Verpackung für Versand",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            305.64,
+            559.81,
+            319.64
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        },
+        {
+          "id": "ps_date_18",
+          "number": 18,
+          "page": 2,
+          "label": "Prüfschritt Datum: Zwischenkontrolle / Sichtprüfung",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            341.64,
+            452.17,
+            355.64
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        },
+        {
+          "id": "ps_sig_19",
+          "number": 19,
+          "page": 2,
+          "label": "Prüfschritt Unterschrift: Zwischenkontrolle / Sichtprüfung",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            341.64,
+            559.81,
+            355.64
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        },
+        {
+          "id": "ps_date_20",
+          "number": 20,
+          "page": 2,
+          "label": "Prüfschritt Datum: Abgleich laut Abgleichanweisung iPad",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            360.84,
+            452.17,
+            374.84
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        },
+        {
+          "id": "ps_sig_21",
+          "number": 21,
+          "page": 2,
+          "label": "Prüfschritt Unterschrift: Abgleich laut Abgleichanweisung iPad",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            360.84,
+            559.81,
+            374.84
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        },
+        {
+          "id": "ps_date_22",
+          "number": 22,
+          "page": 2,
+          "label": "Prüfschritt Datum: Endkontrolle laut Prüfanweisung",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            380.04,
+            452.17,
+            394.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        },
+        {
+          "id": "ps_sig_23",
+          "number": 23,
+          "page": 2,
+          "label": "Prüfschritt Unterschrift: Endkontrolle laut Prüfanweisung",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            380.04,
+            559.81,
+            394.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        },
+        {
+          "id": "ps_date_24",
+          "number": 24,
+          "page": 2,
+          "label": "Prüfschritt Datum: THD/SN/FR Messungen mit Abspeichern der Kurven",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            399.24,
+            452.17,
+            413.24
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        },
+        {
+          "id": "ps_sig_25",
+          "number": 25,
+          "page": 2,
+          "label": "Prüfschritt Unterschrift: THD/SN/FR Messungen mit Abspeichern der Kurven",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            399.24,
+            559.81,
+            413.24
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        },
+        {
+          "id": "ps_date_26",
+          "number": 26,
+          "page": 2,
+          "label": "Prüfschritt Datum: Verpacken des Gerätes nach Vorschrift",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            418.44,
+            452.17,
+            432.44
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        },
+        {
+          "id": "ps_sig_27",
+          "number": 27,
+          "page": 2,
+          "label": "Prüfschritt Unterschrift: Verpacken des Gerätes nach Vorschrift",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            418.44,
+            559.81,
+            432.44
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        },
+        {
+          "id": "footer_28",
+          "number": 28,
+          "page": 2,
+          "label": "Geprüft checkbox (Vermerke)",
+          "type": "tap_x",
+          "value": "X",
+          "rect_pt": [
+            135.47,
+            519.77,
+            145.21,
+            529.39
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        },
+        {
+          "id": "footer_29",
+          "number": 29,
+          "page": 2,
+          "label": "Datum (Vermerke / Geprüft)",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            221.76,
+            512.96,
+            290.04,
+            526.16
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        },
+        {
+          "id": "footer_30",
+          "number": 30,
+          "page": 2,
+          "label": "Test passed checkbox (Safety Test)",
+          "type": "tap_x",
+          "value": "X",
+          "rect_pt": [
+            135.47,
+            582.61,
+            145.21,
+            592.23
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        },
+        {
+          "id": "footer_31",
+          "number": 31,
+          "page": 2,
+          "label": "Datum (Safety Test / Test passed)",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            221.76,
+            576.76,
+            290.04,
+            589.96
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        },
+        {
+          "id": "footer_32",
+          "number": 32,
+          "page": 2,
+          "label": "Gebucht checkbox (Buchungsvermerke)",
+          "type": "tap_x",
+          "value": "X",
+          "rect_pt": [
+            135.47,
+            705.42,
+            145.21,
+            715.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        },
+        {
+          "id": "footer_33",
+          "number": 33,
+          "page": 2,
+          "label": "Datum (Buchungsvermerke / Gebucht)",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            221.76,
+            698.61,
+            290.04,
+            711.81
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        }
+      ]
+    }
+  },
+  "capability_types": {
+    "scan_or_manual": {
+      "description": "Tapping the cell opens the camera for DataMatrix or 1D barcode; decoded value is written into the cell. Manual numeric/text entry is also allowed.",
+      "scan_formats": [
+        "DataMatrix",
+        "1D_barcode"
+      ],
+      "manual_entry": true,
+      "write_decoded_to_cell": true
+    },
+    "tap_ok": {
+      "description": "Tapping the cell writes the fixed text \"OK\" into the field (stamp/confirm).",
+      "value": "OK",
+      "manual_entry": false
+    },
+    "manual_date": {
+      "description": "Manual date entry into the cell (datepicker or typed date).",
+      "manual_entry": true,
+      "value_kind": "date"
+    },
+    "removed": {
+      "description": "Field deleted — not an interactive input."
+    },
+    "tap_date_settings": {
+      "description": "On tap/press, write today's date in format DD.MM.YY (e.g. 15.09.26). Default date is today but user can set a different working date in settings.",
+      "format": "DD.MM.YY",
+      "settings_key": "stamp_date",
+      "default": "today"
+    },
+    "tap_initials_stamp": {
+      "description": "On tap/press, stamp configured user initials into the cell.",
+      "settings_key": "stamp_initials"
+    },
+    "manual_text": {
+      "description": "Opens the keyboard for free manual text/number entry into the cell.",
+      "manual_entry": true
+    },
+    "tap_x": {
+      "description": "On tap, write \"X\" into the cell (checkbox-style mark).",
+      "value": "X"
+    },
+    "tap_lager_clerk": {
+      "description": "On tap, write Sachbearbeiter Lager name from settings (default Adina) into the cell. No dialog.",
+      "settings_key": "sachbearbeiterLager",
+      "default": "Adina",
+      "manual_entry": false
+    }
+  }
+}

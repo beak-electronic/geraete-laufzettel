@@ -1,0 +1,48 @@
+Schnellweg: Netlify Drop (kostenlos, kein Apple-Account)
+
+1. Ordner geraete-laufzettel bereithalten
+   Optional: zip -r geraete-laufzettel.zip geraete-laufzettel && entpacken — Drop braucht den Ordner mit index.html oben
+2. Im Browser https://app.netlify.com/drop öffnen
+3. Den Ordner geraete-laufzettel (nicht nur einzelne Dateien) per Drag-and-Drop hochladen
+   Publish-Root = Ordnerinhalt mit index.html, netlify.toml, sw.js — kein Build-Befehl nötig
+4. Die angezeigte https://….netlify.app URL notieren
+5. Auf dem iPad Safari diese URL öffnen
+6. Teilen-Taste → „Zum Home-Bildschirm“ → Hinzufügen
+7. App-Icon „Geräte Laufzettel“ / „Geräte LZ“ starten (Standalone, offline nach erstem Laden)
+
+Hinweis: Service Worker und PWA brauchen https (Netlify liefert das).
+Lokal zum Testen reicht: python3 -m http.server (siehe README).
+
+Netlify Drawer abschalten (Site-Einstellungen)
+----------------------------------------------
+Die App blendet den Drawer per CSS aus (#netlify-drawer / .netlify-drawer), falls vorhanden.
+Zusätzlich in Netlify dauerhaft deaktivieren:
+
+1. Site öffnen → Project configuration (Site settings)
+2. Build & deploy → Continuous Deployment → Collaboration tools → Configure
+3. Netlify Drawer für Deploy Previews und Branch Deploys ausschalten
+4. Speichern
+
+PDF speichern / teilen auf dem iPad
+-----------------------------------
+Nach dem Bearbeiten: navigator.share({ files: [pdf] }) nur mit files
+(kein title/text/url) → „In Dateien sichern“. Fallback: Download.
+In den Einstellungen kann die Speichern-Art gewählt werden.
+
+Kamera / DataMatrix
+-------------------
+Safari fragt beim ersten Scan nach Kamerazugriff. Ohne Kamera:
+Code einfügen, Bild wählen oder „Beispiel-DataMatrix laden“.
+
+PDF-Katalog auf dem iPad
+------------------------
+Safari kann keinen Ordner dauerhaft verknüpfen. In den Einstellungen:
+„PDFs aus Dateien wählen / aktualisieren“ — Ordner in Dateien öffnen, Alle auswählen.
+Beim App-Start erscheint ein Banner zum Aktualisieren. Desktop Chrome behält den Ordner.
+
+Windows / Chrome PWA
+--------------------
+Nach Deploy (HTTPS/Netlify): in Chrome die Seite öffnen → Adressleisten-Icon „App installieren“
+(oder Menü ⋮ → Speichern und teilen → App installieren / Als App installieren).
+Voraussetzungen: manifest.webmanifest (display: standalone, Icons 192 + 512), Service Worker aktiv.
+Icons „any“ haben iOS-ähnliche Abrundung; „maskable“ sind vollflächig für adaptive Formen.
