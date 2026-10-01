@@ -192,6 +192,13 @@ export function drawInitialsStampInRect(ctx, text, rect, colorCss, scaleX, scale
 
 /** Dialog title: prefer template label; SN rows use prefix „SN“ + full left designation. */
 /** Short dialog title: „SN Endstufe“ from „… BG Endstufe …“ (first word after BG). */
+/** „ATTINY.hex“ from „… BDA1300_LDS-ATTINY.hex“. */
+export function hexDialogLabel(label) {
+  const s = String(label || '');
+  const m = s.match(/([A-Za-z][A-Za-z0-9]*)\.hex\b/i);
+  return m ? `${m[1]}.hex` : '';
+}
+
 export function shortSnHintLabel(label) {
   const s = String(label || '').trim();
   if (!s) return '';
@@ -208,6 +215,8 @@ export function shortSnHintLabel(label) {
 export function fieldDialogTitle(field, fallback = 'Eingabe') {
   const label = String(field?.label || '').trim();
   if (label) {
+    const hex = hexDialogLabel(label);
+    if (hex) return hex;
     // Legacy labels „Seriennummer …“ → „SN …“
     if (/^Seriennummer\b/i.test(label)) {
       return shortSnHintLabel(label.replace(/^Seriennummer\b/i, 'SN').replace(/^SN\s+SN\b/, 'SN'));

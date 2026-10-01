@@ -216,7 +216,7 @@
           "id": "sw_date_attiny",
           "number": 12,
           "page": 1,
-          "label": "Software Datum: BDA1300-ATTINY.hex",
+          "label": "ATTINY.hex",
           "type": "manual_date",
           "value": null,
           "rect_pt": [
@@ -234,7 +234,7 @@
           "id": "sw_date_atmega",
           "number": 13,
           "page": 1,
-          "label": "Software Datum: BDA1300-ATMEGA.hex",
+          "label": "ATMEGA.hex",
           "type": "manual_date",
           "value": null,
           "rect_pt": [

@@ -216,7 +216,7 @@
           "id": "sw_date_attiny",
           "number": 12,
           "page": 1,
-          "label": "Software Datum: BDA1300-ATTINY.hex",
+          "label": "ATTINY.hex",
           "type": "manual_date",
           "value": null,
           "rect_pt": [
@@ -234,7 +234,7 @@
           "id": "sw_date_atmega",
           "number": 13,
           "page": 1,
-          "label": "Software Datum: BDA1300-ATMEGA.hex",
+          "label": "ATMEGA.hex",
           "type": "manual_date",
           "value": null,
           "rect_pt": [
@@ -374,7 +374,7 @@
           "id": "pm_p2_1",
           "number": 1,
           "page": 2,
-          "label": "Prüfmittel verwendet: Digitalmultimeter HP 34461 A",
+          "label": "Prüfmittel: Stelltransformator EA-STT 2000",
           "type": "tap_ok",
           "value": "OK",
           "rect_pt": [
@@ -384,15 +384,15 @@
             111.96
           ],
           "align": "center",
-          "kind": null,
-          "group": null,
-          "left_ref": null
+          "kind": "tap_ok",
+          "group": "pruefmittel",
+          "left_ref": "Stelltransformator EA-STT 2000"
         },
         {
           "id": "pm_p2_2",
           "number": 2,
           "page": 2,
-          "label": "Prüfmittel verwendet: Stelltransformator EA-STT 2000",
+          "label": "Prüfmittel: BEAK Trenntransformator",
           "type": "tap_ok",
           "value": "OK",
           "rect_pt": [
@@ -402,15 +402,15 @@
             131.16
           ],
           "align": "center",
-          "kind": null,
-          "group": null,
-          "left_ref": null
+          "kind": "tap_ok",
+          "group": "pruefmittel",
+          "left_ref": "BEAK Trenntransformator"
         },
         {
           "id": "pm_p2_3",
           "number": 3,
           "page": 2,
-          "label": "Prüfmittel verwendet: BEAK Trenntransformator",
+          "label": "Prüfmittel: iPad mit Aufbauanleitung",
           "type": "tap_ok",
           "value": "OK",
           "rect_pt": [
@@ -420,15 +420,15 @@
             150.36
           ],
           "align": "center",
-          "kind": null,
-          "group": null,
-          "left_ref": null
+          "kind": "tap_ok",
+          "group": "pruefmittel",
+          "left_ref": "iPad mit Aufbauanleitung"
         },
         {
           "id": "pm_p2_4",
           "number": 4,
           "page": 2,
-          "label": "Prüfmittel verwendet: iPad mit Aufbauanleitung und Prüfanweisung",
+          "label": "Prüfmittel: Hochspannungsprüfgeräte LG1800B",
           "type": "tap_ok",
           "value": "OK",
           "rect_pt": [
@@ -438,27 +438,9 @@
             169.56
           ],
           "align": "center",
-          "kind": null,
-          "group": null,
-          "left_ref": null
-        },
-        {
-          "id": "pm_p2_5",
-          "number": 5,
-          "page": 2,
-          "label": "Prüfmittel verwendet: Hochspannungsprüfgeräte LG1800B",
-          "type": "tap_ok",
-          "value": "OK",
-          "rect_pt": [
-            414.16,
-            173.76,
-            559.8,
-            188.76
-          ],
-          "align": "center",
-          "kind": null,
-          "group": null,
-          "left_ref": null
+          "kind": "tap_ok",
+          "group": "pruefmittel",
+          "left_ref": "Hochspannungsprüfgeräte LG1800B"
         },
         {
           "id": "mon_date_6",
@@ -469,9 +451,9 @@
           "value": null,
           "rect_pt": [
             351.37,
-            209.64,
+            190.44,
             452.17,
-            223.64
+            204.44
           ],
           "align": "center",
           "kind": null,
@@ -487,9 +469,9 @@
           "value": null,
           "rect_pt": [
             458.17,
-            209.64,
+            190.44,
             559.81,
-            223.64
+            204.44
           ],
           "align": "center",
           "kind": null,
@@ -505,9 +487,9 @@
           "value": null,
           "rect_pt": [
             351.37,
-            228.84,
+            209.64,
             452.17,
-            242.84
+            223.64
           ],
           "align": "center",
           "kind": null,
@@ -523,9 +505,9 @@
           "value": null,
           "rect_pt": [
             458.17,
-            228.84,
+            209.64,
             559.81,
-            242.84
+            223.64
           ],
           "align": "center",
           "kind": null,
@@ -541,9 +523,9 @@
           "value": null,
           "rect_pt": [
             351.37,
-            248.04,
+            228.84,
             452.17,
-            262.04
+            242.84
           ],
           "align": "center",
           "kind": null,
@@ -559,9 +541,9 @@
           "value": null,
           "rect_pt": [
             458.17,
-            248.04,
+            228.84,
             559.81,
-            262.04
+            242.84
           ],
           "align": "center",
           "kind": null,
@@ -577,9 +559,9 @@
           "value": null,
           "rect_pt": [
             351.37,
-            267.24,
+            248.04,
             452.17,
-            281.24
+            262.04
           ],
           "align": "center",
           "kind": null,
@@ -595,9 +577,9 @@
           "value": null,
           "rect_pt": [
             458.17,
-            267.24,
+            248.04,
             559.81,
-            281.24
+            262.04
           ],
           "align": "center",
           "kind": null,
@@ -613,9 +595,9 @@
           "value": null,
           "rect_pt": [
             351.37,
-            286.44,
+            267.24,
             452.17,
-            300.44
+            281.24
           ],
           "align": "center",
           "kind": null,
@@ -631,9 +613,9 @@
           "value": null,
           "rect_pt": [
             458.17,
-            286.44,
+            267.24,
             559.81,
-            300.44
+            281.24
           ],
           "align": "center",
           "kind": null,
@@ -649,9 +631,9 @@
           "value": null,
           "rect_pt": [
             351.37,
-            305.64,
+            286.44,
             452.17,
-            319.64
+            300.44
           ],
           "align": "center",
           "kind": null,
@@ -667,9 +649,9 @@
           "value": null,
           "rect_pt": [
             458.17,
-            305.64,
+            286.44,
             559.81,
-            319.64
+            300.44
           ],
           "align": "center",
           "kind": null,
@@ -685,9 +667,9 @@
           "value": null,
           "rect_pt": [
             351.37,
-            341.64,
+            322.44,
             452.17,
-            355.64
+            336.44
           ],
           "align": "center",
           "kind": null,
@@ -703,9 +685,9 @@
           "value": null,
           "rect_pt": [
             458.17,
-            341.64,
+            322.44,
             559.81,
-            355.64
+            336.44
           ],
           "align": "center",
           "kind": null,
@@ -721,9 +703,9 @@
           "value": null,
           "rect_pt": [
             351.37,
-            360.84,
+            341.64,
             452.17,
-            374.84
+            355.64
           ],
           "align": "center",
           "kind": null,
@@ -739,9 +721,9 @@
           "value": null,
           "rect_pt": [
             458.17,
-            360.84,
+            341.64,
             559.81,
-            374.84
+            355.64
           ],
           "align": "center",
           "kind": null,
@@ -757,9 +739,9 @@
           "value": null,
           "rect_pt": [
             351.37,
-            380.04,
+            360.84,
             452.17,
-            394.04
+            374.84
           ],
           "align": "center",
           "kind": null,
@@ -775,9 +757,9 @@
           "value": null,
           "rect_pt": [
             458.17,
-            380.04,
+            360.84,
             559.81,
-            394.04
+            374.84
           ],
           "align": "center",
           "kind": null,
@@ -793,9 +775,9 @@
           "value": null,
           "rect_pt": [
             351.37,
-            399.24,
+            380.04,
             452.17,
-            413.24
+            394.04
           ],
           "align": "center",
           "kind": null,
@@ -811,9 +793,9 @@
           "value": null,
           "rect_pt": [
             458.17,
-            399.24,
+            380.04,
             559.81,
-            413.24
+            394.04
           ],
           "align": "center",
           "kind": null,
@@ -829,9 +811,9 @@
           "value": null,
           "rect_pt": [
             351.37,
-            418.44,
+            399.24,
             452.17,
-            432.44
+            413.24
           ],
           "align": "center",
           "kind": null,
@@ -847,9 +829,9 @@
           "value": null,
           "rect_pt": [
             458.17,
-            418.44,
+            399.24,
             559.81,
-            432.44
+            413.24
           ],
           "align": "center",
           "kind": null,
@@ -865,9 +847,9 @@
           "value": "X",
           "rect_pt": [
             135.47,
-            519.77,
+            500.57,
             145.21,
-            529.39
+            510.19
           ],
           "align": "center",
           "kind": null,
@@ -883,9 +865,9 @@
           "value": null,
           "rect_pt": [
             221.76,
-            512.96,
+            493.76,
             290.04,
-            526.16
+            506.96
           ],
           "align": "center",
           "kind": null,
@@ -901,9 +883,9 @@
           "value": "X",
           "rect_pt": [
             135.47,
-            582.61,
+            563.41,
             145.21,
-            592.23
+            573.03
           ],
           "align": "center",
           "kind": null,
@@ -919,9 +901,9 @@
           "value": null,
           "rect_pt": [
             221.76,
-            576.76,
+            557.56,
             290.04,
-            589.96
+            570.76
           ],
           "align": "center",
           "kind": null,
@@ -937,9 +919,9 @@
           "value": "X",
           "rect_pt": [
             135.47,
-            705.42,
+            686.22,
             145.21,
-            715.04
+            695.84
           ],
           "align": "center",
           "kind": null,
@@ -955,9 +937,9 @@
           "value": null,
           "rect_pt": [
             221.76,
-            698.61,
+            679.41,
             290.04,
-            711.81
+            692.61
           ],
           "align": "center",
           "kind": null,

@@ -233,7 +233,7 @@
           "id": "software_datum_after_colon_1",
           "number": 13,
           "page": 1,
-          "label": "Software-Datum PA180-ATINY.hex",
+          "label": "ATINY.hex",
           "type": "manual_date",
           "value": null,
           "rect_pt": [
@@ -253,7 +253,7 @@
           "id": "software_datum_after_colon_2",
           "number": 14,
           "page": 1,
-          "label": "Software-Datum PA180-ATMEGA.hex",
+          "label": "ATMEGA.hex",
           "type": "manual_date",
           "value": null,
           "rect_pt": [
