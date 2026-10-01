@@ -18,7 +18,7 @@
           "id": "sn_right_1",
           "number": 1,
           "page": 1,
-          "label": "SN 101.098 BG Endstufe BBAA PA 180 V1.0",
+          "label": "SN Endstufe",
           "type": "scan_or_manual",
           "value": null,
           "rect_pt": [
@@ -30,7 +30,7 @@
           "align": "center",
           "kind": null,
           "group": null,
-          "left_ref": "101.098 BG Endstufe BBAA PA 180 V1.0"
+          "left_ref": "SN Endstufe"
         },
         {
           "id": "sn_right_2",
@@ -54,7 +54,7 @@
           "id": "sn_right_3",
           "number": 3,
           "page": 1,
-          "label": "SN 101.141 BG LCD Baugruppe PA 180 V1",
+          "label": "SN LCD",
           "type": "scan_or_manual",
           "value": null,
           "rect_pt": [
@@ -66,7 +66,7 @@
           "align": "center",
           "kind": null,
           "group": null,
-          "left_ref": "101.141 BG LCD Baugruppe PA 180 V1"
+          "left_ref": "SN LCD"
         },
         {
           "id": "sn_right_4",
@@ -126,7 +126,7 @@
           "id": "sn_right_7",
           "number": 7,
           "page": 1,
-          "label": "SN 101.132 BG Netzteil PA 180 V3",
+          "label": "SN Netzteil",
           "type": "scan_or_manual",
           "value": null,
           "rect_pt": [
@@ -138,7 +138,7 @@
           "align": "center",
           "kind": null,
           "group": null,
-          "left_ref": "101.132 BG Netzteil PA 180 V3"
+          "left_ref": "SN Netzteil"
         },
         {
           "id": "sn_right_8",

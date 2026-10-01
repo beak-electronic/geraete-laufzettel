@@ -1202,7 +1202,7 @@ function computeStampLayout(inset, dateStr, initials, measure) {
   // Date-only: keep date at the SAME Y as a normal stamp (placeholder
   // initials only for geometry). Lower area stays free for Pencil signature.
   if (!hasInitials) {
-    const layout = computeStampLayout(inset, dateStr, 'DK', measure);
+    const layout = computeStampLayout(inset, dateStr, 'TK', measure);
     return {
       dateSize: layout.dateSize,
       initSize: 0,
@@ -2173,7 +2173,7 @@ function redrawSettingsStampBadge() {
   // light gray plate (readable in Dark Mode)
   ctx.fillStyle = '#e8e8ed';
   ctx.fillRect(0, 0, css, css);
-  const initials = ((state.settings && state.settings.initials) || 'DK').trim().slice(0, 4) || 'DK';
+  const initials = ((state.settings && state.settings.initials) || 'TK').trim().slice(0, 4) || 'TK';
   const color = colorCss(state.settings.colorIndex || 0);
   // boxed initials centered (stamp-like)
   ctx.font = '700 13px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
@@ -2263,7 +2263,7 @@ function openSettings() {
 }
 
 function applySettingsFromForm() {
-  const initials = el.initials.value.trim() || 'DK';
+  const initials = el.initials.value.trim() || 'TK';
   state.settings.initials = initials;
   saveInitials(initials);
 
@@ -2355,7 +2355,7 @@ export function initFill() {
   });
 
   el.initials.addEventListener('change', () => {
-    const initials = el.initials.value.trim() || 'DK';
+    const initials = el.initials.value.trim() || 'TK';
     state.settings.initials = initials;
     saveInitials(initials);
     redrawSettingsStampBadge();
