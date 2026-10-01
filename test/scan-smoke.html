@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html><body>
+<script src="/vendor/zxing-library.min.js"></script>
+<img id="im" src="/samples/datamatrix-demo.png" />
+<pre id="out">pending</pre>
+<script type="module">
+import { decodeDataMatrixFromElement } from "/js/scan.js";
+import { extractSerialFromPayload } from "/js/sn.js";
+const im = document.getElementById("im");
+await new Promise((r,j)=>{ if(im.complete) r(); else { im.onload=r; im.onerror=j; }});
+try {
+  const text = await decodeDataMatrixFromElement(im);
+  const sn = extractSerialFromPayload(text);
+  const ok = text.includes("XX0000") && sn === "XX0000E00A00K0001";
+  document.getElementById("out").textContent = (ok?"PASS":"FAIL") + "\n" + text + "\n" + sn;
+  document.title = ok ? "PASS" : "FAIL";
+} catch(e) {
+  document.getElementById("out").textContent = "FAIL " + e;
+  document.title = "FAIL";
+}
+</script>
+</body></html>
