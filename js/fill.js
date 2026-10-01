@@ -36,6 +36,8 @@ import {
   KNOWN_TEMPLATES,
   resolveTemplateId,
   loadTemplate,
+  extractArticleKey,
+  extractArticleFromFilename,
   fieldKey,
   stampDateForSettings,
 } from './fields.js';
@@ -388,6 +390,20 @@ export async function openFile(file, fileHandle = null) {
     state.templateId = '';
 
     await resolveAndLoadTemplate(state.fileName, pdf);
+
+    if (!state.template) {
+      const detected =
+        extractArticleFromFilename(state.fileName) ||
+        extractArticleKey(state.pdfHeaderText) ||
+        '';
+      clearDocument();
+      showToast(
+        detected
+          ? `Keine Feldvorlage für ${detected} hinterlegt — PDF wurde nicht geöffnet.`
+          : 'Keine Feldvorlage für diese PDF hinterlegt — PDF wurde nicht geöffnet.',
+      );
+      return;
+    }
 
     // Do NOT restore glfill/bgfill overlays on open. A partially filled PDF already
     // has stamps baked into the page — redrawing them causes double text. Treat the

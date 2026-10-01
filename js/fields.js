@@ -38,20 +38,27 @@ export function extractArticleFromFilename(name) {
  * Resolve active template id.
  * @param {{ filename?: string, pdfText?: string, settings?: { fieldTemplateId?: string } }} opts
  */
+export function isKnownTemplateId(id) {
+  const s = String(id || '').trim();
+  return !!s && KNOWN_TEMPLATES.some((t) => t.id === s);
+}
+
 export function resolveTemplateId(opts = {}) {
   const settings = opts.settings || {};
   const override = String(settings.fieldTemplateId || '').trim();
-  if (override && override !== 'auto') return override;
+  if (override && override !== 'auto') {
+    return isKnownTemplateId(override) ? override : '';
+  }
 
   const fromFile = extractArticleFromFilename(opts.filename);
-  if (fromFile && KNOWN_TEMPLATES.some((t) => t.id === fromFile)) return fromFile;
+  if (isKnownTemplateId(fromFile)) return fromFile;
 
   const fromText = extractArticleKey(opts.pdfText || '');
-  if (fromText && KNOWN_TEMPLATES.some((t) => t.id === fromText)) return fromText;
+  if (isKnownTemplateId(fromText)) return fromText;
 
-  // Auto fallback: only known template for now
+  // Auto only when exactly one Vorlage exists
   if (KNOWN_TEMPLATES.length === 1) return KNOWN_TEMPLATES[0].id;
-  return fromText || fromFile || KNOWN_TEMPLATES[0]?.id || '';
+  return '';
 }
 
 export async function loadTemplate(templateId) {
