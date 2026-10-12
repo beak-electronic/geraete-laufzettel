@@ -8,6 +8,7 @@ export const KNOWN_TEMPLATES = [
   { id: '200.420', label: '200.420', dataUrl: '../data/template-200.420.json' },
   { id: '200.433', label: '200.433', dataUrl: '../data/template-200.433.json' },
   { id: '200.434', label: '200.434', dataUrl: '../data/template-200.434.json' },
+  { id: '200.436', label: '200.436', dataUrl: '../data/template-200.436.json' },
   { id: '200.464', label: '200.464', dataUrl: '../data/template-200.464.json' },
   { id: '200.465', label: '200.465', dataUrl: '../data/template-200.465.json' },
   { id: '200.481', label: '200.481', dataUrl: '../data/template-200.481.json' },
@@ -122,7 +123,7 @@ export function drawFieldHighlights(ctx, fields, scaleX, scaleY) {
 /**
  * Fit + center text in a field rect (canvas, top-left origin).
  */
-export function drawCenteredFieldText(ctx, text, rect, colorCss, scaleX, scaleY) {
+export function drawCenteredFieldText(ctx, text, rect, colorCss, scaleX, scaleY, fontPt) {
   if (!text) return;
   const [x0, y0, x1, y1] = rect;
   const ix = x0 * scaleX;
@@ -135,6 +136,7 @@ export function drawCenteredFieldText(ctx, text, rect, colorCss, scaleX, scaleY)
   const maxW = Math.max(2, iw - pad * 2);
   const maxH = Math.max(2, ih - pad * 2);
   let size = Math.min(maxH * 0.85, 28);
+  if (fontPt) size = Math.min(size, fontPt * scaleY);
   ctx.save();
   ctx.fillStyle = colorCss || 'rgb(20,51,140)';
   ctx.textAlign = 'center';

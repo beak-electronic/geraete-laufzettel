@@ -3,7 +3,7 @@
  * pymupdf top-left Y → pdf-lib bottom-left: yPdf = PAGE_H - yTop
  */
 
-import { PAGE_WIDTH as PAGE_W, PAGE_HEIGHT as PAGE_H, V_LINES, H_LINES } from './grid.js?v=1.34';
+import { PAGE_WIDTH as PAGE_W, PAGE_HEIGHT as PAGE_H, V_LINES, H_LINES } from './grid.js?v=1.35';
 
 /** Column X edges — must match fill stamp grid (V_LINES). */
 const COL_X = V_LINES;
@@ -312,7 +312,7 @@ function drawPage(page, job, fonts, datum, rowCount, snStartIndex) {
 }
 
 /**
- * @param {import('./parse.js?v=1.34').Job} job
+ * @param {import('./parse.js?v=1.35').Job} job
  * @returns {Promise<{ bytes: Uint8Array, filename: string }>}
  */
 export async function generatePdf(job) {

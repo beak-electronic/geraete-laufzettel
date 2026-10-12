@@ -15,8 +15,8 @@ import {
   stampInitialsForSettings,
   stampLagerClerkForSettings,
   normalizeStampDateYY,
-} from './fields.js?v=1.34';
-import { colorCss, colorRgb01 } from './settings.js?v=1.34';
+} from './fields.js?v=1.35';
+import { colorCss, colorRgb01 } from './settings.js?v=1.35';
 
 const { rgb, StandardFonts } = PDFLib;
 
@@ -105,7 +105,7 @@ export function drawGeraetePage(wrap, pageWidth, pageHeight, api) {
         drawInitialsStampInRect(ctx, val.text, f.rect_pt, color, scaleX, scaleY);
       } else {
         if (f.multiline || f.single_line) drawMultilineFieldText(ctx, val.text, f.rect_pt, color, scaleX, scaleY, f.font_size_pt, !!f.single_line);
-        else drawCenteredFieldText(ctx, val.text, f.rect_pt, color, scaleX, scaleY);
+        else drawCenteredFieldText(ctx, val.text, f.rect_pt, color, scaleX, scaleY, f.font_size_pt);
       }
     }
   }
@@ -283,7 +283,7 @@ export async function embedFieldValuesInPdf(pdfDoc, pages, fieldValues, settings
     // OK / serials / dates share regular weight — only initials stamps stay bold.
     const font = isInitials ? helveticaBold : helvetica;
 
-    let size = Math.min(h * 0.72, 14);
+    let size = Math.min(h * 0.72, val.font_size_pt || 14);
     const maxW = Math.max(2, w - 2);
     while (size > 4 && font.widthOfTextAtSize(text, size) > maxW) {
       size -= 0.25;
