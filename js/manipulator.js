@@ -298,28 +298,32 @@ function setMergeStatus(text, kind = '') {
 }
 
 /**
- * Reihenfolge + Name: Datei mit Geräte-ID zuerst. Fehler bei 0 oder 2 Treffern.
- * @param {{name:string}[]} files  genau 2
+ * Reihenfolge + Name: Datei mit Geräte-ID zuerst, danach die Safety Tests
+ * in natürlicher Dateinamen-Sortierung (z. B. „Safety Test 2“ vor „Safety Test 10“).
+ * Fehler bei 0 oder mehreren Geräte-ID-Treffern.
+ * @param {{name:string}[]} files  2–4 Dateien
  */
 export function planMerge(files) {
   const hits = files.filter((f) => DEVICE_ID_NAME_RE.test(f.name));
   if (hits.length === 0) throw new Error('Keine Datei mit Geräte-ID (DE-…) gefunden');
-  if (hits.length > 1) throw new Error('Beide Dateien haben eine Geräte-ID (DE-…) – bitte nur eine');
+  if (hits.length > 1) throw new Error('Mehrere Dateien haben eine Geräte-ID (DE-…) – bitte nur eine');
   const first = hits[0];
-  const second = files.find((f) => f !== first);
+  const coll = new Intl.Collator('de', { numeric: true, sensitivity: 'base' });
+  const rest = files.filter((f) => f !== first).sort((a, b) => coll.compare(a.name, b.name) || (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
   const id = first.name.match(DEVICE_ID_NAME_RE)[0].toUpperCase().replace(/^DE-/, 'DE-');
-  return { ordered: [first, second], outName: `${id} (Safety Test).pdf` };
+  return { ordered: [first, ...rest], outName: `${id} (Safety Test).pdf` };
 }
+
+const MERGE_MIN = 2; // 1 Gerätelaufzettel + 1 Safety Test
+const MERGE_MAX = 4; // 1 Gerätelaufzettel + 3 Safety Tests
 
 let lastMerge = null;
 
 async function handleMergeFiles(fileList) {
   if (state.busy) return;
   const files = [...(fileList || [])];
-  if (files.length !== 2) {
-    const msg = files.length < 2
-      ? 'Bitte genau 2 Dateien auswählen (nur ' + files.length + ' gewählt)'
-      : 'Bitte genau 2 Dateien auswählen (' + files.length + ' gewählt)';
+  if (files.length < MERGE_MIN || files.length > MERGE_MAX) {
+    const msg = `Bitte einen Gerätelaufzettel und 1 bis 3 Safety Tests auswählen (${files.length} gewählt)`;
     setMergeStatus(msg, 'error');
     showToast(msg);
     return;
@@ -371,7 +375,7 @@ async function handleMergeFiles(fileList) {
     const bytes = await out.save();
     const blob = new Blob([bytes], { type: 'application/pdf' });
     lastMerge = { blob, name: plan.outName };
-    const total = counts[0] + counts[1];
+    const total = counts.reduce((a, b) => a + b, 0);
     setMergeStatus(`${plan.outName} · ${total} Seite(n)`, 'ok');
     const list = $('#pm-merge-list');
     if (list) {
