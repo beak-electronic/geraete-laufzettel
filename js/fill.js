@@ -1,4 +1,4 @@
-import * as pdfjsLib from '../vendor/pdf.min.mjs?v=1.35';
+import * as pdfjsLib from '../vendor/pdf.min.mjs?v=1.36';
 import {
   emptyCells,
   headerCells,
@@ -11,7 +11,7 @@ import {
   PAGE_HEIGHT,
   INSET,
   FILL_WHITE,
-} from './grid.js?v=1.35';
+} from './grid.js?v=1.36';
 import {
   loadSettings,
   saveInitials,
@@ -31,7 +31,7 @@ import {
   colorRgb01,
   DARK_COLORS,
   LAST_COLUMN_INDEX,
-} from './settings.js?v=1.35';
+} from './settings.js?v=1.36';
 import {
   KNOWN_TEMPLATES,
   resolveTemplateId,
@@ -40,14 +40,14 @@ import {
   extractArticleFromFilename,
   fieldKey,
   stampDateForSettings,
-} from './fields.js?v=1.35';
+} from './fields.js?v=1.36';
 import {
   drawGeraetePage,
   embedFieldValuesInPdf,
   serializeFieldValues,
   parseFieldValuesFromKeywords,
   applyParsedFieldValues,
-} from './field-fill.js?v=1.35';
+} from './field-fill.js?v=1.36';
 import {
   decodeBarcodeFromBlob,
   decodeBarcodeFromElement,
@@ -56,9 +56,9 @@ import {
   stopCamera,
   releaseAllCameras,
   releaseAllCamerasAsync,
-} from './scan.js?v=1.35';
+} from './scan.js?v=1.36';
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs?v=1.35', import.meta.url).href;
+pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs?v=1.36', import.meta.url).href;
 
 const { PDFDocument, rgb, StandardFonts, LineCapStyle } = PDFLib;
 
@@ -266,7 +266,7 @@ function clearDocument() {
     releaseAllCameras();
   } catch (_) {}
   // Release home + field cameras so the next home scan can start (iOS).
-  import('./app.js?v=1.35')
+  import('./app.js?v=1.36')
     .then((mod) => {
       if (typeof mod.ensureCamerasReleased === 'function') return mod.ensureCamerasReleased();
     })
@@ -360,7 +360,7 @@ function parseFilledFromKeywords(keywords) {
  */
 export async function openFile(file, fileHandle = null) {
   try {
-    const mod = await import('./app.js?v=1.35');
+    const mod = await import('./app.js?v=1.36');
     if (typeof mod.ensureCamerasReleased === 'function') await mod.ensureCamerasReleased();
   } catch (_) {}
 
@@ -1629,11 +1629,11 @@ function preferDownloadSave() {
 
 async function syncCatalogAfterSave(blob, name) {
   try {
-    const cat = await import('./catalog.js?v=1.35');
+    const cat = await import('./catalog.js?v=1.36');
     if (typeof cat.upsertSavedPdf === 'function') {
       await cat.upsertSavedPdf(blob, name);
     }
-    const mod = await import('./app.js?v=1.35');
+    const mod = await import('./app.js?v=1.36');
     if (typeof mod.onPdfCatalogUpdated === 'function') {
       await mod.onPdfCatalogUpdated();
     }
@@ -1647,7 +1647,7 @@ async function notifyStampSaved() {
   state.pendingQty = 0;
   if (!qty) return;
   try {
-    const mod = await import('./app.js?v=1.35');
+    const mod = await import('./app.js?v=1.36');
     if (typeof mod.onStampSaved === 'function') mod.onStampSaved(qty);
   } catch (err) {
     console.warn('onStampSaved failed', err);
@@ -1673,7 +1673,13 @@ let fieldEntryResolver = null;
 let fieldScanAbort = null;
 let fieldScanStream = null;
 
+/** Serial numbers: letters before the first digit always uppercase (e.g. ep123 → EP123). */
+function upperSerialPrefix(v) {
+  return String(v ?? '').replace(/^[^0-9]+/, (m) => m.toUpperCase());
+}
+
 function closeFieldEntryDialog(result) {
+  if (result != null && el.fieldEntryInput?.dataset?.maskKind === 'scan_or_manual') result = upperSerialPrefix(result);
   const dlg = el.fieldEntryDialog;
   if (dlg && typeof dlg.close === 'function') dlg.close();
   else if (dlg) dlg.removeAttribute('open');
@@ -2421,6 +2427,23 @@ export function initFill() {
     });
   }
 
+
+  el.fieldEntryInput?.addEventListener('input', () => {
+    const inp = el.fieldEntryInput;
+    if (inp.dataset.maskKind !== 'scan_or_manual') return;
+    const up = upperSerialPrefix(inp.value);
+    if (up === inp.value) return;
+    const a = inp.selectionStart, b = inp.selectionEnd;
+    inp.value = up;
+    try { inp.setSelectionRange(a, b); } catch (_) {}
+  });
+
+  // Enter in the (single-line) entry field = OK.
+  el.fieldEntryInput?.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' || e.isComposing || e.shiftKey || e.altKey || e.ctrlKey || e.metaKey) return;
+    e.preventDefault();
+    el.fieldEntryOk?.click();
+  });
 
   if (el.fieldEntryOk) {
     el.fieldEntryOk.addEventListener('click', (e) => {
