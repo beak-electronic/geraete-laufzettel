@@ -7,6 +7,8 @@ import {
   rectCssPercent,
   drawFieldHighlights,
   drawCenteredFieldText,
+  drawMultilineFieldText,
+  fitMultilineText,
   drawInitialsStampInRect,
   fieldDialogTitle,
   stampDateForSettings,
@@ -102,7 +104,8 @@ export function drawGeraetePage(wrap, pageWidth, pageHeight, api) {
       if (typ === 'tap_initials_stamp') {
         drawInitialsStampInRect(ctx, val.text, f.rect_pt, color, scaleX, scaleY);
       } else {
-        drawCenteredFieldText(ctx, val.text, f.rect_pt, color, scaleX, scaleY);
+        if (f.multiline || f.single_line) drawMultilineFieldText(ctx, val.text, f.rect_pt, color, scaleX, scaleY, f.font_size_pt, !!f.single_line);
+        else drawCenteredFieldText(ctx, val.text, f.rect_pt, color, scaleX, scaleY);
       }
     }
   }
@@ -232,6 +235,9 @@ async function onFieldTap(field, pageIndex, api) {
     text,
     colorIndex: api.settings.colorIndex,
     rect_pt: field.rect_pt,
+    multiline: !!field.multiline,
+    single_line: !!field.single_line,
+    font_size_pt: field.font_size_pt,
   });
   api.pushUndo({ kind: 'fields', pageIndex, before });
   api.redrawPage(pageIndex);
@@ -260,6 +266,19 @@ export async function embedFieldValuesInPdf(pdfDoc, pages, fieldValues, settings
     const c = colorRgb01(val.colorIndex ?? settings.colorIndex);
     const textColor = rgb(c.r, c.g, c.b);
     const text = String(val.text);
+    if (val.multiline || val.single_line) {
+      const fit = fitMultilineText(text, val.rect_pt, val.font_size_pt, (s, pt) => helvetica.widthOfTextAtSize(s, pt), !!val.single_line);
+      fit.lines.forEach((ln, i) => {
+        page.drawText(ln, {
+          x: x0 + fit.pad,
+          y: pageHeight - (y0 + fit.padY + i * fit.lineH + fit.lineH * 0.5 + fit.size * 0.35),
+          size: fit.size,
+          font: helvetica,
+          color: textColor,
+        });
+      });
+      continue;
+    }
     const isInitials = val.type === 'tap_initials_stamp';
     // OK / serials / dates share regular weight — only initials stamps stay bold.
     const font = isInitials ? helveticaBold : helvetica;
@@ -357,6 +376,9 @@ export function applyParsedFieldValues(fieldValues, parsed, template) {
       text: String(text),
       colorIndex: colorIndex ?? 0,
       rect_pt: f.rect_pt,
+      multiline: !!f.multiline,
+      single_line: !!f.single_line,
+      font_size_pt: f.font_size_pt,
     });
   }
 }

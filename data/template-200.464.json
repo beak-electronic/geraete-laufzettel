@@ -1,0 +1,1389 @@
+{
+  "id": "200.464",
+  "label": "200.464",
+  "pages": {
+    "1": {
+      "page": 1,
+      "style": {
+        "fill_hex": "#ADD8E6",
+        "alpha": 0.59,
+        "stroke": null,
+        "label_mode": "number",
+        "number_color_hex": "#2F6FAE",
+        "omit_text_hint": true,
+        "omit_crosshair": true
+      },
+      "fields": [
+        {
+          "id": "sn_right_1",
+          "number": 1,
+          "page": 1,
+          "label": "SN 100.867 BG Strommessung V1.1",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            343.3,
+            559.8,
+            365.1
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "100.867 BG Strommessung V1.1"
+        },
+        {
+          "id": "sn_right_2",
+          "number": 2,
+          "page": 1,
+          "label": "SN 101.109 BG BNC EMV Adpater V2",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            371.1,
+            559.8,
+            392.8
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "101.109 BG BNC EMV Adpater V2"
+        },
+        {
+          "id": "sn_right_3",
+          "number": 3,
+          "page": 1,
+          "label": "SN 101.109 BG BNC EMV Adpater V2",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            398.8,
+            559.8,
+            420.3
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "101.109 BG BNC EMV Adpater V2"
+        },
+        {
+          "id": "sn_right_4",
+          "number": 4,
+          "page": 1,
+          "label": "SN 101.109 BG BNC EMV Adpater V2",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            426.3,
+            559.8,
+            448.1
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "101.109 BG BNC EMV Adpater V2"
+        },
+        {
+          "id": "sn_right_5",
+          "number": 5,
+          "page": 1,
+          "label": "SN 100.720 BG D-SUB-9 EMV Adapter V1",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            454.1,
+            559.8,
+            475.5
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "100.720 BG D-SUB-9 EMV Adapter V1"
+        },
+        {
+          "id": "sn_right_6",
+          "number": 6,
+          "page": 1,
+          "label": "SN Endstufe",
+          "type": "scan_or_manual",
+          "value": null,
+          "rect_pt": [
+            414.16,
+            481.5,
+            559.8,
+            503.1
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "100.854 BG Endstufe V2"
+        },
+        {
+          "id": "sn_right_7",
+          "number": 7,
+          "page": 1,
+          "label": "SN 100.181 BG Kabelsatz V1",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            509.1,
+            559.8,
+            530.8
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "100.181 BG Kabelsatz V1"
+        },
+        {
+          "id": "sn_right_8",
+          "number": 8,
+          "page": 1,
+          "label": "SN LCD",
+          "type": "scan_or_manual",
+          "value": null,
+          "rect_pt": [
+            414.16,
+            536.8,
+            559.8,
+            558.3
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "100.961 BG LCD Baugruppe V3"
+        },
+        {
+          "id": "sn_right_9",
+          "number": 9,
+          "page": 1,
+          "label": "SN Netzteil",
+          "type": "scan_or_manual",
+          "value": null,
+          "rect_pt": [
+            414.16,
+            564.3,
+            559.8,
+            586.1
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "101.206 BG Netzteil V3"
+        },
+        {
+          "id": "sn_right_10",
+          "number": 10,
+          "page": 1,
+          "label": "SN 100.704 BG Netzverteiler V230-1",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            592.1,
+            559.8,
+            613.5
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "100.704 BG Netzverteiler V230-1"
+        },
+        {
+          "id": "sn_right_11",
+          "number": 11,
+          "page": 1,
+          "label": "SN 100.960 Verpackung Shell V1",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            619.5,
+            559.8,
+            641.1
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "100.960 Verpackung Shell V1"
+        },
+        {
+          "id": "software_right_path",
+          "number": 12,
+          "page": 1,
+          "label": "Software path row bestätigt (right)",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            663.0,
+            559.8,
+            676.6
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "pruefmittel_right_1",
+          "number": 13,
+          "page": 1,
+          "label": "Prüfmittel verwendet: Rohde & Schwarz Audio Analyzer",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            699.6,
+            559.8,
+            713.1
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "pruefmittel_right_2",
+          "number": 14,
+          "page": 1,
+          "label": "Prüfmittel verwendet: Oszilloskop HM 1507 / 5105A",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            719.0,
+            559.8,
+            732.3
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "pruefmittel_right_3",
+          "number": 15,
+          "page": 1,
+          "label": "Prüfmittel verwendet: BEAK Lastwiderstand",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            738.2,
+            559.8,
+            751.6
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "pruefmittel_right_4",
+          "number": 16,
+          "page": 1,
+          "label": "Prüfmittel verwendet: HP Digital Multimeter HP 3456",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            757.5,
+            559.8,
+            770.9
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "pruefmittel_right_5",
+          "number": 17,
+          "page": 1,
+          "label": "Prüfmittel verwendet: HP Digital Multimeter HP 3456 (2)",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            776.8,
+            559.8,
+            789.9
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "bemerkung_leerzeile",
+          "number": 18,
+          "page": 1,
+          "label": "Bemerkung (leere Zeile nach „-“)",
+          "type": "manual_text",
+          "value": null,
+          "rect_pt": [
+            326.08,
+            236.85,
+            559.8,
+            247.65
+          ],
+          "align": "left",
+          "kind": null,
+          "group": null,
+          "single_line": true,
+          "font_size_pt": 9
+        },
+        {
+          "id": "bemerkung_text",
+          "number": 19,
+          "page": 1,
+          "label": "Bemerkung",
+          "type": "manual_text",
+          "value": null,
+          "rect_pt": [
+            326.08,
+            271.06,
+            559.8,
+            320.86
+          ],
+          "align": "left",
+          "kind": null,
+          "group": null,
+          "multiline": true,
+          "font_size_pt": 9
+        },
+        {
+          "id": "buchungsdatum_lager",
+          "number": 20,
+          "page": 1,
+          "label": "Buchungsdatum Lager",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            124.88,
+            271.06,
+            315.36,
+            293.16
+          ],
+          "align": "center",
+          "kind": "text",
+          "group": "buchungsdaten"
+        },
+        {
+          "id": "sachbearbeiter_lager",
+          "number": 21,
+          "page": 1,
+          "label": "Sachbearbeiter Lager",
+          "type": "tap_lager_clerk",
+          "value": null,
+          "rect_pt": [
+            124.88,
+            299.16,
+            315.36,
+            320.86
+          ],
+          "align": "center",
+          "kind": "text",
+          "group": "buchungsdaten"
+        }
+      ]
+    },
+    "2": {
+      "page": 2,
+      "style": {
+        "fill_hex": "#ADD8E6",
+        "alpha": 0.59,
+        "stroke": null,
+        "label_mode": "number",
+        "number_color_hex": "#2F6FAE",
+        "omit_text_hint": true,
+        "omit_crosshair": true
+      },
+      "fields": [
+        {
+          "id": "pruefmittel_p2_1",
+          "number": 1,
+          "page": 2,
+          "label": "Prüfmittel verwendet: Stelltransformator EA-STT 2000 / BEAK RKT 4",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            97.5,
+            559.8,
+            111.1
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "pruefmittel_p2_2",
+          "number": 2,
+          "page": 2,
+          "label": "Prüfmittel verwendet: Sicherheitstester LG1800B",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            117.0,
+            559.8,
+            130.3
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "montage_datum_1",
+          "number": 3,
+          "page": 2,
+          "label": "Montage Datum: Montage Chassis",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            152.8,
+            452.17,
+            166.1
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "montage_u_1",
+          "number": 4,
+          "page": 2,
+          "label": "Montage Unterschrift: Montage Chassis",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            152.8,
+            559.81,
+            166.1
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "montage_datum_2",
+          "number": 5,
+          "page": 2,
+          "label": "Montage Datum: Kontrolle Sicherung FS1",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            172.0,
+            452.17,
+            185.3
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "montage_u_2",
+          "number": 6,
+          "page": 2,
+          "label": "Montage Unterschrift: Kontrolle Sicherung FS1",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            172.0,
+            559.81,
+            185.3
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "montage_datum_3",
+          "number": 7,
+          "page": 2,
+          "label": "Montage Datum: Montage Baugruppen",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            191.2,
+            452.17,
+            204.6
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "montage_u_3",
+          "number": 8,
+          "page": 2,
+          "label": "Montage Unterschrift: Montage Baugruppen",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            191.2,
+            559.81,
+            204.6
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "montage_datum_4",
+          "number": 9,
+          "page": 2,
+          "label": "Montage Datum: Montage Trafo (komplett)",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            210.5,
+            452.17,
+            223.9
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "montage_u_4",
+          "number": 10,
+          "page": 2,
+          "label": "Montage Unterschrift: Montage Trafo (komplett)",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            210.5,
+            559.81,
+            223.9
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "montage_datum_5",
+          "number": 11,
+          "page": 2,
+          "label": "Montage Datum: komplette Verkabelung",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            229.8,
+            452.17,
+            243.1
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "montage_u_5",
+          "number": 12,
+          "page": 2,
+          "label": "Montage Unterschrift: komplette Verkabelung",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            229.8,
+            559.81,
+            243.1
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "montage_datum_6",
+          "number": 13,
+          "page": 2,
+          "label": "Montage Datum: Endmontage / Deckel und Etiketten anbringen",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            249.0,
+            452.17,
+            262.1
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "montage_u_6",
+          "number": 14,
+          "page": 2,
+          "label": "Montage Unterschrift: Endmontage / Deckel und Etiketten anbringen",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            249.0,
+            559.81,
+            262.1
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "montage_datum_7",
+          "number": 15,
+          "page": 2,
+          "label": "Montage Datum: Verpackung für Versand",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            268.0,
+            452.17,
+            281.3
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "montage_u_7",
+          "number": 16,
+          "page": 2,
+          "label": "Montage Unterschrift: Verpackung für Versand",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            268.0,
+            559.81,
+            281.3
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_qc_1",
+          "number": 17,
+          "page": 2,
+          "label": "Prüfschritt Q-C-passed: Zwischenkontrolle / Sichtprüfung",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            303.9,
+            559.81,
+            317.3
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_qc_2",
+          "number": 18,
+          "page": 2,
+          "label": "Prüfschritt Q-C-passed: Abgleich laut Abgleichanweisung",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            323.2,
+            559.81,
+            336.6
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_qc_3",
+          "number": 19,
+          "page": 2,
+          "label": "Prüfschritt Q-C-passed: Gerät am Messplatz anschließen",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            342.5,
+            559.81,
+            355.9
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_qc_4",
+          "number": 20,
+          "page": 2,
+          "label": "Prüfschritt Q-C-passed: Regeltrafo einschalten und AC hochfahren",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            361.8,
+            559.81,
+            375.1
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_qc_5",
+          "number": 21,
+          "page": 2,
+          "label": "Prüfschritt Q-C-passed: Offset 1 - LP 20 - R6",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            381.0,
+            559.81,
+            394.1
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_qc_6",
+          "number": 22,
+          "page": 2,
+          "label": "Prüfschritt Q-C-passed: Offset 3 - OUTPUT - R1",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            400.0,
+            559.81,
+            413.3
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_qc_7",
+          "number": 23,
+          "page": 2,
+          "label": "Prüfschritt Q-C-passed: Ruhestrom - R58",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            419.2,
+            559.81,
+            432.6
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_qc_8",
+          "number": 24,
+          "page": 2,
+          "label": "Prüfschritt Q-C-passed: Offset 1 - TP 1/2 - R20",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            438.5,
+            559.81,
+            451.9
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_qc_9",
+          "number": 25,
+          "page": 2,
+          "label": "Prüfschritt Q-C-passed: Offset 2 - TP 3 - R25",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            457.8,
+            559.81,
+            471.1
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_qc_10",
+          "number": 26,
+          "page": 2,
+          "label": "Prüfschritt Q-C-passed: Offset 3 - TP 4/5 - R30",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            477.0,
+            559.81,
+            490.1
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_qc_11",
+          "number": 27,
+          "page": 2,
+          "label": "Prüfschritt Q-C-passed: Offset 4 - TP 6 - R45",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            496.0,
+            559.81,
+            509.3
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_qc_12",
+          "number": 28,
+          "page": 2,
+          "label": "Prüfschritt Q-C-passed: Offset 7 - Strommonitor - R57",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            515.2,
+            559.81,
+            528.6
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_qc_13",
+          "number": 29,
+          "page": 2,
+          "label": "Prüfschritt Q-C-passed: Gerät an normaler Netzversorgung anschließen",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            534.5,
+            559.81,
+            547.9
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_qc_14",
+          "number": 30,
+          "page": 2,
+          "label": "Prüfschritt Q-C-passed: Current Monitor @ R62",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            553.8,
+            559.81,
+            567.1
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_qc_15",
+          "number": 31,
+          "page": 2,
+          "label": "Prüfschritt Q-C-passed: Ue 36 mV am Lastwiderstand (18 A)",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            573.0,
+            559.81,
+            586.1
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_qc_16",
+          "number": 32,
+          "page": 2,
+          "label": "Prüfschritt Q-C-passed: Anzeige Display @ P 3",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            592.0,
+            559.81,
+            605.3
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_qc_17",
+          "number": 33,
+          "page": 2,
+          "label": "Prüfschritt Q-C-passed: P2 herausdrehen, P3 einstellen",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            611.2,
+            559.81,
+            624.6
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_qc_18",
+          "number": 34,
+          "page": 2,
+          "label": "Prüfschritt Q-C-passed: Anzeige Display @ P 2",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            630.5,
+            559.81,
+            643.9
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_qc_19",
+          "number": 35,
+          "page": 2,
+          "label": "Prüfschritt Q-C-passed: Ua 45 V am Output einstellen",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            649.8,
+            559.81,
+            663.1
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_qc_20",
+          "number": 36,
+          "page": 2,
+          "label": "Prüfschritt Q-C-passed: Strombegrenzung @ R24",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            669.0,
+            559.81,
+            682.1
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_qc_21",
+          "number": 37,
+          "page": 2,
+          "label": "Prüfschritt Q-C-passed: Abschaltung Ua beobachten (R24)",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            688.0,
+            559.81,
+            701.3
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_qc_22",
+          "number": 38,
+          "page": 2,
+          "label": "Prüfschritt Q-C-passed: Strombegrenzung @ R41",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            707.2,
+            559.81,
+            720.6
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_qc_23",
+          "number": 39,
+          "page": 2,
+          "label": "Prüfschritt Q-C-passed: Abschaltung Ua beobachten (R41)",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            726.5,
+            559.81,
+            739.9
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_qc_24",
+          "number": 40,
+          "page": 2,
+          "label": "Prüfschritt Q-C-passed: Strombegrenzung @ R26",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            745.8,
+            559.81,
+            759.1
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_qc_25",
+          "number": 41,
+          "page": 2,
+          "label": "Prüfschritt Q-C-passed: ACHTUNG Punkte 32-35 wiederholen",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            765.0,
+            559.81,
+            778.1
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_qc_26",
+          "number": 42,
+          "page": 2,
+          "label": "Prüfschritt Q-C-passed: Lüfter abdecken mit 5A/DC",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            784.0,
+            559.81,
+            797.3
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        }
+      ]
+    },
+    "3": {
+      "page": 3,
+      "style": {
+        "fill_hex": "#ADD8E6",
+        "alpha": 0.59,
+        "stroke": null,
+        "label_mode": "number",
+        "number_color_hex": "#2F6FAE",
+        "omit_text_hint": true,
+        "omit_crosshair": true
+      },
+      "fields": [
+        {
+          "id": "p3_qc_1",
+          "number": 1,
+          "page": 3,
+          "label": "Prüfschritt Q-C-passed: Lötbrücke am JP 1 schließen",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            97.5,
+            559.81,
+            111.1
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "p3_qc_2",
+          "number": 2,
+          "page": 3,
+          "label": "Prüfschritt Q-C-passed: RESET GAIN, Interlock 1, Overtravel, ERROR",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            117.0,
+            559.81,
+            130.3
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "p3_qc_3",
+          "number": 3,
+          "page": 3,
+          "label": "Prüfschritt Q-C-passed: Kontrast einstellen LCD Anzeige (P1)",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            136.2,
+            559.81,
+            149.6
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "p3_qc_4",
+          "number": 4,
+          "page": 3,
+          "label": "Prüfschritt Q-C-passed: Performance Test mit Abspeichern der Protokolle",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            155.5,
+            559.81,
+            168.6
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "p3_qc_5",
+          "number": 5,
+          "page": 3,
+          "label": "Prüfschritt Q-C-passed: Mains Power Confirmation = 230 V",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            174.5,
+            559.81,
+            187.9
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "p3_mains_datum",
+          "number": 6,
+          "page": 3,
+          "label": "Mains Power Confirmation: Datum",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            380.5,
+            173.0,
+            452.17,
+            181.6
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "p3_mains_power",
+          "number": 7,
+          "page": 3,
+          "label": "Mains Power Confirmation: Mains Power",
+          "type": "manual_text",
+          "value": null,
+          "rect_pt": [
+            403.0,
+            182.2,
+            452.17,
+            190.2
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "p3_qc_6",
+          "number": 8,
+          "page": 3,
+          "label": "Prüfschritt Q-C-passed: Fuse Check FS1",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            193.8,
+            559.81,
+            207.1
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "p3_qc_7",
+          "number": 9,
+          "page": 3,
+          "label": "Prüfschritt Q-C-passed: Sicherheitstest (LG1800B)",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            213.0,
+            559.81,
+            226.3
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "vermerke_geprueft",
+          "number": 10,
+          "page": 3,
+          "label": "Geprüft checkbox (Vermerke)",
+          "type": "tap_x",
+          "value": null,
+          "rect_pt": [
+            135.22,
+            312.7,
+            145.26,
+            323.6
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "vermerke_passed",
+          "number": 11,
+          "page": 3,
+          "label": "Test passed checkbox (Safety Test)",
+          "type": "tap_x",
+          "value": null,
+          "rect_pt": [
+            135.22,
+            376.0,
+            145.26,
+            386.6
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "vermerke_gebucht",
+          "number": 12,
+          "page": 3,
+          "label": "Gebucht checkbox (Buchungsvermerke)",
+          "type": "tap_x",
+          "value": null,
+          "rect_pt": [
+            135.22,
+            499.2,
+            145.26,
+            509.8
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "vermerke_datum_geprueft",
+          "number": 13,
+          "page": 3,
+          "label": "Datum (Vermerke / Geprüft)",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            221.76,
+            309.4,
+            290.04,
+            322.6
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "vermerke_datum_passed",
+          "number": 14,
+          "page": 3,
+          "label": "Datum (Safety Test / Test passed)",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            221.76,
+            372.8,
+            290.04,
+            386.0
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "vermerke_datum_gebucht",
+          "number": 15,
+          "page": 3,
+          "label": "Datum (Buchungsvermerke / Gebucht)",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            221.76,
+            495.1,
+            290.04,
+            508.3
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        }
+      ]
+    }
+  }
+}

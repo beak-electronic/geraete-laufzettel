@@ -7,6 +7,7 @@ export const KNOWN_TEMPLATES = [
   { id: '200.420', label: '200.420', dataUrl: '../data/template-200.420.json' },
   { id: '200.433', label: '200.433', dataUrl: '../data/template-200.433.json' },
   { id: '200.434', label: '200.434', dataUrl: '../data/template-200.434.json' },
+  { id: '200.464', label: '200.464', dataUrl: '../data/template-200.464.json' },
   { id: '200.483', label: '200.483', dataUrl: '../data/template-200.483.json' },
 ];
 
@@ -141,6 +142,68 @@ export function drawCenteredFieldText(ctx, text, rect, colorCss, scaleX, scaleY)
     size -= 0.5;
   }
   ctx.fillText(String(text), ix + iw / 2, iy + ih / 2 + size * 0.04, maxW);
+  ctx.restore();
+}
+
+/**
+ * Word-wrap text into lines that fit maxW (measure(str) -> width). Honors explicit \n.
+ */
+export function wrapTextLines(text, maxW, measure) {
+  const lines = [];
+  for (const para of String(text).split(/\r?\n/)) {
+    const words = para.split(/\s+/).filter(Boolean);
+    let cur = '';
+    for (const w of words) {
+      const next = cur ? `${cur} ${w}` : w;
+      if (!cur || measure(next) <= maxW) { cur = next; continue; }
+      lines.push(cur);
+      cur = w;
+    }
+    lines.push(cur);
+  }
+  return lines;
+}
+
+/**
+ * Multiline free text (field.multiline): left/top aligned, word wrap,
+ * font size from field.font_size_pt (shrinks only if the text would overflow).
+ */
+export function fitMultilineText(text, rect, fontSizePt, measureAt, singleLine = false) {
+  const [x0, y0, x1, y1] = rect;
+  const pad = 1.5;
+  const maxW = Math.max(2, x1 - x0 - pad * 2);
+  const maxH = Math.max(2, y1 - y0 - pad * 2);
+  let size = fontSizePt || 9;
+  let lines;
+  if (singleLine) {
+    // One left-aligned line; rect height = line height, no vertical padding.
+    const one = String(text).replace(/\s+/g, ' ').trim();
+    while (size > 4 && measureAt(one, size) > maxW) size -= 0.25;
+    return { size, lines: [one], lineH: y1 - y0, pad, padY: 0 };
+  }
+  while (true) {
+    lines = wrapTextLines(text, maxW, (s) => measureAt(s, size));
+    if (lines.length * size * 1.2 <= maxH || size <= 5) break;
+    size -= 0.25;
+  }
+  return { size, lines, lineH: size * 1.2, pad, padY: pad };
+}
+
+export function drawMultilineFieldText(ctx, text, rect, colorCss, scaleX, scaleY, fontSizePt, singleLine = false) {
+  if (!text) return;
+  const font = (pt) => `400 ${pt * scaleY}px Helvetica, Arial, sans-serif`;
+  const { size, lines, lineH, pad, padY } = fitMultilineText(text, rect, fontSizePt, (s, pt) => {
+    ctx.font = font(pt);
+    return ctx.measureText(s).width / scaleX;
+  }, singleLine);
+  ctx.save();
+  ctx.fillStyle = colorCss || 'rgb(20,51,140)';
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'top';
+  ctx.font = font(size);
+  lines.forEach((ln, i) => {
+    ctx.fillText(ln, (rect[0] + pad) * scaleX, (rect[1] + padY + i * lineH + (lineH - size) / 2) * scaleY);
+  });
   ctx.restore();
 }
 
