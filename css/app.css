@@ -1610,3 +1610,58 @@ body.pen-drawing #main-fill {
 .scan-actions .btn-secondary {
   margin-top: 0;
 }
+
+/* —— PDF Manipulator (PDF Zerteiler) —— */
+.pm-view .field-label {
+  display: block;
+  font-size: 13px;
+  color: var(--muted, #6e6e73);
+  margin: 0 0 -6px;
+}
+.pm-view .split-input {
+  width: 100%;
+  box-sizing: border-box;
+  font: inherit;
+  font-size: 16px;
+  color: var(--text);
+  background: var(--card, #fff);
+  border: 1px solid var(--border, rgba(60, 60, 67, 0.29));
+  border-radius: 12px;
+  padding: 12px 14px;
+  outline: none;
+}
+.pm-view .split-input:focus {
+  border-color: var(--pink);
+}
+.pm-view .status {
+  margin: 4px 0 2px;
+}
+.pm-drop-btn {
+  width: min(100%, 280px);
+  min-height: 52px;
+  border: 2px dashed transparent;
+  transition: border-color 0.15s, background 0.15s, transform 0.12s;
+}
+.pm-drop-btn.is-over {
+  background: var(--pink-hover);
+  border-color: #fff;
+  transform: scale(1.02);
+}
+.pm-result {
+  margin-top: 18px;
+}
+.pm-result-list {
+  margin: 8px 0 4px;
+  padding-left: 22px;
+}
+.pm-result-list li {
+  margin: 4px 0;
+  word-break: break-all;
+}
+.pm-result-list .pm-pages {
+  margin-left: 8px;
+  font-size: 13px;
+}
+.pm-merge-section {
+  margin-top: 26px;
+}

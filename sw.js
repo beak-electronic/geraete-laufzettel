@@ -1,5 +1,5 @@
 /* Geräte Laufzettel – offline app shell (scan + fill) */
-const CACHE = 'geraete-laufzettel-v80';
+const CACHE = 'geraete-laufzettel-v81';
 const ASSETS = [
   './',
   './index.html',
@@ -21,12 +21,17 @@ const ASSETS = [
   './js/settings.js',
   './js/parse.js',
   './js/pdf.js',
+  './js/split.js',
+  './js/manipulator.js',
+  './js/xps2pdf.js',
   './manifest.webmanifest',
   './vendor/pdf-lib.min.js',
   './vendor/fontkit.umd.min.js',
   './vendor/pdf.min.mjs',
   './vendor/pdf.worker.min.mjs',
   './vendor/zxing-library.min.js',
+  './vendor/jszip.min.js',
+  './vendor/FileSaver.min.js',
   './fonts/Calibri.subset.ttf',
   './fonts/Calibri-Bold.subset.ttf',
   './fonts/Aeonis.subset.ttf',
