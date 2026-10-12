@@ -4,7 +4,7 @@
  * des Laufzettel-Öffnens (PDFs ohne Feldvorlage werden hier normal geteilt).
  */
 import * as pdfjsLib from '../vendor/pdf.min.mjs';
-import { buildSplitZip } from './split.js';
+import { buildSplitZip, sanitizeFilename } from './split.js';
 import { xpsToPdf, isXpsFile } from './xps2pdf.js';
 
 if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
@@ -102,9 +102,56 @@ async function saveAsWithPicker(blob, name, type) {
  * Reihenfolge: Desktop mit „Speichern unter“ → Dialog; sonst (iPad) Teilen-Menü; sonst Download.
  * @returns {Promise<string>} Ergebnis ('saved'|'aborted'|'needs-gesture'|'shared'|'downloaded')
  */
-async function finishSaveBlob(blob, name, type = 'application/zip') {
+/**
+ * „Speichern unter“ SOFORT öffnen (synchron im change-/click-Handler, vor jeder
+ * asynchronen Verarbeitung), solange die Nutzeraktivierung noch gilt.
+ * Der Name ist schon aus den Dateinamen bekannt. Die Verarbeitung läuft parallel,
+ * geschrieben wird danach in den gewählten Handle.
+ * @returns {Promise<{handle?:any, status?:string}>|null}  null = kein Picker (iPad etc.)
+ */
+function requestSaveHandle(name, type) {
+  if (!hasSaveAsPicker()) return null;
+  let p;
+  try {
+    p = window.showSaveFilePicker({
+      suggestedName: name,
+      types: [SAVE_TYPES[type] || SAVE_TYPES['application/zip']],
+    });
+  } catch (err) {
+    p = Promise.reject(err);
+  }
+  return p.then(
+    (handle) => ({ handle }),
+    (err) => {
+      if (err?.name === 'AbortError') return { status: 'aborted' };
+      if (err?.name === 'SecurityError' || err?.name === 'NotAllowedError') return { status: 'needs-gesture' };
+      console.warn('showSaveFilePicker failed', err);
+      return { status: 'failed' };
+    }
+  );
+}
+
+async function writeToHandle(handle, blob) {
+  try {
+    const w = await handle.createWritable();
+    await w.write(blob);
+    await w.close();
+    return 'saved';
+  } catch (err) {
+    console.warn('write failed', err);
+    return 'failed';
+  }
+}
+
+async function finishSaveBlob(blob, name, type = 'application/zip', pre = null) {
   if (hasSaveAsPicker()) {
-    const r = await saveAsWithPicker(blob, name, type);
+    let r;
+    if (pre) {
+      const got = await pre;
+      r = got.handle ? await writeToHandle(got.handle, blob) : got.status;
+    } else {
+      r = await saveAsWithPicker(blob, name, type);
+    }
     if (r === 'saved') {
       showToast(`Gespeichert: ${name}`);
       return r;
@@ -164,6 +211,32 @@ function renderResult(result) {
 
 /* ---------- Verarbeiten ---------- */
 
+/**
+ * Desktop-Chrome/Edge: Dateien per showOpenFilePicker statt <input type=file> wählen.
+ * Getestet (Chrome 154, headful): Nach <input>-Dialog ist navigator.userActivation.isActive
+ * false → showSaveFilePicker scheitert. Nach showOpenFilePicker bleibt die Aktivierung
+ * erhalten → „Speichern unter“ öffnet direkt. iPad/Safari hat die API nicht → <input> wie bisher.
+ * @returns {boolean} true, wenn der Picker-Pfad genutzt wird
+ */
+function openViaPicker(multiple, onFiles) {
+  if (typeof window.showOpenFilePicker !== 'function' || !hasSaveAsPicker()) return false;
+  window.showOpenFilePicker({
+    multiple,
+    types: [{
+      description: multiple ? 'PDF / XPS' : 'PDF',
+      accept: multiple
+        ? { 'application/pdf': ['.pdf'], 'application/vnd.ms-xpsdocument': ['.xps'], 'application/oxps': ['.oxps'] }
+        : { 'application/pdf': ['.pdf'] },
+    }],
+  }).then(async (handles) => {
+    const files = await Promise.all(handles.map((h) => h.getFile()));
+    onFiles(files);
+  }).catch((err) => {
+    if (err?.name !== 'AbortError') console.warn('showOpenFilePicker failed', err);
+  });
+  return true;
+}
+
 async function handlePdfFile(file) {
   if (!file || state.busy) return;
   if (!/\.pdf$/i.test(file.name) && file.type !== 'application/pdf') {
@@ -177,6 +250,10 @@ async function handlePdfFile(file) {
     showToast('pdf-lib oder JSZip fehlt');
     return;
   }
+  // Name ist vorab bekannt → Dialog sofort öffnen (Nutzeraktivierung noch gültig)
+  const stem = String(file.name || 'dokument').replace(/\.pdf$/i, '') || 'dokument';
+  const preZipName = `${sanitizeFilename(stem)}_geteilt.zip`;
+  const pre = requestSaveHandle(preZipName, 'application/zip');
   state.busy = true;
   const btn = $('#btn-pm-open');
   if (btn) btn.disabled = true;
@@ -196,7 +273,7 @@ async function handlePdfFile(file) {
     state.lastZip = result;
     setStatus(`${result.filenames.length} Datei(en): ${result.filenames.join(', ')}`, 'ok');
     renderResult(result);
-    await finishSaveBlob(result.zipBlob, result.zipName);
+    await finishSaveBlob(result.zipBlob, result.zipName, 'application/zip', result.zipName === preZipName ? pre : null);
   } catch (err) {
     console.error(err);
     const msg = err?.message || 'Teilen fehlgeschlagen';
@@ -231,7 +308,7 @@ export function planMerge(files) {
   const first = hits[0];
   const second = files.find((f) => f !== first);
   const id = first.name.match(DEVICE_ID_NAME_RE)[0].toUpperCase().replace(/^DE-/, 'DE-');
-  return { ordered: [first, second], outName: `${id}.pdf` };
+  return { ordered: [first, second], outName: `${id} (Safety Test).pdf` };
 }
 
 let lastMerge = null;
@@ -264,6 +341,7 @@ async function handleMergeFiles(fileList) {
     showToast(err.message);
     return;
   }
+  const pre = requestSaveHandle(plan.outName, 'application/pdf');
   state.busy = true;
   const btn = $('#btn-pm-merge');
   if (btn) btn.disabled = true;
@@ -311,7 +389,7 @@ async function handleMergeFiles(fileList) {
     const tot = $('#pm-merge-total');
     if (tot) tot.textContent = `Gesamt: ${total} Seite(n)`;
     $('#pm-merge-result')?.classList.remove('hidden');
-    await finishSaveBlob(blob, plan.outName, 'application/pdf');
+    await finishSaveBlob(blob, plan.outName, 'application/pdf', pre);
   } catch (err) {
     console.error(err);
     const msg = err?.message || 'Verbinden fehlgeschlagen';
@@ -349,7 +427,9 @@ export function initManipulator() {
   });
   const mBtn = $('#btn-pm-merge');
   const mInput = $('#pm-merge-input');
-  mBtn?.addEventListener('click', () => mInput?.click());
+  mBtn?.addEventListener('click', () => {
+    if (!openViaPicker(true, (files) => handleMergeFiles(files))) mInput?.click();
+  });
   mInput?.addEventListener('change', () => {
     const fl = mInput.files ? [...mInput.files] : [];
     mInput.value = '';
@@ -359,7 +439,9 @@ export function initManipulator() {
     if (lastMerge) finishSaveBlob(lastMerge.blob, lastMerge.name, 'application/pdf');
   });
   if (!btn || !input) return;
-  btn.addEventListener('click', () => input.click());
+  btn.addEventListener('click', () => {
+    if (!openViaPicker(false, (files) => files[0] && handlePdfFile(files[0]))) input.click();
+  });
   input.addEventListener('change', () => {
     const f = input.files && input.files[0];
     input.value = '';
@@ -388,3 +470,25 @@ export function initManipulator() {
 }
 
 initManipulator();
+
+/* v1.31: Feldinhalt bei Klick/Fokus/Tap komplett markieren, damit Tippen ersetzt */
+function selectAllOnFocus(el) {
+  if (!el) return;
+  let justFocused = false;
+  const selAll = () => { try { el.setSelectionRange(0, el.value.length); } catch { el.select(); } };
+  el.addEventListener('focus', () => {
+    justFocused = true;
+    selAll();
+    setTimeout(selAll, 0); // iPad Safari setzt den Cursor nach focus
+  });
+  el.addEventListener('mouseup', (e) => {
+    if (justFocused) { e.preventDefault(); selAll(); }
+    justFocused = false;
+  });
+  el.addEventListener('touchend', () => {
+    if (justFocused) setTimeout(selAll, 0);
+    justFocused = false;
+  });
+}
+selectAllOnFocus(document.getElementById('pm-split-field'));
+selectAllOnFocus(document.getElementById('pm-remove-field'));

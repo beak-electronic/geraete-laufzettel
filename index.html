@@ -63,7 +63,7 @@
       </section>
 
       <section class="scan-section pm-section" aria-labelledby="pm-heading">
-        <h2 id="pm-heading" class="section-title">PDF teilen oder PDFs verbinden</h2>
+        <h2 id="pm-heading" class="section-title">PDF teilen oder Dateien zu einer PDF verbinden</h2>
         <p class="open-copy">
           Mehrseitige PDFs nach Geräte-ID aufteilen oder zwei PDFs zu einer verbinden.
         </p>
@@ -72,11 +72,11 @@
 
       <div class="home-footer-row">
         <p class="home-footer">
-          Version 1.30<br />
+          Version 1.31<br />
           © BEAK electronic engineering GmbH &amp; Co. KG
         </p>
         <button type="button" class="footer-settings-btn" id="btn-home-settings" aria-label="Einstellungen" title="Einstellungen">
-          <img class="pill-icon" src="icons/settings_btn.png?v=1.30" alt="" width="40" height="40" draggable="false" />
+          <img class="pill-icon" src="icons/settings_btn.png?v=1.31" alt="" width="40" height="40" draggable="false" />
         </button>
       </div>
     </div>
@@ -238,6 +238,9 @@
           <p class="hint">Im Programm hinterlegte Vorlagen (nur Übersicht, öffnet kein PDF):</p>
           <ul id="settings-field-templates-list" class="field-templates-list" aria-label="Hinterlegte Feldvorlagen">
             <li>
+              <span class="tmpl-id">200.001</span>
+            </li>
+            <li>
               <span class="tmpl-id">200.420</span>
             </li>
             <li>
@@ -298,7 +301,7 @@
         </section>
         <section class="settings-section cardish">
           <h3>Info</h3>
-          <p class="hint">Geräte Laufzettel 1.30<br />© BEAK electronic engineering GmbH &amp; Co. KG</p>
+          <p class="hint">Geräte Laufzettel 1.31<br />© BEAK electronic engineering GmbH &amp; Co. KG</p>
         </section>
       </div>
     </form>
@@ -318,6 +321,7 @@
         <label class="field-label" for="fill-settings-template">Vorlage</label>
         <select id="fill-settings-template">
           <option value="auto">Auto (aus DE- Artikel)</option>
+          <option value="200.001">200.001</option>
           <option value="200.420">200.420</option>
           <option value="200.433">200.433</option>
           <option value="200.434">200.434</option>
@@ -425,12 +429,12 @@
     </div>
   </div>
 
-  <script src="vendor/pdf-lib.min.js?v=1.30"></script>
-  <script src="vendor/fontkit.umd.min.js?v=1.30"></script>
-  <script src="vendor/zxing-library.min.js?v=1.30"></script>
-  <script src="vendor/jszip.min.js?v=1.30"></script>
-  <script src="vendor/FileSaver.min.js?v=1.30"></script>
-  <script type="module" src="js/app.js?v=1.30"></script>
-  <script type="module" src="js/manipulator.js?v=1.30"></script>
+  <script src="vendor/pdf-lib.min.js?v=1.31"></script>
+  <script src="vendor/fontkit.umd.min.js?v=1.31"></script>
+  <script src="vendor/zxing-library.min.js?v=1.31"></script>
+  <script src="vendor/jszip.min.js?v=1.31"></script>
+  <script src="vendor/FileSaver.min.js?v=1.31"></script>
+  <script type="module" src="js/app.js?v=1.31"></script>
+  <script type="module" src="js/manipulator.js?v=1.31"></script>
 </body>
 </html>

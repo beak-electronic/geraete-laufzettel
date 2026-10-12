@@ -336,6 +336,25 @@
           "align": "center",
           "kind": "text",
           "group": "buchungsdaten"
+        },
+        {
+          "id": "bemerkung_text",
+          "number": 21,
+          "page": 1,
+          "label": "Bemerkung",
+          "type": "manual_text",
+          "value": null,
+          "rect_pt": [
+            320.58,
+            249.3,
+            559.8,
+            320.86
+          ],
+          "align": "left",
+          "kind": null,
+          "group": null,
+          "multiline": true,
+          "font_size_pt": 9
         }
       ]
     },
