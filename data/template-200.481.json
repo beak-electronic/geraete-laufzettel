@@ -1,0 +1,860 @@
+{
+  "id": "200.481",
+  "label": "200.481",
+  "pages": {
+    "1": {
+      "page": 1,
+      "style": {
+        "fill_hex": "#ADD8E6",
+        "alpha": 0.59,
+        "stroke": null,
+        "label_mode": "number",
+        "number_color_hex": "#2F6FAE",
+        "omit_text_hint": true,
+        "omit_crosshair": true
+      },
+      "fields": [
+        {
+          "id": "sn_right_1",
+          "number": 1,
+          "page": 1,
+          "label": "SN Endstufe",
+          "type": "scan_or_manual",
+          "value": null,
+          "rect_pt": [
+            414.16,
+            342.1,
+            559.8,
+            363.8
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "SN Endstufe"
+        },
+        {
+          "id": "sn_right_2",
+          "number": 2,
+          "page": 1,
+          "label": "SN 101.251 BG Kabelsatz V4_230V V1",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            369.7,
+            559.8,
+            391.4
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "101.251 BG Kabelsatz V4_230V V1"
+        },
+        {
+          "id": "sn_right_3",
+          "number": 3,
+          "page": 1,
+          "label": "SN LCD",
+          "type": "scan_or_manual",
+          "value": null,
+          "rect_pt": [
+            414.16,
+            397.3,
+            559.8,
+            419.0
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "SN LCD"
+        },
+        {
+          "id": "sn_right_4",
+          "number": 4,
+          "page": 1,
+          "label": "SN Netzteil",
+          "type": "scan_or_manual",
+          "value": null,
+          "rect_pt": [
+            414.16,
+            424.9,
+            559.8,
+            446.6
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "SN Netzteil"
+        },
+        {
+          "id": "sn_right_5",
+          "number": 5,
+          "page": 1,
+          "label": "SN Schalter",
+          "type": "scan_or_manual",
+          "value": null,
+          "rect_pt": [
+            414.16,
+            452.5,
+            559.8,
+            474.2
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "SN Schalter"
+        },
+        {
+          "id": "sn_right_6",
+          "number": 6,
+          "page": 1,
+          "label": "SN 100.119 Verpackung 2 HE Export 2.7 (V1)",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            480.1,
+            559.8,
+            501.8
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "100.119 Verpackung 2 HE Export 2.7 (V1)"
+        },
+        {
+          "id": "sw_ok_1",
+          "number": 7,
+          "page": 1,
+          "label": "Software bestätigt",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            524.4,
+            559.8,
+            539.9
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "sw_date_1",
+          "number": 8,
+          "page": 1,
+          "label": "Software",
+          "type": "manual_date",
+          "value": null,
+          "rect_pt": [
+            271.7,
+            527.0,
+            408.16,
+            540.2
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        },
+        {
+          "id": "sw_ok_2",
+          "number": 9,
+          "page": 1,
+          "label": "Software bestätigt",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            543.6,
+            559.8,
+            559.1
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "sw_date_2",
+          "number": 10,
+          "page": 1,
+          "label": "Software",
+          "type": "manual_date",
+          "value": null,
+          "rect_pt": [
+            270.8,
+            546.2,
+            408.16,
+            559.4
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        },
+        {
+          "id": "sw_ok_3",
+          "number": 11,
+          "page": 1,
+          "label": "Software bestätigt",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            562.8,
+            559.8,
+            578.3
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "sw_date_3",
+          "number": 12,
+          "page": 1,
+          "label": "Software",
+          "type": "manual_date",
+          "value": null,
+          "rect_pt": [
+            269.2,
+            565.4,
+            408.16,
+            578.6
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": null
+        },
+        {
+          "id": "pm_p1_1",
+          "number": 13,
+          "page": 1,
+          "label": "Prüfmittel verwendet: Oszilloskop HM 1507",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            599.4,
+            559.8,
+            614.9
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "pm_p1_2",
+          "number": 14,
+          "page": 1,
+          "label": "Prüfmittel verwendet: BEAK Lastwiderstand xx",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            618.6,
+            559.8,
+            634.1
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "pm_p1_3",
+          "number": 15,
+          "page": 1,
+          "label": "Prüfmittel verwendet: HP Digitalmultimeter HP 3456",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            637.8,
+            559.8,
+            653.3
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "pm_p1_4",
+          "number": 16,
+          "page": 1,
+          "label": "Prüfmittel verwendet: Stelltransformator BEAK",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            657.0,
+            559.8,
+            672.5
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "pm_p1_5",
+          "number": 17,
+          "page": 1,
+          "label": "Prüfmittel verwendet: Sicherheitstester LG1800B",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            676.2,
+            559.8,
+            691.7
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "mon_date_1",
+          "number": 18,
+          "page": 1,
+          "label": "Montage Datum: Montage Chassis",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            712.14,
+            452.17,
+            726.14
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "mon_sig_1",
+          "number": 19,
+          "page": 1,
+          "label": "Montage Unterschrift: Montage Chassis",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            712.14,
+            559.81,
+            726.14
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "mon_date_2",
+          "number": 20,
+          "page": 1,
+          "label": "Montage Datum: komplette Verkabelung",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            731.34,
+            452.17,
+            745.34
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "mon_sig_2",
+          "number": 21,
+          "page": 1,
+          "label": "Montage Unterschrift: komplette Verkabelung",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            731.34,
+            559.81,
+            745.34
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "mon_date_3",
+          "number": 22,
+          "page": 1,
+          "label": "Montage Datum: Montage Trafos",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            750.54,
+            452.17,
+            764.54
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "mon_sig_3",
+          "number": 23,
+          "page": 1,
+          "label": "Montage Unterschrift: Montage Trafos",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            750.54,
+            559.81,
+            764.54
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "mon_date_4",
+          "number": 24,
+          "page": 1,
+          "label": "Montage Datum: Montage der Baugruppen",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            769.74,
+            452.17,
+            783.74
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "mon_sig_4",
+          "number": 25,
+          "page": 1,
+          "label": "Montage Unterschrift: Montage der Baugruppen",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            769.74,
+            559.81,
+            783.74
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "mon_date_5",
+          "number": 26,
+          "page": 1,
+          "label": "Montage Datum: Endmontage / Deckel und Etiketten anbringen",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            788.94,
+            452.17,
+            802.94
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "mon_sig_5",
+          "number": 27,
+          "page": 1,
+          "label": "Montage Unterschrift: Endmontage / Deckel und Etiketten anbringen",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            788.94,
+            559.81,
+            802.94
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "buchungsdatum_lager",
+          "number": 28,
+          "page": 1,
+          "label": "Buchungsdatum Lager",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            125.0,
+            270.5,
+            315.0,
+            292.5
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "sachbearbeiter_lager",
+          "number": 29,
+          "page": 1,
+          "label": "Sachbearbeiter Lager",
+          "type": "tap_lager_clerk",
+          "value": null,
+          "rect_pt": [
+            125.0,
+            300.5,
+            315.0,
+            322.5
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "bemerkung_text",
+          "number": 30,
+          "page": 1,
+          "label": "Bemerkung",
+          "type": "manual_text",
+          "value": null,
+          "rect_pt": [
+            320.58,
+            281.8,
+            559.8,
+            320.86
+          ],
+          "align": "left",
+          "kind": null,
+          "group": null,
+          "multiline": true,
+          "font_size_pt": 9
+        }
+      ]
+    },
+    "2": {
+      "page": 2,
+      "style": {
+        "fill_hex": "#ADD8E6",
+        "alpha": 0.59,
+        "stroke": null,
+        "label_mode": "number",
+        "number_color_hex": "#2F6FAE",
+        "omit_text_hint": true,
+        "omit_crosshair": true
+      },
+      "fields": [
+        {
+          "id": "mon_date_6",
+          "number": 1,
+          "page": 2,
+          "label": "Montage Datum: Verpackung für Versand",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            97.04,
+            452.17,
+            111.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "mon_sig_6",
+          "number": 2,
+          "page": 2,
+          "label": "Montage Unterschrift: Verpackung für Versand",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            97.04,
+            559.81,
+            111.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_qc_1",
+          "number": 3,
+          "page": 2,
+          "label": "Prüfschritt Q-C-passed: Zwischenprüfung / Sichtprüfung",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            133.04,
+            559.81,
+            147.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_qc_2",
+          "number": 4,
+          "page": 2,
+          "label": "Prüfschritt Q-C-passed: Abgleich laut Abgleichanweisung",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            152.24,
+            559.81,
+            166.24
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_qc_3",
+          "number": 5,
+          "page": 2,
+          "label": "Prüfschritt Q-C-passed: Feldmessung am Lastwiderstand",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            171.44,
+            559.81,
+            185.44
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_qc_4",
+          "number": 6,
+          "page": 2,
+          "label": "Prüfschritt Q-C-passed: Ausgangsspannung abgleichen (Sollwert: ca. 45V-69VDC)",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            190.64,
+            559.81,
+            204.64
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_istwert",
+          "number": 7,
+          "page": 2,
+          "label": "Ausgangsspannung Istwert",
+          "type": "manual_text",
+          "value": null,
+          "rect_pt": [
+            379.9,
+            188.6,
+            453.7,
+            201.0
+          ],
+          "align": "left",
+          "kind": null,
+          "group": null,
+          "single_line": true,
+          "font_size_pt": 9
+        },
+        {
+          "id": "ps_qc_5",
+          "number": 8,
+          "page": 2,
+          "label": "Prüfschritt Q-C-passed: Strombegrenzung testen MIN: 4A - MAX: 15A",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            209.84,
+            559.81,
+            223.84
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_qc_6",
+          "number": 9,
+          "page": 2,
+          "label": "Prüfschritt Q-C-passed: Funktionalität testen",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            229.04,
+            559.81,
+            243.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "footer_geprueft_x",
+          "number": 10,
+          "page": 2,
+          "label": "Geprüft checkbox (Vermerke)",
+          "type": "tap_x",
+          "value": "X",
+          "rect_pt": [
+            135.47,
+            330.32,
+            145.21,
+            339.94
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "footer_geprueft_datum",
+          "number": 11,
+          "page": 2,
+          "label": "Datum (Geprüft)",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            221.76,
+            323.51,
+            290.04,
+            336.71
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "footer_passed_x",
+          "number": 12,
+          "page": 2,
+          "label": "Test passed checkbox (Safety Test)",
+          "type": "tap_x",
+          "value": "X",
+          "rect_pt": [
+            135.47,
+            393.16,
+            145.21,
+            402.78
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "footer_passed_datum",
+          "number": 13,
+          "page": 2,
+          "label": "Datum (Test passed)",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            221.76,
+            387.31,
+            290.04,
+            400.51
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "footer_gebucht_x",
+          "number": 14,
+          "page": 2,
+          "label": "Gebucht checkbox (Buchungsvermerke)",
+          "type": "tap_x",
+          "value": "X",
+          "rect_pt": [
+            135.47,
+            515.97,
+            145.21,
+            525.59
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "footer_gebucht_datum",
+          "number": 15,
+          "page": 2,
+          "label": "Datum (Gebucht)",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            221.76,
+            509.16,
+            290.04,
+            522.36
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        }
+      ]
+    }
+  },
+  "capability_types": {
+    "scan_or_manual": {
+      "description": "Tapping the cell opens the camera for DataMatrix or 1D barcode; decoded value is written into the cell. Manual numeric/text entry is also allowed.",
+      "scan_formats": [
+        "DataMatrix",
+        "1D_barcode"
+      ],
+      "manual_entry": true,
+      "write_decoded_to_cell": true
+    },
+    "tap_ok": {
+      "description": "Tapping the cell writes the fixed text \"OK\" into the field (stamp/confirm).",
+      "value": "OK",
+      "manual_entry": false
+    },
+    "manual_date": {
+      "description": "Manual date entry into the cell (datepicker or typed date).",
+      "manual_entry": true,
+      "value_kind": "date"
+    },
+    "removed": {
+      "description": "Field deleted — not an interactive input."
+    },
+    "tap_date_settings": {
+      "description": "On tap/press, write today's date in format DD.MM.YY (e.g. 15.09.26). Default date is today but user can set a different working date in settings.",
+      "format": "DD.MM.YY",
+      "settings_key": "stamp_date",
+      "default": "today"
+    },
+    "tap_initials_stamp": {
+      "description": "On tap/press, stamp configured user initials into the cell.",
+      "settings_key": "stamp_initials"
+    },
+    "manual_text": {
+      "description": "Opens the keyboard for free manual text/number entry into the cell.",
+      "manual_entry": true
+    },
+    "tap_x": {
+      "description": "On tap, write \"X\" into the cell (checkbox-style mark).",
+      "value": "X"
+    },
+    "tap_lager_clerk": {
+      "description": "On tap, write Sachbearbeiter Lager name from settings (default from settings) into the cell. No dialog.",
+      "settings_key": "sachbearbeiterLager",
+      "default": "Lager",
+      "manual_entry": false
+    }
+  }
+}

@@ -10,6 +10,7 @@ export const KNOWN_TEMPLATES = [
   { id: '200.434', label: '200.434', dataUrl: '../data/template-200.434.json' },
   { id: '200.464', label: '200.464', dataUrl: '../data/template-200.464.json' },
   { id: '200.465', label: '200.465', dataUrl: '../data/template-200.465.json' },
+  { id: '200.481', label: '200.481', dataUrl: '../data/template-200.481.json' },
   { id: '200.483', label: '200.483', dataUrl: '../data/template-200.483.json' },
 ];
 
