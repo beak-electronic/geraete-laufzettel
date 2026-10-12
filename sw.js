@@ -1,5 +1,5 @@
 /* Geräte Laufzettel – offline app shell (scan + fill) */
-const CACHE = 'geraete-laufzettel-v84';
+const CACHE = 'geraete-laufzettel-v85';
 const ASSETS = [
   './',
   './index.html',
@@ -90,6 +90,10 @@ function isIconOrTouchAsset(url) {
   );
 }
 
+function isCodeAsset(url) {
+  return /\.(m?js|css|json|webmanifest)$/i.test(url.pathname || '');
+}
+
 function isServiceWorkerScript(url) {
   return /\/sw\.js$/i.test(url.pathname);
 }
@@ -171,7 +175,24 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // Listed / same-origin assets: cache-first (ignoreSearch for ?v=), then network.
+  // Code/data (JS, MJS, CSS, JSON, manifest): network-first (revalidated), cache fallback offline.
+  // Prevents new index.html + stale cached JS after a deploy (v1.34 fix).
+  if (isCodeAsset(url)) {
+    event.respondWith(
+      fetch(req, { cache: 'no-cache' })
+        .then((res) => {
+          if (res.ok) {
+            const clone = res.clone();
+            caches.open(CACHE).then((cache) => cache.put(req, clone));
+          }
+          return res;
+        })
+        .catch(async () => (await matchCache(req)) || new Response('', { status: 503, statusText: 'Offline' }))
+    );
+    return;
+  }
+
+  // Other same-origin assets (fonts, images): cache-first (ignoreSearch for ?v=), then network.
   // Never fall back to index.html for CSS/JS/fonts/images.
   event.respondWith(
     matchCache(req).then((cached) => {
