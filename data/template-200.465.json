@@ -23,9 +23,9 @@
           "value": "OK",
           "rect_pt": [
             414.16,
-            343.3,
+            342.1,
             559.8,
-            365.1
+            363.8
           ],
           "align": "center",
           "kind": null,
@@ -41,9 +41,9 @@
           "value": "OK",
           "rect_pt": [
             414.16,
-            371.1,
+            369.8,
             559.8,
-            392.8
+            391.5
           ],
           "align": "center",
           "kind": null,
@@ -59,9 +59,9 @@
           "value": "OK",
           "rect_pt": [
             414.16,
-            398.8,
+            397.5,
             559.8,
-            420.3
+            419.1
           ],
           "align": "center",
           "kind": null,
@@ -77,9 +77,9 @@
           "value": "OK",
           "rect_pt": [
             414.16,
-            426.3,
+            425.1,
             559.8,
-            448.1
+            446.8
           ],
           "align": "center",
           "kind": null,
@@ -95,9 +95,9 @@
           "value": "OK",
           "rect_pt": [
             414.16,
-            454.1,
+            452.8,
             559.8,
-            475.5
+            474.3
           ],
           "align": "center",
           "kind": null,
@@ -113,9 +113,9 @@
           "value": null,
           "rect_pt": [
             414.16,
-            481.5,
+            480.3,
             559.8,
-            503.1
+            501.8
           ],
           "align": "center",
           "kind": null,
@@ -131,9 +131,9 @@
           "value": "OK",
           "rect_pt": [
             414.16,
-            509.1,
+            507.8,
             559.8,
-            530.8
+            529.5
           ],
           "align": "center",
           "kind": null,
@@ -149,9 +149,9 @@
           "value": null,
           "rect_pt": [
             414.16,
-            536.8,
+            535.5,
             559.8,
-            558.3
+            557.1
           ],
           "align": "center",
           "kind": null,
@@ -167,9 +167,9 @@
           "value": null,
           "rect_pt": [
             414.16,
-            564.3,
+            563.1,
             559.8,
-            586.1
+            584.8
           ],
           "align": "center",
           "kind": null,
@@ -180,19 +180,19 @@
           "id": "sn_right_10",
           "number": 10,
           "page": 1,
-          "label": "SN 100.704 BG Netzverteiler V230-1",
+          "label": "SN 100.705 BG Netzverteiler V120-1",
           "type": "tap_ok",
           "value": "OK",
           "rect_pt": [
             414.16,
-            592.1,
+            590.8,
             559.8,
-            613.5
+            612.3
           ],
           "align": "center",
           "kind": null,
           "group": null,
-          "left_ref": "100.704 BG Netzverteiler V230-1"
+          "left_ref": "100.705 BG Netzverteiler V120-1"
         },
         {
           "id": "sn_right_11",
@@ -203,9 +203,9 @@
           "value": "OK",
           "rect_pt": [
             414.16,
-            619.5,
+            618.3,
             559.8,
-            641.1
+            639.8
           ],
           "align": "center",
           "kind": null,
@@ -221,9 +221,9 @@
           "value": "OK",
           "rect_pt": [
             414.16,
-            663.0,
+            662.0,
             559.8,
-            676.6
+            675.3
           ],
           "align": "center",
           "kind": null,
@@ -238,9 +238,9 @@
           "value": "OK",
           "rect_pt": [
             414.16,
-            699.6,
+            698.5,
             559.8,
-            713.1
+            712.1
           ],
           "align": "center",
           "kind": null,
@@ -250,14 +250,14 @@
           "id": "pruefmittel_right_2",
           "number": 14,
           "page": 1,
-          "label": "Prüfmittel verwendet: Oszilloskop HM 1507 / 5105A",
+          "label": "Prüfmittel verwendet: Oszilloskop HM 1507 /5105A",
           "type": "tap_ok",
           "value": "OK",
           "rect_pt": [
             414.16,
-            719.0,
+            718.0,
             559.8,
-            732.3
+            731.3
           ],
           "align": "center",
           "kind": null,
@@ -272,9 +272,9 @@
           "value": "OK",
           "rect_pt": [
             414.16,
-            738.2,
+            737.2,
             559.8,
-            751.6
+            750.6
           ],
           "align": "center",
           "kind": null,
@@ -289,9 +289,9 @@
           "value": "OK",
           "rect_pt": [
             414.16,
-            757.5,
+            756.5,
             559.8,
-            770.9
+            769.9
           ],
           "align": "center",
           "kind": null,
@@ -306,9 +306,9 @@
           "value": "OK",
           "rect_pt": [
             414.16,
-            776.8,
+            775.8,
             559.8,
-            789.9
+            788.9
           ],
           "align": "center",
           "kind": null,
@@ -323,9 +323,9 @@
           "value": null,
           "rect_pt": [
             326.08,
-            236.85,
+            235.35,
             559.8,
-            247.65
+            246.15
           ],
           "align": "left",
           "kind": null,
@@ -342,9 +342,9 @@
           "value": null,
           "rect_pt": [
             124.88,
-            271.06,
+            269.46,
             315.36,
-            293.16
+            291.36
           ],
           "align": "center",
           "kind": "text",
@@ -359,9 +359,9 @@
           "value": null,
           "rect_pt": [
             124.88,
-            299.16,
+            297.36,
             315.36,
-            320.86
+            319.36
           ],
           "align": "center",
           "kind": "text",
@@ -392,7 +392,7 @@
             414.16,
             97.5,
             559.8,
-            111.1
+            110.9
           ],
           "align": "center",
           "kind": null,
@@ -407,9 +407,9 @@
           "value": "OK",
           "rect_pt": [
             414.16,
-            117.0,
+            116.8,
             559.8,
-            130.3
+            130.1
           ],
           "align": "center",
           "kind": null,
@@ -424,7 +424,7 @@
           "value": null,
           "rect_pt": [
             351.37,
-            152.8,
+            152.5,
             452.17,
             166.1
           ],
@@ -441,7 +441,7 @@
           "value": null,
           "rect_pt": [
             458.17,
-            152.8,
+            152.5,
             559.81,
             166.1
           ],
@@ -453,7 +453,7 @@
           "id": "montage_datum_2",
           "number": 5,
           "page": 2,
-          "label": "Montage Datum: Kontrolle Sicherung FS1",
+          "label": "Montage Datum: Kontrolle Sicherung FS1 (6,3x32 SHT 20 A)",
           "type": "tap_date_settings",
           "value": null,
           "rect_pt": [
@@ -470,7 +470,7 @@
           "id": "montage_u_2",
           "number": 6,
           "page": 2,
-          "label": "Montage Unterschrift: Kontrolle Sicherung FS1",
+          "label": "Montage Unterschrift: Kontrolle Sicherung FS1 (6,3x32 SHT 20 A)",
           "type": "tap_initials_stamp",
           "value": null,
           "rect_pt": [
@@ -562,7 +562,7 @@
             351.37,
             229.8,
             452.17,
-            243.1
+            242.9
           ],
           "align": "center",
           "kind": null,
@@ -579,7 +579,7 @@
             458.17,
             229.8,
             559.81,
-            243.1
+            242.9
           ],
           "align": "center",
           "kind": null,
@@ -594,7 +594,7 @@
           "value": null,
           "rect_pt": [
             351.37,
-            249.0,
+            248.8,
             452.17,
             262.1
           ],
@@ -611,7 +611,7 @@
           "value": null,
           "rect_pt": [
             458.17,
-            249.0,
+            248.8,
             559.81,
             262.1
           ],
@@ -662,9 +662,9 @@
           "value": null,
           "rect_pt": [
             458.17,
-            303.9,
+            323.2,
             559.81,
-            317.3
+            336.6
           ],
           "align": "center",
           "kind": null,
@@ -679,9 +679,9 @@
           "value": null,
           "rect_pt": [
             458.17,
-            323.2,
+            342.5,
             559.81,
-            336.6
+            355.9
           ],
           "align": "center",
           "kind": null,
@@ -696,9 +696,9 @@
           "value": null,
           "rect_pt": [
             458.17,
-            342.5,
+            361.8,
             559.81,
-            355.9
+            375.1
           ],
           "align": "center",
           "kind": null,
@@ -713,9 +713,9 @@
           "value": null,
           "rect_pt": [
             458.17,
-            361.8,
+            381.0,
             559.81,
-            375.1
+            394.3
           ],
           "align": "center",
           "kind": null,
@@ -725,14 +725,14 @@
           "id": "ps_qc_5",
           "number": 21,
           "page": 2,
-          "label": "Prüfschritt Q-C-passed: Offset 1 - LP 20 - R6",
+          "label": "Prüfschritt Q-C-passed: 1) Abgleichvorgänge auf der Endstufe",
           "type": "tap_initials_stamp",
           "value": null,
           "rect_pt": [
             458.17,
-            381.0,
+            400.2,
             559.81,
-            394.1
+            413.3
           ],
           "align": "center",
           "kind": null,
@@ -742,24 +742,7 @@
           "id": "ps_qc_6",
           "number": 22,
           "page": 2,
-          "label": "Prüfschritt Q-C-passed: Offset 3 - OUTPUT - R1",
-          "type": "tap_initials_stamp",
-          "value": null,
-          "rect_pt": [
-            458.17,
-            400.0,
-            559.81,
-            413.3
-          ],
-          "align": "center",
-          "kind": null,
-          "group": null
-        },
-        {
-          "id": "ps_qc_7",
-          "number": 23,
-          "page": 2,
-          "label": "Prüfschritt Q-C-passed: Ruhestrom - R58",
+          "label": "Prüfschritt Q-C-passed: Offset 1 - LP 20 - R6",
           "type": "tap_initials_stamp",
           "value": null,
           "rect_pt": [
@@ -773,10 +756,10 @@
           "group": null
         },
         {
-          "id": "ps_qc_8",
-          "number": 24,
+          "id": "ps_qc_7",
+          "number": 23,
           "page": 2,
-          "label": "Prüfschritt Q-C-passed: Offset 1 - TP 1/2 - R20",
+          "label": "Prüfschritt Q-C-passed: Offset 3 - OUTPUT - R1",
           "type": "tap_initials_stamp",
           "value": null,
           "rect_pt": [
@@ -790,10 +773,10 @@
           "group": null
         },
         {
-          "id": "ps_qc_9",
-          "number": 25,
+          "id": "ps_qc_8",
+          "number": 24,
           "page": 2,
-          "label": "Prüfschritt Q-C-passed: Offset 2 - TP 3 - R25",
+          "label": "Prüfschritt Q-C-passed: Ruhestrom - R58",
           "type": "tap_initials_stamp",
           "value": null,
           "rect_pt": [
@@ -807,17 +790,34 @@
           "group": null
         },
         {
-          "id": "ps_qc_10",
-          "number": 26,
+          "id": "ps_qc_9",
+          "number": 25,
           "page": 2,
-          "label": "Prüfschritt Q-C-passed: Offset 3 - TP 4/5 - R30",
+          "label": "Prüfschritt Q-C-passed: 2) Abgleichvorgänge auf dem Netzteil und der Anzeige",
           "type": "tap_initials_stamp",
           "value": null,
           "rect_pt": [
             458.17,
             477.0,
             559.81,
-            490.1
+            490.3
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_qc_10",
+          "number": 26,
+          "page": 2,
+          "label": "Prüfschritt Q-C-passed: Offset 1 - TP 1/2 - R20",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            496.2,
+            559.81,
+            509.3
           ],
           "align": "center",
           "kind": null,
@@ -827,24 +827,7 @@
           "id": "ps_qc_11",
           "number": 27,
           "page": 2,
-          "label": "Prüfschritt Q-C-passed: Offset 4 - TP 6 - R45",
-          "type": "tap_initials_stamp",
-          "value": null,
-          "rect_pt": [
-            458.17,
-            496.0,
-            559.81,
-            509.3
-          ],
-          "align": "center",
-          "kind": null,
-          "group": null
-        },
-        {
-          "id": "ps_qc_12",
-          "number": 28,
-          "page": 2,
-          "label": "Prüfschritt Q-C-passed: Offset 7 - Strommonitor - R57",
+          "label": "Prüfschritt Q-C-passed: Offset 2 - TP 3 - R25",
           "type": "tap_initials_stamp",
           "value": null,
           "rect_pt": [
@@ -858,10 +841,10 @@
           "group": null
         },
         {
-          "id": "ps_qc_13",
-          "number": 29,
+          "id": "ps_qc_12",
+          "number": 28,
           "page": 2,
-          "label": "Prüfschritt Q-C-passed: Gerät an normaler Netzversorgung anschließen",
+          "label": "Prüfschritt Q-C-passed: Offset 3 - TP 4/5 - R30",
           "type": "tap_initials_stamp",
           "value": null,
           "rect_pt": [
@@ -875,10 +858,10 @@
           "group": null
         },
         {
-          "id": "ps_qc_14",
-          "number": 30,
+          "id": "ps_qc_13",
+          "number": 29,
           "page": 2,
-          "label": "Prüfschritt Q-C-passed: Current Monitor @ R62",
+          "label": "Prüfschritt Q-C-passed: Offset 4 - TP 6 - R45",
           "type": "tap_initials_stamp",
           "value": null,
           "rect_pt": [
@@ -892,17 +875,34 @@
           "group": null
         },
         {
-          "id": "ps_qc_15",
-          "number": 31,
+          "id": "ps_qc_14",
+          "number": 30,
           "page": 2,
-          "label": "Prüfschritt Q-C-passed: Ue 36 mV am Lastwiderstand (18 A)",
+          "label": "Prüfschritt Q-C-passed: Offset 7 - Strommonitor - R57",
           "type": "tap_initials_stamp",
           "value": null,
           "rect_pt": [
             458.17,
             573.0,
             559.81,
-            586.1
+            586.3
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_qc_15",
+          "number": 31,
+          "page": 2,
+          "label": "Prüfschritt Q-C-passed: Gerät an normaler Netzversorgung anschließen",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            592.2,
+            559.81,
+            605.3
           ],
           "align": "center",
           "kind": null,
@@ -912,24 +912,7 @@
           "id": "ps_qc_16",
           "number": 32,
           "page": 2,
-          "label": "Prüfschritt Q-C-passed: Anzeige Display @ P 3",
-          "type": "tap_initials_stamp",
-          "value": null,
-          "rect_pt": [
-            458.17,
-            592.0,
-            559.81,
-            605.3
-          ],
-          "align": "center",
-          "kind": null,
-          "group": null
-        },
-        {
-          "id": "ps_qc_17",
-          "number": 33,
-          "page": 2,
-          "label": "Prüfschritt Q-C-passed: P2 herausdrehen, P3 einstellen",
+          "label": "Prüfschritt Q-C-passed: 3) Einstell- und Abgleichvorgänge",
           "type": "tap_initials_stamp",
           "value": null,
           "rect_pt": [
@@ -943,10 +926,10 @@
           "group": null
         },
         {
-          "id": "ps_qc_18",
-          "number": 34,
+          "id": "ps_qc_17",
+          "number": 33,
           "page": 2,
-          "label": "Prüfschritt Q-C-passed: Anzeige Display @ P 2",
+          "label": "Prüfschritt Q-C-passed: Current Monitor @ R62",
           "type": "tap_initials_stamp",
           "value": null,
           "rect_pt": [
@@ -960,10 +943,10 @@
           "group": null
         },
         {
-          "id": "ps_qc_19",
-          "number": 35,
+          "id": "ps_qc_18",
+          "number": 34,
           "page": 2,
-          "label": "Prüfschritt Q-C-passed: Ua 45 V am Output einstellen",
+          "label": "Prüfschritt Q-C-passed: Ue 36 mV am Lastwiderstand (18 A)",
           "type": "tap_initials_stamp",
           "value": null,
           "rect_pt": [
@@ -977,17 +960,34 @@
           "group": null
         },
         {
-          "id": "ps_qc_20",
-          "number": 36,
+          "id": "ps_qc_19",
+          "number": 35,
           "page": 2,
-          "label": "Prüfschritt Q-C-passed: Strombegrenzung @ R24",
+          "label": "Prüfschritt Q-C-passed: Anzeige Display @ P 3",
           "type": "tap_initials_stamp",
           "value": null,
           "rect_pt": [
             458.17,
             669.0,
             559.81,
-            682.1
+            682.3
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_qc_20",
+          "number": 36,
+          "page": 2,
+          "label": "Prüfschritt Q-C-passed: P2 herausdrehen, P3 einstellen",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            688.2,
+            559.81,
+            701.3
           ],
           "align": "center",
           "kind": null,
@@ -997,24 +997,7 @@
           "id": "ps_qc_21",
           "number": 37,
           "page": 2,
-          "label": "Prüfschritt Q-C-passed: Abschaltung Ua beobachten (R24)",
-          "type": "tap_initials_stamp",
-          "value": null,
-          "rect_pt": [
-            458.17,
-            688.0,
-            559.81,
-            701.3
-          ],
-          "align": "center",
-          "kind": null,
-          "group": null
-        },
-        {
-          "id": "ps_qc_22",
-          "number": 38,
-          "page": 2,
-          "label": "Prüfschritt Q-C-passed: Strombegrenzung @ R41",
+          "label": "Prüfschritt Q-C-passed: Anzeige Display @ P 2",
           "type": "tap_initials_stamp",
           "value": null,
           "rect_pt": [
@@ -1028,10 +1011,10 @@
           "group": null
         },
         {
-          "id": "ps_qc_23",
-          "number": 39,
+          "id": "ps_qc_22",
+          "number": 38,
           "page": 2,
-          "label": "Prüfschritt Q-C-passed: Abschaltung Ua beobachten (R41)",
+          "label": "Prüfschritt Q-C-passed: Ua 45 V am Output einstellen",
           "type": "tap_initials_stamp",
           "value": null,
           "rect_pt": [
@@ -1045,10 +1028,10 @@
           "group": null
         },
         {
-          "id": "ps_qc_24",
-          "number": 40,
+          "id": "ps_qc_23",
+          "number": 39,
           "page": 2,
-          "label": "Prüfschritt Q-C-passed: Strombegrenzung @ R26",
+          "label": "Prüfschritt Q-C-passed: Strombegrenzung @ R24",
           "type": "tap_initials_stamp",
           "value": null,
           "rect_pt": [
@@ -1062,32 +1045,32 @@
           "group": null
         },
         {
-          "id": "ps_qc_25",
-          "number": 41,
+          "id": "ps_qc_24",
+          "number": 40,
           "page": 2,
-          "label": "Prüfschritt Q-C-passed: ACHTUNG Punkte 32-35 wiederholen",
+          "label": "Prüfschritt Q-C-passed: Abschaltung Ua beobachten (R24)",
           "type": "tap_initials_stamp",
           "value": null,
           "rect_pt": [
             458.17,
             765.0,
             559.81,
-            778.1
+            778.3
           ],
           "align": "center",
           "kind": null,
           "group": null
         },
         {
-          "id": "ps_qc_26",
-          "number": 42,
+          "id": "ps_qc_25",
+          "number": 41,
           "page": 2,
-          "label": "Prüfschritt Q-C-passed: Lüfter abdecken mit 5A/DC",
+          "label": "Prüfschritt Q-C-passed: Strombegrenzung @ R41",
           "type": "tap_initials_stamp",
           "value": null,
           "rect_pt": [
             458.17,
-            784.0,
+            784.2,
             559.81,
             797.3
           ],
@@ -1113,14 +1096,14 @@
           "id": "p3_qc_1",
           "number": 1,
           "page": 3,
-          "label": "Prüfschritt Q-C-passed: Lötbrücke am JP 1 schließen",
+          "label": "Prüfschritt Q-C-passed: Abschaltung Ua beobachten (R41)",
           "type": "tap_initials_stamp",
           "value": null,
           "rect_pt": [
             458.17,
             97.5,
             559.81,
-            111.1
+            110.9
           ],
           "align": "center",
           "kind": null,
@@ -1130,14 +1113,14 @@
           "id": "p3_qc_2",
           "number": 2,
           "page": 3,
-          "label": "Prüfschritt Q-C-passed: RESET GAIN, Interlock 1, Overtravel, ERROR",
+          "label": "Prüfschritt Q-C-passed: Strombegrenzung @ R26",
           "type": "tap_initials_stamp",
           "value": null,
           "rect_pt": [
             458.17,
-            117.0,
+            116.8,
             559.81,
-            130.3
+            130.1
           ],
           "align": "center",
           "kind": null,
@@ -1147,14 +1130,14 @@
           "id": "p3_qc_3",
           "number": 3,
           "page": 3,
-          "label": "Prüfschritt Q-C-passed: Kontrast einstellen LCD Anzeige (P1)",
+          "label": "Prüfschritt Q-C-passed: ACHTUNG! Punkte 32-35 wiederholen",
           "type": "tap_initials_stamp",
           "value": null,
           "rect_pt": [
             458.17,
-            136.2,
+            136.0,
             559.81,
-            149.6
+            149.3
           ],
           "align": "center",
           "kind": null,
@@ -1164,12 +1147,12 @@
           "id": "p3_qc_4",
           "number": 4,
           "page": 3,
-          "label": "Prüfschritt Q-C-passed: Performance Test mit Abspeichern der Protokolle",
+          "label": "Prüfschritt Q-C-passed: Lüftersteuerung kontrollieren",
           "type": "tap_initials_stamp",
           "value": null,
           "rect_pt": [
             458.17,
-            155.5,
+            155.2,
             559.81,
             168.6
           ],
@@ -1181,7 +1164,7 @@
           "id": "p3_qc_5",
           "number": 5,
           "page": 3,
-          "label": "Prüfschritt Q-C-passed: Mains Power Confirmation = 230 V",
+          "label": "Prüfschritt Q-C-passed: Lüfter abdecken mit 5A/DC (Ua=40V)",
           "type": "tap_initials_stamp",
           "value": null,
           "rect_pt": [
@@ -1195,51 +1178,17 @@
           "group": null
         },
         {
-          "id": "p3_mains_datum",
+          "id": "p3_qc_6",
           "number": 6,
           "page": 3,
-          "label": "Mains Power Confirmation: Datum",
-          "type": "tap_date_settings",
-          "value": null,
-          "rect_pt": [
-            380.5,
-            173.0,
-            452.17,
-            181.6
-          ],
-          "align": "center",
-          "kind": null,
-          "group": null
-        },
-        {
-          "id": "p3_mains_power",
-          "number": 7,
-          "page": 3,
-          "label": "Mains Power Confirmation: Mains Power",
-          "type": "manual_text",
-          "value": null,
-          "rect_pt": [
-            403.0,
-            182.2,
-            452.17,
-            190.2
-          ],
-          "align": "center",
-          "kind": null,
-          "group": null
-        },
-        {
-          "id": "p3_qc_6",
-          "number": 8,
-          "page": 3,
-          "label": "Prüfschritt Q-C-passed: Fuse Check FS1",
+          "label": "Prüfschritt Q-C-passed: Lötbrücke am JP 1 schließen",
           "type": "tap_initials_stamp",
           "value": null,
           "rect_pt": [
             458.17,
             193.8,
             559.81,
-            207.1
+            206.9
           ],
           "align": "center",
           "kind": null,
@@ -1247,16 +1196,152 @@
         },
         {
           "id": "p3_qc_7",
+          "number": 7,
+          "page": 3,
+          "label": "Prüfschritt Q-C-passed: 4) Überprüfen der Fehlersignale",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            212.8,
+            559.81,
+            226.1
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "p3_qc_8",
+          "number": 8,
+          "page": 3,
+          "label": "Prüfschritt Q-C-passed: RESET GAIN, Interlock 1, Overtravel, ERROR",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            232.0,
+            559.81,
+            245.3
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "p3_qc_9",
           "number": 9,
+          "page": 3,
+          "label": "Prüfschritt Q-C-passed: Kontrast einstellen LCD Anzeige (P1)",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            251.2,
+            559.81,
+            264.6
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "p3_qc_10",
+          "number": 10,
+          "page": 3,
+          "label": "Prüfschritt Q-C-passed: Performance Test mit Abspeichern der Protokolle",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            270.5,
+            559.81,
+            283.9
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "p3_qc_11",
+          "number": 11,
+          "page": 3,
+          "label": "Prüfschritt Q-C-passed: Mains Power Confirmation = 120 V",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            289.8,
+            559.81,
+            302.9
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "p3_mains_datum",
+          "number": 12,
+          "page": 3,
+          "label": "Mains Power Confirmation: Datum",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            380.5,
+            288.3,
+            452.17,
+            296.9
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "p3_mains_power",
+          "number": 13,
+          "page": 3,
+          "label": "Mains Power Confirmation: Mains Power",
+          "type": "manual_text",
+          "value": null,
+          "rect_pt": [
+            403.0,
+            297.5,
+            452.17,
+            305.5
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "p3_qc_12",
+          "number": 14,
+          "page": 3,
+          "label": "Prüfschritt Q-C-passed: Fuse Check FS1",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            308.8,
+            559.81,
+            322.1
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "p3_qc_13",
+          "number": 15,
           "page": 3,
           "label": "Prüfschritt Q-C-passed: Sicherheitstest (LG1800B)",
           "type": "tap_initials_stamp",
           "value": null,
           "rect_pt": [
             458.17,
-            213.0,
+            328.0,
             559.81,
-            226.3
+            341.3
           ],
           "align": "center",
           "kind": null,
@@ -1264,16 +1349,16 @@
         },
         {
           "id": "vermerke_geprueft",
-          "number": 10,
+          "number": 16,
           "page": 3,
           "label": "Geprüft checkbox (Vermerke)",
           "type": "tap_x",
           "value": null,
           "rect_pt": [
             135.22,
-            312.7,
+            427.9,
             145.26,
-            323.6
+            438.6
           ],
           "align": "center",
           "kind": null,
@@ -1281,16 +1366,16 @@
         },
         {
           "id": "vermerke_passed",
-          "number": 11,
+          "number": 17,
           "page": 3,
           "label": "Test passed checkbox (Safety Test)",
           "type": "tap_x",
           "value": null,
           "rect_pt": [
             135.22,
-            376.0,
+            491.3,
             145.26,
-            386.6
+            501.9
           ],
           "align": "center",
           "kind": null,
@@ -1298,16 +1383,16 @@
         },
         {
           "id": "vermerke_gebucht",
-          "number": 12,
+          "number": 18,
           "page": 3,
           "label": "Gebucht checkbox (Buchungsvermerke)",
           "type": "tap_x",
           "value": null,
           "rect_pt": [
             135.22,
-            499.2,
+            613.6,
             145.26,
-            509.8
+            624.3
           ],
           "align": "center",
           "kind": null,
@@ -1315,16 +1400,16 @@
         },
         {
           "id": "vermerke_datum_geprueft",
-          "number": 13,
+          "number": 19,
           "page": 3,
           "label": "Datum (Vermerke / Geprüft)",
           "type": "tap_date_settings",
           "value": null,
           "rect_pt": [
             221.76,
-            309.4,
+            424.4,
             290.04,
-            322.6
+            437.6
           ],
           "align": "center",
           "kind": null,
@@ -1332,16 +1417,16 @@
         },
         {
           "id": "vermerke_datum_passed",
-          "number": 14,
+          "number": 20,
           "page": 3,
           "label": "Datum (Safety Test / Test passed)",
           "type": "tap_date_settings",
           "value": null,
           "rect_pt": [
             221.76,
-            372.8,
+            487.8,
             290.04,
-            386.0
+            501.0
           ],
           "align": "center",
           "kind": null,
@@ -1349,16 +1434,16 @@
         },
         {
           "id": "vermerke_datum_gebucht",
-          "number": 15,
+          "number": 21,
           "page": 3,
           "label": "Datum (Buchungsvermerke / Gebucht)",
           "type": "tap_date_settings",
           "value": null,
           "rect_pt": [
             221.76,
-            495.1,
+            610.1,
             290.04,
-            508.3
+            623.3
           ],
           "align": "center",
           "kind": null,
