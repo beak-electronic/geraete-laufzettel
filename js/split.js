@@ -21,6 +21,14 @@ export function isAutoSplitField(raw) {
 }
 
 /**
+ * „Entfernen“ field means automatic removal (Caution pages): empty or „Automatisch“.
+ * @param {string} raw
+ */
+export function isAutoRemoveField(raw) {
+  return isAutoSplitField(raw);
+}
+
+/**
  * Parse „Entfernen von Seite(n)“ field → pages to discard after each part.
  * Empty / 0 / „Keine Seite(n) entfernen“ (and similar) → 0.
  * @param {string|number} raw
@@ -28,7 +36,7 @@ export function isAutoSplitField(raw) {
  */
 export function parseRemoveField(raw) {
   const text = String(raw ?? '').trim();
-  if (!text) return 0;
+  if (!text || isAutoRemoveField(text)) return 0;
   // Accept „Keine“, „Keine Seite(n) entfernen“, „0“, etc.
   const normalized = text
     .toLowerCase()
@@ -45,7 +53,7 @@ export function parseRemoveField(raw) {
   }
   if (!/^\d+$/.test(text)) {
     throw new Error(
-      'Ungültige Entfernen-Angabe – Zahl oder „Keine Seite(n) entfernen“'
+      'Ungültige Entfernen-Angabe – Automatisch, Zahl oder „Keine“'
     );
   }
   const n = parseInt(text, 10);
@@ -375,7 +383,8 @@ export async function resolveSplitRanges(
   pdf,
   splitField,
   onStatus,
-  removeCount = 0
+  removeCount = 0,
+  autoCaution = true
 ) {
   const pageCount = pdf.numPages;
   const m = Math.max(0, Math.floor(Number(removeCount) || 0));
@@ -402,7 +411,7 @@ export async function resolveSplitRanges(
         markers.push(null);
       }
     }
-    const caution = await findCautionPages(pdf, onStatus);
+    const caution = autoCaution ? await findCautionPages(pdf, onStatus) : [];
     let ranges;
     try {
       ranges = rangesFromPageMarkers(markers, pageCount, m);
@@ -420,7 +429,7 @@ export async function resolveSplitRanges(
     );
     return ranges;
   }
-  const caution = await findCautionPages(pdf, onStatus);
+  const caution = autoCaution ? await findCautionPages(pdf, onStatus) : [];
   const ranges = dropPagesFromRanges(parseSplitField(splitField, pageCount, m), new Set(caution));
   ranges.cautionPages = caution;
   return ranges;
@@ -595,11 +604,14 @@ export async function buildSplitZip(opts) {
     removeCountOpt != null
       ? Math.max(0, Math.floor(Number(removeCountOpt) || 0))
       : parseRemoveField(removeField ?? '');
+  // Automatisch (Standard): Caution-Seiten entfernen; Zahl/„Keine“ überschreibt das.
+  const autoCaution = removeCountOpt == null && isAutoRemoveField(removeField ?? '');
   const ranges = await resolveSplitRanges(
     pdf,
     splitField,
     onStatus,
-    removeCount
+    removeCount,
+    autoCaution
   );
   const cautionPages = ranges.cautionPages || [];
   if (!ranges.length) throw new Error('Nach Entfernen der Caution-Seiten bleibt keine Seite übrig');

@@ -35,16 +35,49 @@
         if (standalone) document.documentElement.setAttribute('data-standalone', '1');
       } catch (e) {}
     })();
-    // Nach einem Update: Sobald der neue Service Worker übernimmt, einmal neu laden,
-    // damit nicht neues HTML mit altem (gecachtem) JavaScript läuft. Nur kurz nach dem Start.
+    // Nach einem Update übernimmt der neue Service Worker. Früher wurde dann sofort neu
+    // geladen – das warf Nutzer mitten in einer Ansicht (z. B. Liste) auf den Startbildschirm.
+    // Jetzt: nur still neu laden, solange noch niemand mit der App interagiert hat und der
+    // Startbildschirm ohne offenen Dialog sichtbar ist; sonst Hinweis „Update verfügbar“.
     (function () {
       try {
         if (!('serviceWorker' in navigator) || !navigator.serviceWorker.controller) return;
-        var t0 = Date.now(), done = false;
+        var t0 = Date.now(), done = false, acted = false;
+        var mark = function () { acted = true; };
+        ['pointerdown', 'keydown', 'touchstart'].forEach(function (ev) {
+          window.addEventListener(ev, mark, { capture: true, passive: true });
+        });
+        var idleOnHome = function () {
+          var home = document.getElementById('home');
+          if (!home || home.classList.contains('hidden')) return false;
+          if (document.querySelector('dialog[open]')) return false;
+          var fill = document.getElementById('fill-mode');
+          if (fill && !fill.classList.contains('hidden')) return false;
+          return true;
+        };
+        var showHint = function () {
+          if (document.getElementById('update-hint')) return;
+          var bar = document.createElement('div');
+          bar.id = 'update-hint';
+          bar.className = 'update-hint';
+          bar.setAttribute('role', 'status');
+          bar.innerHTML = '<span>Update verfügbar</span><button type="button">Neu laden</button>';
+          bar.querySelector('button').addEventListener('click', function () { location.reload(); });
+          // Ein modaler Dialog macht den Rest der Seite inaktiv – Hinweis daher im offenen
+          // Dialog anzeigen, sonst im body (nach jedem Klick neu einhängen).
+          var place = function () {
+            var host = document.querySelector('dialog[open]') || document.body;
+            if (bar.parentNode !== host) host.appendChild(bar);
+          };
+          place();
+          document.addEventListener('click', function () { setTimeout(place, 0); }, true);
+          document.addEventListener('close', function () { setTimeout(place, 0); }, true);
+        };
         navigator.serviceWorker.addEventListener('controllerchange', function () {
-          if (done || Date.now() - t0 > 20000) return;
+          if (done) return;
           done = true;
-          location.reload();
+          if (!acted && Date.now() - t0 < 20000 && idleOnHome()) location.reload();
+          else showHint();
         });
       } catch (e) {}
     })();
@@ -85,14 +118,14 @@
 
       <div class="home-footer-row">
         <p class="home-footer">
-          Version 1.41<br />
+          Version 1.42<br />
           © BEAK electronic engineering GmbH &amp; Co. KG
         </p>
         <button type="button" class="footer-settings-btn" id="btn-open-names" aria-label="Liste" title="Liste">
-          <img class="pill-icon" src="icons/list_btn.png?v=1.41" alt="" width="40" height="40" draggable="false" />
+          <img class="pill-icon" src="icons/list_btn.png?v=1.42" alt="" width="40" height="40" draggable="false" />
         </button>
         <button type="button" class="footer-settings-btn" id="btn-home-settings" aria-label="Einstellungen" title="Einstellungen">
-          <img class="pill-icon" src="icons/settings_btn.png?v=1.41" alt="" width="40" height="40" draggable="false" />
+          <img class="pill-icon" src="icons/settings_btn.png?v=1.42" alt="" width="40" height="40" draggable="false" />
         </button>
       </div>
     </div>
@@ -175,7 +208,7 @@
         <label class="field-label" for="pm-split-field">Teilen nach Seite(n)</label>
         <input type="text" id="pm-split-field" class="split-input" inputmode="text" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Automatisch" value="Automatisch" />
         <label class="field-label" for="pm-remove-field">Entfernen von Seite(n) nach dem Teilen</label>
-        <input type="text" id="pm-remove-field" class="split-input" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Keine Seite(n) entfernen" value="Keine Seite(n) entfernen" />
+        <input type="text" id="pm-remove-field" class="split-input" inputmode="text" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Automatisch" value="Automatisch" />
         <p class="status" id="pm-status" role="status">PDF auf den Button ziehen oder tippen</p>
         <button type="button" class="btn btn-prominent pm-drop-btn" id="btn-pm-open">PDF öffnen &amp; bearbeiten</button>
       </section>
@@ -252,15 +285,15 @@
       <div class="settings-body">
         <section class="settings-section cardish">
           <p class="hint" id="names-status" hidden></p>
-          <div class="settings-btn-row">
-            <button type="button" class="btn btn-secondary" id="btn-import-names">Liste importieren</button>
-            <button type="button" class="btn btn-secondary" id="btn-clear-names">Liste entfernen</button>
-          </div>
           <div class="names-reload-row" id="names-reload-row" hidden>
             <button type="button" class="btn btn-secondary" id="btn-reload-names">Liste neu laden</button>
           </div>
           <input type="file" id="names-file-input" accept=".txt,.csv,.tsv,.xlsx,text/plain,text/csv" hidden />
           <ul id="names-list" class="names-list" aria-label="Vorlagen mit Namen"></ul>
+          <div class="settings-btn-row names-btn-row">
+            <button type="button" class="btn btn-secondary" id="btn-import-names">Liste importieren</button>
+            <button type="button" class="btn btn-secondary" id="btn-clear-names">Liste entfernen</button>
+          </div>
         </section>
       </div>
     </form>
@@ -315,7 +348,7 @@
         </section>
         <section class="settings-section cardish">
           <h3>Info</h3>
-          <p class="hint">Geräte Laufzettel 1.41<br />© BEAK electronic engineering GmbH &amp; Co. KG</p>
+          <p class="hint">Geräte Laufzettel 1.42<br />© BEAK electronic engineering GmbH &amp; Co. KG</p>
         </section>
       </div>
     </form>
@@ -460,12 +493,12 @@
     </div>
   </div>
 
-  <script src="vendor/pdf-lib.min.js?v=1.41"></script>
-  <script src="vendor/fontkit.umd.min.js?v=1.41"></script>
-  <script src="vendor/zxing-library.min.js?v=1.41"></script>
-  <script src="vendor/jszip.min.js?v=1.41"></script>
-  <script src="vendor/FileSaver.min.js?v=1.41"></script>
-  <script type="module" src="js/app.js?v=1.41"></script>
-  <script type="module" src="js/manipulator.js?v=1.41"></script>
+  <script src="vendor/pdf-lib.min.js?v=1.42"></script>
+  <script src="vendor/fontkit.umd.min.js?v=1.42"></script>
+  <script src="vendor/zxing-library.min.js?v=1.42"></script>
+  <script src="vendor/jszip.min.js?v=1.42"></script>
+  <script src="vendor/FileSaver.min.js?v=1.42"></script>
+  <script type="module" src="js/app.js?v=1.42"></script>
+  <script type="module" src="js/manipulator.js?v=1.42"></script>
 </body>
 </html>
