@@ -1,4 +1,4 @@
-import { extractSerialFromPayload, isUsableSerial } from "./sn.js?v=1.36";
+import { extractSerialFromPayload, isUsableSerial } from "./sn.js?v=1.37";
 import {
   decodeDataMatrixFromBlob,
   decodeDataMatrixFromElement,
@@ -7,7 +7,7 @@ import {
   stopCamera,
   releaseAllCameras,
   releaseAllCamerasAsync,
-} from "./scan.js?v=1.36";
+} from "./scan.js?v=1.37";
 import {
   findPdfBySerial,
   pickPdfFolder,
@@ -20,9 +20,9 @@ import {
   getIdbCatalogStats,
   clearIdbCatalog,
   formatCatalogUpdated,
-} from "./catalog.js?v=1.36";
-import { initFill, openFile, pickAndOpen } from "./fill.js?v=1.36";
-import { KNOWN_TEMPLATES } from "./fields.js?v=1.36";
+} from "./catalog.js?v=1.37";
+import { initFill, openFile, pickAndOpen } from "./fill.js?v=1.37";
+import { KNOWN_TEMPLATES } from "./fields.js?v=1.37";
 
 const STORAGE_KEY = "geraete-laufzettel-settings-v1";
 const DEMO_PAYLOAD = "DE-200.433-XXXX-XX0000E00A00K0001";
