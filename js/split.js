@@ -652,5 +652,5 @@ export async function buildSplitZip(opts) {
     `${filenames.length} PDF(s) in ${zipName}`,
     'ok'
   );
-  return { zipBlob, zipName, filenames, ranges, ids, cautionPages };
+  return { zipBlob, zipName, filenames, ranges, ids, cautionPages, parts };
 }

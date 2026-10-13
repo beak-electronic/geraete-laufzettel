@@ -1718,3 +1718,7 @@ body.pen-drawing #main-fill {
 }
 
 .names-btn-row { margin-top: 12px; }
+
+.pm-dir-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0 2px; font-size: 14px; }
+.pm-dir-row strong { overflow-wrap: anywhere; }
+.pm-dir-btn { padding: 4px 8px; min-height: 0; font-size: 14px; }

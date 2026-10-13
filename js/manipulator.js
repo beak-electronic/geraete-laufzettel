@@ -3,12 +3,12 @@
  * Eigene Ansicht, eigener Datei-Input: läuft NICHT über die Feldvorlagen-Prüfung
  * des Laufzettel-Öffnens (PDFs ohne Feldvorlage werden hier normal geteilt).
  */
-import * as pdfjsLib from '../vendor/pdf.min.mjs?v=1.42';
-import { buildSplitZip, sanitizeFilename } from './split.js?v=1.42';
-import { xpsToPdf, isXpsFile } from './xps2pdf.js?v=1.42';
+import * as pdfjsLib from '../vendor/pdf.min.mjs?v=1.43';
+import { buildSplitZip, sanitizeFilename } from './split.js?v=1.43';
+import { xpsToPdf, isXpsFile } from './xps2pdf.js?v=1.43';
 
 if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs?v=1.42', import.meta.url).href;
+  pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs?v=1.43', import.meta.url).href;
 }
 
 const $ = (sel) => document.querySelector(sel);
@@ -190,7 +190,7 @@ async function finishSaveBlob(blob, name, type = 'application/zip', pre = null) 
 
 /* ---------- Ergebnisliste ---------- */
 
-function renderResult(result) {
+function renderResult(result, dirName = null) {
   const box = $('#pm-result');
   const list = $('#pm-result-list');
   const zipName = $('#pm-result-zip');
@@ -205,7 +205,11 @@ function renderResult(result) {
     li.querySelector('.pm-pages').textContent = pages;
     list.appendChild(li);
   });
-  if (zipName) zipName.textContent = result.zipName;
+  if (zipName) zipName.textContent = dirName || result.zipName;
+  const lbl = $('#pm-result-label');
+  if (lbl) lbl.textContent = dirName ? 'Ordner:' : 'ZIP:';
+  const again = $('#btn-pm-save-again');
+  if (again) again.textContent = dirName ? 'Als ZIP speichern…' : (hasSaveAsPicker() ? 'Speichern unter…' : 'ZIP erneut speichern');
   const removed = $('#pm-result-removed');
   if (removed) {
     const c = result.cautionPages || [];
@@ -213,6 +217,117 @@ function renderResult(result) {
     removed.classList.toggle('hidden', !c.length);
   }
   box.classList.remove('hidden');
+}
+
+
+/* ---------- Zielordner (File System Access, Chrome/Edge) ---------- */
+
+const DIR_DB = 'laufzettel-split-dir';
+const DIR_KEY = 'dirHandle';
+const dirState = { handle: null };
+
+function hasDirPicker() {
+  return typeof window.showDirectoryPicker === 'function';
+}
+
+function dirDb() {
+  return new Promise((resolve, reject) => {
+    const r = indexedDB.open(DIR_DB, 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('kv');
+    r.onsuccess = () => resolve(r.result);
+    r.onerror = () => reject(r.error);
+  });
+}
+
+async function dirGet() {
+  try {
+    const db = await dirDb();
+    return await new Promise((res) => {
+      const q = db.transaction('kv').objectStore('kv').get(DIR_KEY);
+      q.onsuccess = () => res(q.result || null);
+      q.onerror = () => res(null);
+    });
+  } catch (_) { return null; }
+}
+
+async function dirPut(handle) {
+  try {
+    const db = await dirDb();
+    await new Promise((res) => {
+      const tx = db.transaction('kv', 'readwrite');
+      if (handle) tx.objectStore('kv').put(handle, DIR_KEY);
+      else tx.objectStore('kv').delete(DIR_KEY);
+      tx.oncomplete = res;
+      tx.onerror = res;
+    });
+  } catch (_) {}
+}
+
+function renderDirControl() {
+  const name = $('#pm-dir-name');
+  const btn = $('#btn-pm-dir');
+  const clr = $('#btn-pm-dir-clear');
+  const h = dirState.handle;
+  if (name) name.textContent = h ? h.name : 'Kein Ordner – ZIP-Download';
+  if (btn) btn.textContent = h ? 'Zielordner ändern' : 'Zielordner wählen';
+  clr?.classList.toggle('hidden', !h);
+}
+
+/**
+ * Schreibrecht prüfen; mit gesture=true ggf. nachfragen (nur im Klick-Handler aufrufen).
+ * @returns {Promise<any|null>} Handle bei Schreibrecht, sonst null (→ ZIP)
+ */
+async function dirWithPermission(gesture) {
+  const h = dirState.handle;
+  if (!h) return null;
+  const opts = { mode: 'readwrite' };
+  try {
+    let st = typeof h.queryPermission === 'function' ? await h.queryPermission(opts) : 'granted';
+    if (st === 'prompt' && gesture && typeof h.requestPermission === 'function') {
+      st = await h.requestPermission(opts);
+    }
+    return st === 'granted' ? h : null;
+  } catch (err) {
+    console.warn('dir permission failed', err);
+    return null;
+  }
+}
+
+async function chooseDir() {
+  if (!hasDirPicker()) return;
+  try {
+    const h = await window.showDirectoryPicker({ id: 'pm-split', mode: 'readwrite' });
+    dirState.handle = h;
+    await dirPut(h);
+    renderDirControl();
+    showToast(`Zielordner: ${h.name}`);
+  } catch (err) {
+    if (err?.name !== 'AbortError') console.warn('showDirectoryPicker failed', err);
+  }
+}
+
+/** Einzelne PDFs in den Ordner schreiben (gleichnamige Dateien werden überschrieben). */
+async function writePartsToDir(dir, filenames, parts) {
+  for (let i = 0; i < parts.length; i++) {
+    const fh = await dir.getFileHandle(filenames[i], { create: true });
+    const w = await fh.createWritable();
+    await w.write(new Blob([parts[i]], { type: 'application/pdf' }));
+    await w.close();
+  }
+}
+
+async function initDirControl() {
+  const wrap = $('#pm-dir-row');
+  if (!hasDirPicker()) { wrap?.classList.add('hidden'); return; }
+  wrap?.classList.remove('hidden');
+  dirState.handle = await dirGet();
+  renderDirControl();
+  $('#btn-pm-dir')?.addEventListener('click', chooseDir);
+  $('#btn-pm-dir-clear')?.addEventListener('click', async () => {
+    dirState.handle = null;
+    await dirPut(null);
+    renderDirControl();
+  });
 }
 
 /* ---------- Verarbeiten ---------- */
@@ -238,12 +353,15 @@ function openViaPicker(multiple, onFiles) {
     const files = await Promise.all(handles.map((h) => h.getFile()));
     onFiles(files);
   }).catch((err) => {
-    if (err?.name !== 'AbortError') console.warn('showOpenFilePicker failed', err);
+    if (err?.name !== 'AbortError') {
+      console.warn('showOpenFilePicker failed', err);
+      setStatus('Bitte erneut tippen');
+    }
   });
   return true;
 }
 
-async function handlePdfFile(file) {
+async function handlePdfFile(file, dirP = null) {
   if (!file || state.busy) return;
   if (!/\.pdf$/i.test(file.name) && file.type !== 'application/pdf') {
     showToast('Bitte eine PDF-Datei wählen');
@@ -259,7 +377,9 @@ async function handlePdfFile(file) {
   // Name ist vorab bekannt → Dialog sofort öffnen (Nutzeraktivierung noch gültig)
   const stem = String(file.name || 'dokument').replace(/\.pdf$/i, '') || 'dokument';
   const preZipName = `${sanitizeFilename(stem)}_geteilt.zip`;
-  const pre = requestSaveHandle(preZipName, 'application/zip');
+  // Zielordner mit Schreibrecht → einzelne PDFs, kein ZIP-Dialog
+  const dir = dirState.handle ? (dirP ? await dirP : await dirWithPermission(false)) : null;
+  const pre = dir ? null : requestSaveHandle(preZipName, 'application/zip');
   state.busy = true;
   const btn = $('#btn-pm-open');
   if (btn) btn.disabled = true;
@@ -278,8 +398,24 @@ async function handlePdfFile(file) {
     });
     state.lastZip = result;
     setStatus(`${result.filenames.length} Datei(en): ${result.filenames.join(', ')}`, 'ok');
-    renderResult(result);
-    await finishSaveBlob(result.zipBlob, result.zipName, 'application/zip', result.zipName === preZipName ? pre : null);
+    let written = false;
+    if (dir) {
+      try {
+        setStatus(`Speichere ${result.filenames.length} PDF(s) in „${dir.name}“…`, 'busy');
+        await writePartsToDir(dir, result.filenames, result.parts);
+        written = true;
+      } catch (err) {
+        console.warn('Ordner-Schreiben fehlgeschlagen, ZIP-Fallback', err);
+        showToast('Ordner nicht beschreibbar – ZIP-Download');
+      }
+    }
+    renderResult(result, written ? dir.name : null);
+    if (written) {
+      setStatus(`${result.filenames.length} PDF(s) in „${dir.name}“ gespeichert`, 'ok');
+      showToast(`${result.filenames.length} PDF(s) gespeichert`);
+    } else {
+      await finishSaveBlob(result.zipBlob, result.zipName, 'application/zip', result.zipName === preZipName ? pre : null);
+    }
   } catch (err) {
     console.error(err);
     const msg = err?.message || 'Teilen fehlgeschlagen';
@@ -450,12 +586,22 @@ export function initManipulator() {
   });
   if (!btn || !input) return;
   btn.addEventListener('click', () => {
-    if (!openViaPicker(false, (files) => files[0] && handlePdfFile(files[0]))) input.click();
+    // Schreibrecht im Klick-Handler anfragen (Nutzergeste); danach Datei wählen
+    const go = (dirP) => {
+      if (!openViaPicker(false, (files) => files[0] && handlePdfFile(files[0], dirP))) {
+        input._dirP = dirP;
+        input.click();
+      }
+    };
+    if (!dirState.handle) { go(null); return; }
+    dirWithPermission(true).then((dir) => go(Promise.resolve(dir)));
   });
   input.addEventListener('change', () => {
     const f = input.files && input.files[0];
     input.value = '';
-    if (f) handlePdfFile(f);
+    const dirP = input._dirP || null;
+    input._dirP = null;
+    if (f) handlePdfFile(f, dirP);
   });
   const prevent = (e) => {
     e.preventDefault();
@@ -477,6 +623,7 @@ export function initManipulator() {
     if (b) b.textContent = 'Speichern unter…';
   }
   setStatus('PDF auf den Button ziehen oder tippen');
+  initDirControl();
 }
 
 initManipulator();
