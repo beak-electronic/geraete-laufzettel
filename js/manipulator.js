@@ -3,12 +3,12 @@
  * Eigene Ansicht, eigener Datei-Input: läuft NICHT über die Feldvorlagen-Prüfung
  * des Laufzettel-Öffnens (PDFs ohne Feldvorlage werden hier normal geteilt).
  */
-import * as pdfjsLib from '../vendor/pdf.min.mjs?v=1.40';
-import { buildSplitZip, sanitizeFilename } from './split.js?v=1.40';
-import { xpsToPdf, isXpsFile } from './xps2pdf.js?v=1.40';
+import * as pdfjsLib from '../vendor/pdf.min.mjs?v=1.41';
+import { buildSplitZip, sanitizeFilename } from './split.js?v=1.41';
+import { xpsToPdf, isXpsFile } from './xps2pdf.js?v=1.41';
 
 if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs?v=1.40', import.meta.url).href;
+  pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs?v=1.41', import.meta.url).href;
 }
 
 const $ = (sel) => document.querySelector(sel);
@@ -206,6 +206,12 @@ function renderResult(result) {
     list.appendChild(li);
   });
   if (zipName) zipName.textContent = result.zipName;
+  const removed = $('#pm-result-removed');
+  if (removed) {
+    const c = result.cautionPages || [];
+    removed.textContent = c.length ? `Caution-Seite(n) entfernt: ${c.join(', ')}` : '';
+    removed.classList.toggle('hidden', !c.length);
+  }
   box.classList.remove('hidden');
 }
 

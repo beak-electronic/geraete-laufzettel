@@ -304,6 +304,67 @@ export function rangesFromPageMarkers(markers, pageCount, removeCount = 0) {
 }
 
 /**
+ * Detect a "Caution" cover/label page: the word CAUTION as large text,
+ * horizontally centred near the top of the page.
+ * @param {Array<{str?: string, transform?: number[], width?: number, height?: number}>} items
+ * @param {{width?: number, height?: number}} viewport
+ * @returns {boolean}
+ */
+export function isCautionPageFromTextItems(items, viewport) {
+  const W = viewport?.width || 595;
+  const H = viewport?.height || 842;
+  for (const it of items || []) {
+    const str = String(it?.str || '').trim();
+    if (!/^caution[!:.]?$/i.test(str)) continue;
+    const t = it.transform || [];
+    const size = Math.max(Math.abs(t[3] || 0), Math.abs(t[0] || 0), it.height || 0);
+    const x = t[4] ?? 0;
+    const y = t[5] ?? 0; // PDF space: baseline from bottom
+    const w = it.width || size * str.length * 0.6;
+    const cx = x + w / 2;
+    if (size >= 16 && y >= H * 0.8 && Math.abs(cx - W / 2) <= W * 0.2) return true;
+  }
+  return false;
+}
+
+/**
+ * Remove given pages from ranges; a removed page inside a range splits it.
+ * @param {PageRange[]} ranges
+ * @param {Set<number>} drop 1-based pages
+ * @returns {PageRange[]}
+ */
+export function dropPagesFromRanges(ranges, drop) {
+  if (!drop || !drop.size) return ranges;
+  const out = [];
+  for (const { start, end } of ranges) {
+    let s = null;
+    for (let p = start; p <= end; p++) {
+      if (drop.has(p)) {
+        if (s != null) out.push({ start: s, end: p - 1 });
+        s = null;
+      } else if (s == null) s = p;
+    }
+    if (s != null) out.push({ start: s, end });
+  }
+  return out;
+}
+
+/** @returns {Promise<number[]>} 1-based Caution pages */
+export async function findCautionPages(pdf, onStatus) {
+  const found = [];
+  for (let p = 1; p <= pdf.numPages; p++) {
+    onStatus?.(`Caution-Seiten prüfen ${p}/${pdf.numPages}…`, 'busy');
+    try {
+      const page = await pdf.getPage(p);
+      const vp = page.getViewport({ scale: 1 });
+      const tc = await page.getTextContent();
+      if (isCautionPageFromTextItems(tc.items || [], { width: vp.width, height: vp.height })) found.push(p);
+    } catch (_) {}
+  }
+  return found;
+}
+
+/**
  * Resolve split ranges: auto (Seite X von Y) or manual field.
  * @param {*} pdf pdf.js PDFDocumentProxy
  * @param {string} splitField
@@ -341,7 +402,16 @@ export async function resolveSplitRanges(
         markers.push(null);
       }
     }
-    const ranges = rangesFromPageMarkers(markers, pageCount, m);
+    const caution = await findCautionPages(pdf, onStatus);
+    let ranges;
+    try {
+      ranges = rangesFromPageMarkers(markers, pageCount, m);
+    } catch (err) {
+      if (!caution.length) throw err;
+      ranges = [{ start: 1, end: pageCount }]; // split only at Caution pages
+    }
+    ranges = dropPagesFromRanges(ranges, new Set(caution));
+    ranges.cautionPages = caution;
     const discardNote =
       m > 0 ? ` (je ${m} Seite(n) nach Teil übersprungen)` : '';
     onStatus?.(
@@ -350,7 +420,10 @@ export async function resolveSplitRanges(
     );
     return ranges;
   }
-  return parseSplitField(splitField, pageCount, m);
+  const caution = await findCautionPages(pdf, onStatus);
+  const ranges = dropPagesFromRanges(parseSplitField(splitField, pageCount, m), new Set(caution));
+  ranges.cautionPages = caution;
+  return ranges;
 }
 
 /**
@@ -528,6 +601,8 @@ export async function buildSplitZip(opts) {
     onStatus,
     removeCount
   );
+  const cautionPages = ranges.cautionPages || [];
+  if (!ranges.length) throw new Error('Nach Entfernen der Caution-Seiten bleibt keine Seite übrig');
   onStatus?.(`${ranges.length} Teil(e) aus ${pageCount} Seiten…`, 'busy');
 
   const ids = [];
@@ -565,5 +640,5 @@ export async function buildSplitZip(opts) {
     `${filenames.length} PDF(s) in ${zipName}`,
     'ok'
   );
-  return { zipBlob, zipName, filenames, ranges, ids };
+  return { zipBlob, zipName, filenames, ranges, ids, cautionPages };
 }

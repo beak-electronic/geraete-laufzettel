@@ -1,0 +1,1423 @@
+{
+  "id": "200.447",
+  "label": "200.447",
+  "pages": {
+    "1": {
+      "page": 1,
+      "style": {
+        "fill_hex": "#ADD8E6",
+        "alpha": 0.59,
+        "stroke": null,
+        "label_mode": "number",
+        "number_color_hex": "#2F6FAE",
+        "omit_text_hint": true,
+        "omit_crosshair": true
+      },
+      "fields": [
+        {
+          "id": "sn_right_1",
+          "number": 1,
+          "page": 1,
+          "label": "SN Endstufe",
+          "type": "scan_or_manual",
+          "value": null,
+          "rect_pt": [
+            414.16,
+            342.1,
+            559.8,
+            363.8
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "101.089 BG Endstufe V2.3"
+        },
+        {
+          "id": "sn_right_2",
+          "number": 2,
+          "page": 1,
+          "label": "SN 101.018 BG Kabelsatz V1",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            369.7,
+            559.8,
+            391.4
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "101.018 BG Kabelsatz V1"
+        },
+        {
+          "id": "sn_right_3",
+          "number": 3,
+          "page": 1,
+          "label": "SN LCD (V1.0)",
+          "type": "scan_or_manual",
+          "value": null,
+          "rect_pt": [
+            414.16,
+            397.3,
+            559.8,
+            419.0
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "101.093 BG LCD Baugruppe V1.0"
+        },
+        {
+          "id": "sn_right_4",
+          "number": 4,
+          "page": 1,
+          "label": "SN 101.048 BG Lüfter 70-20-2 V1",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            424.9,
+            559.8,
+            446.6
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "101.048 BG Lüfter 70-20-2 V1"
+        },
+        {
+          "id": "sn_right_5",
+          "number": 5,
+          "page": 1,
+          "label": "SN 101.088 BG Netzbuchse 230V V1",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            452.5,
+            559.8,
+            474.2
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "101.088 BG Netzbuchse 230V V1"
+        },
+        {
+          "id": "sn_right_6",
+          "number": 6,
+          "page": 1,
+          "label": "SN 101.053 BG Netzschalter V1",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            480.1,
+            559.8,
+            501.8
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "101.053 BG Netzschalter V1"
+        },
+        {
+          "id": "sn_right_7",
+          "number": 7,
+          "page": 1,
+          "label": "SN Netzteil",
+          "type": "scan_or_manual",
+          "value": null,
+          "rect_pt": [
+            414.16,
+            507.7,
+            559.8,
+            529.4
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "101.087 BG Netzteil V2"
+        },
+        {
+          "id": "sn_right_8",
+          "number": 8,
+          "page": 1,
+          "label": "SN 101.051 BG Poti V1",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            535.3,
+            559.8,
+            557.0
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "101.051 BG Poti V1"
+        },
+        {
+          "id": "sn_right_9",
+          "number": 9,
+          "page": 1,
+          "label": "SN 101.054 BG Schalter Phase-UI V1",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            562.9,
+            559.8,
+            584.6
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "101.054 BG Schalter Phase-UI V1"
+        },
+        {
+          "id": "sn_right_10",
+          "number": 10,
+          "page": 1,
+          "label": "SN 101.056 BG Speakon NL-4 MP V1",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            590.5,
+            559.8,
+            612.2
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "101.056 BG Speakon NL-4 MP V1"
+        },
+        {
+          "id": "sn_right_11",
+          "number": 11,
+          "page": 1,
+          "label": "SN 101.001 Verpackung 2 HE Export 2.7 (V2)",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            618.1,
+            559.8,
+            639.8
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "101.001 Verpackung 2 HE Export 2.7 (V2)"
+        },
+        {
+          "id": "sn_right_12",
+          "number": 12,
+          "page": 1,
+          "label": "SN LCD (V3)",
+          "type": "scan_or_manual",
+          "value": null,
+          "rect_pt": [
+            414.16,
+            645.7,
+            559.8,
+            667.4
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "101.146 BG LCD Baugruppe V3"
+        },
+        {
+          "id": "software_path_ok",
+          "number": 13,
+          "page": 1,
+          "label": "Software Pfad bestätigt",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            413.5,
+            690.6,
+            560.0,
+            704.0
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "software_datum_1",
+          "number": 14,
+          "page": 1,
+          "label": "Software",
+          "type": "manual_date",
+          "value": null,
+          "rect_pt": [
+            188.0,
+            697.4,
+            300.0,
+            707.0
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "Software",
+          "prefill": false,
+          "no_stamp_date_default": true,
+          "font_size_pt": 8.0
+        },
+        {
+          "id": "pm_p1_1",
+          "number": 15,
+          "page": 1,
+          "label": "Prüfmittel verwendet: BEAK Lastwiderstand 4R, Rohde & Schwarz Audio Analyzer, Oszilloskop HM 1507",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            726.0,
+            559.8,
+            741.5
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "pm_p1_2",
+          "number": 16,
+          "page": 1,
+          "label": "Prüfmittel verwendet: HP Digital Multimeter HP 3456, Stelltransformator EA-STT 2000, Sicherheitstester LG1800B",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            745.2,
+            559.8,
+            760.7
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "mon_date_1",
+          "number": 17,
+          "page": 1,
+          "label": "Montage Datum: Montage Chassis",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            781.94,
+            452.17,
+            795.94
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "mon_sig_1",
+          "number": 18,
+          "page": 1,
+          "label": "Montage Unterschrift: Montage Chassis",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            781.94,
+            559.81,
+            795.94
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "buchungsdatum_lager",
+          "number": 19,
+          "page": 1,
+          "label": "Buchungsdatum Lager",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            125.0,
+            270.5,
+            315.0,
+            292.5
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "sachbearbeiter_lager",
+          "number": 20,
+          "page": 1,
+          "label": "Sachbearbeiter Lager",
+          "type": "tap_lager_clerk",
+          "value": null,
+          "rect_pt": [
+            125.0,
+            300.5,
+            315.0,
+            322.5
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "bemerkung_text",
+          "number": 21,
+          "page": 1,
+          "label": "Bemerkung",
+          "type": "manual_text",
+          "value": null,
+          "rect_pt": [
+            325.0,
+            205.6,
+            559.8,
+            319.6
+          ],
+          "align": "left",
+          "kind": null,
+          "group": null,
+          "multiline": true,
+          "font_size_pt": 9
+        }
+      ]
+    },
+    "2": {
+      "page": 2,
+      "style": {
+        "fill_hex": "#ADD8E6",
+        "alpha": 0.59,
+        "stroke": null,
+        "label_mode": "number",
+        "number_color_hex": "#2F6FAE",
+        "omit_text_hint": true,
+        "omit_crosshair": true
+      },
+      "fields": [
+        {
+          "id": "mon_date_2",
+          "number": 1,
+          "page": 2,
+          "label": "Montage Datum: Montage Baugruppen",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            97.04,
+            452.17,
+            111.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "mon_sig_2",
+          "number": 2,
+          "page": 2,
+          "label": "Montage Unterschrift: Montage Baugruppen",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            97.04,
+            559.81,
+            111.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "mon_date_3",
+          "number": 3,
+          "page": 2,
+          "label": "Montage Datum: Montage Trafo und komplette Verkabelung",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            116.04,
+            452.17,
+            130.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "mon_sig_3",
+          "number": 4,
+          "page": 2,
+          "label": "Montage Unterschrift: Montage Trafo und komplette Verkabelung",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            116.04,
+            559.81,
+            130.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "mon_date_4",
+          "number": 5,
+          "page": 2,
+          "label": "Montage Datum: Endmontage / Deckel und Etiketten anbringen",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            135.04,
+            452.17,
+            149.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "mon_sig_4",
+          "number": 6,
+          "page": 2,
+          "label": "Montage Unterschrift: Endmontage / Deckel und Etiketten anbringen",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            135.04,
+            559.81,
+            149.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "mon_date_5",
+          "number": 7,
+          "page": 2,
+          "label": "Montage Datum: Verpackung für Versand",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            155.04,
+            452.17,
+            169.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "mon_sig_5",
+          "number": 8,
+          "page": 2,
+          "label": "Montage Unterschrift: Verpackung für Versand",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            155.04,
+            559.81,
+            169.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_date_1",
+          "number": 9,
+          "page": 2,
+          "label": "Prüfschritt Datum: Kleinspannungen messen & auf Kurzschluss messen",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            191.04,
+            452.17,
+            205.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_sig_1",
+          "number": 10,
+          "page": 2,
+          "label": "Prüfschritt Unterschrift: Kleinspannungen messen & auf Kurzschluss messen",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            191.04,
+            559.81,
+            205.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_date_2",
+          "number": 11,
+          "page": 2,
+          "label": "Prüfschritt Datum: Hochspannung messen",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            210.04,
+            452.17,
+            224.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_sig_2",
+          "number": 12,
+          "page": 2,
+          "label": "Prüfschritt Unterschrift: Hochspannung messen",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            210.04,
+            559.81,
+            224.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_date_3",
+          "number": 13,
+          "page": 2,
+          "label": "Prüfschritt Datum: Strom- und Spannungsanzeige überprüfen",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            229.04,
+            452.17,
+            243.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_sig_3",
+          "number": 14,
+          "page": 2,
+          "label": "Prüfschritt Unterschrift: Strom- und Spannungsanzeige überprüfen",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            229.04,
+            559.81,
+            243.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_date_4",
+          "number": 15,
+          "page": 2,
+          "label": "Prüfschritt Datum: Reduzierte Leistung überprüfen",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            248.04,
+            452.17,
+            262.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_sig_4",
+          "number": 16,
+          "page": 2,
+          "label": "Prüfschritt Unterschrift: Reduzierte Leistung überprüfen",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            248.04,
+            559.81,
+            262.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_date_5",
+          "number": 17,
+          "page": 2,
+          "label": "Prüfschritt Datum: Offset einstellen",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            267.04,
+            452.17,
+            281.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_sig_5",
+          "number": 18,
+          "page": 2,
+          "label": "Prüfschritt Unterschrift: Offset einstellen",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            267.04,
+            559.81,
+            281.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_date_6",
+          "number": 19,
+          "page": 2,
+          "label": "Prüfschritt Datum: Ruhestrom einstellen",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            287.04,
+            452.17,
+            301.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_sig_6",
+          "number": 20,
+          "page": 2,
+          "label": "Prüfschritt Unterschrift: Ruhestrom einstellen",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            287.04,
+            559.81,
+            301.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_date_7",
+          "number": 21,
+          "page": 2,
+          "label": "Prüfschritt Datum: Maximale Ausgangsspannung einstellen",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            306.04,
+            452.17,
+            320.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_sig_7",
+          "number": 22,
+          "page": 2,
+          "label": "Prüfschritt Unterschrift: Maximale Ausgangsspannung einstellen",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            306.04,
+            559.81,
+            320.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_date_8",
+          "number": 23,
+          "page": 2,
+          "label": "Prüfschritt Datum: Spannungsanzeige Display einstellen",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            325.04,
+            452.17,
+            339.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_sig_8",
+          "number": 24,
+          "page": 2,
+          "label": "Prüfschritt Unterschrift: Spannungsanzeige Display einstellen",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            325.04,
+            559.81,
+            339.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_date_9",
+          "number": 25,
+          "page": 2,
+          "label": "Prüfschritt Datum: Phasenschalter prüfen",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            344.04,
+            452.17,
+            358.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_sig_9",
+          "number": 26,
+          "page": 2,
+          "label": "Prüfschritt Unterschrift: Phasenschalter prüfen",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            344.04,
+            559.81,
+            358.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_date_10",
+          "number": 27,
+          "page": 2,
+          "label": "Prüfschritt Datum: BNC Input AC testen",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            363.04,
+            452.17,
+            377.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_sig_10",
+          "number": 28,
+          "page": 2,
+          "label": "Prüfschritt Unterschrift: BNC Input AC testen",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            363.04,
+            559.81,
+            377.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_date_11",
+          "number": 29,
+          "page": 2,
+          "label": "Prüfschritt Datum: Stromwert im Display abgleichen",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            383.04,
+            452.17,
+            397.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_sig_11",
+          "number": 30,
+          "page": 2,
+          "label": "Prüfschritt Unterschrift: Stromwert im Display abgleichen",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            383.04,
+            559.81,
+            397.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_date_12",
+          "number": 31,
+          "page": 2,
+          "label": "Prüfschritt Datum: Strommonitor einstellen",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            402.04,
+            452.17,
+            416.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_sig_12",
+          "number": 32,
+          "page": 2,
+          "label": "Prüfschritt Unterschrift: Strommonitor einstellen",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            402.04,
+            559.81,
+            416.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_date_13",
+          "number": 33,
+          "page": 2,
+          "label": "Prüfschritt Datum: Spannungsmonitor überprüfen",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            421.04,
+            452.17,
+            435.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_sig_13",
+          "number": 34,
+          "page": 2,
+          "label": "Prüfschritt Unterschrift: Spannungsmonitor überprüfen",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            421.04,
+            559.81,
+            435.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_date_14",
+          "number": 35,
+          "page": 2,
+          "label": "Prüfschritt Datum: Distortion Funktion einstellen",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            440.04,
+            452.17,
+            454.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_sig_14",
+          "number": 36,
+          "page": 2,
+          "label": "Prüfschritt Unterschrift: Distortion Funktion einstellen",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            440.04,
+            559.81,
+            454.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_date_15",
+          "number": 37,
+          "page": 2,
+          "label": "Prüfschritt Datum: Current Test",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            459.04,
+            452.17,
+            473.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_sig_15",
+          "number": 38,
+          "page": 2,
+          "label": "Prüfschritt Unterschrift: Current Test",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            459.04,
+            559.81,
+            473.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_date_16",
+          "number": 39,
+          "page": 2,
+          "label": "Prüfschritt Datum: I-Mode Test",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            479.04,
+            452.17,
+            493.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_sig_16",
+          "number": 40,
+          "page": 2,
+          "label": "Prüfschritt Unterschrift: I-Mode Test",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            479.04,
+            559.81,
+            493.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_date_17",
+          "number": 41,
+          "page": 2,
+          "label": "Prüfschritt Datum: DC Abschaltung testen",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            498.04,
+            452.17,
+            512.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_sig_17",
+          "number": 42,
+          "page": 2,
+          "label": "Prüfschritt Unterschrift: DC Abschaltung testen",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            498.04,
+            559.81,
+            512.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_date_18",
+          "number": 43,
+          "page": 2,
+          "label": "Prüfschritt Datum: Prüfung der Temperaturschalter",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            517.04,
+            452.17,
+            531.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_sig_18",
+          "number": 44,
+          "page": 2,
+          "label": "Prüfschritt Unterschrift: Prüfung der Temperaturschalter",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            517.04,
+            559.81,
+            531.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_date_19",
+          "number": 45,
+          "page": 2,
+          "label": "Prüfschritt Datum: Messung THD, S&N, Frequenzgang",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            536.04,
+            452.17,
+            550.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_sig_19",
+          "number": 46,
+          "page": 2,
+          "label": "Prüfschritt Unterschrift: Messung THD, S&N, Frequenzgang",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            536.04,
+            559.81,
+            550.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_date_20",
+          "number": 47,
+          "page": 2,
+          "label": "Prüfschritt Datum: Endmontage (Schrauben, Elkos, Wannen, Deckel)",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            555.04,
+            452.17,
+            569.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_sig_20",
+          "number": 48,
+          "page": 2,
+          "label": "Prüfschritt Unterschrift: Endmontage (Schrauben, Elkos, Wannen, Deckel)",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            555.04,
+            559.81,
+            569.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_date_21",
+          "number": 49,
+          "page": 2,
+          "label": "Prüfschritt Datum: Sicherheitstest mit Abspeichern des Prüfprotokolls",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            575.04,
+            452.17,
+            589.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_sig_21",
+          "number": 50,
+          "page": 2,
+          "label": "Prüfschritt Unterschrift: Sicherheitstest mit Abspeichern des Prüfprotokolls",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            575.04,
+            559.81,
+            589.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        }
+      ]
+    },
+    "3": {
+      "page": 3,
+      "style": {
+        "fill_hex": "#ADD8E6",
+        "alpha": 0.59,
+        "stroke": null,
+        "label_mode": "number",
+        "number_color_hex": "#2F6FAE",
+        "omit_text_hint": true,
+        "omit_crosshair": true
+      },
+      "fields": [
+        {
+          "id": "footer_geprueft_x",
+          "number": 1,
+          "page": 3,
+          "label": "Geprüft checkbox (Vermerke)",
+          "type": "tap_x",
+          "value": "X",
+          "rect_pt": [
+            135.47,
+            164.72,
+            145.21,
+            174.34
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "footer_geprueft_datum",
+          "number": 2,
+          "page": 3,
+          "label": "Datum (Geprüft)",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            221.76,
+            157.91,
+            290.04,
+            171.11
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "footer_passed_x",
+          "number": 3,
+          "page": 3,
+          "label": "Test passed checkbox (Safety Test)",
+          "type": "tap_x",
+          "value": "X",
+          "rect_pt": [
+            135.47,
+            228.2,
+            145.21,
+            237.82
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "footer_passed_datum",
+          "number": 4,
+          "page": 3,
+          "label": "Datum (Test passed)",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            221.76,
+            221.39,
+            290.04,
+            234.59
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "footer_gebucht_x",
+          "number": 5,
+          "page": 3,
+          "label": "Gebucht checkbox (Buchungsvermerke)",
+          "type": "tap_x",
+          "value": "X",
+          "rect_pt": [
+            135.47,
+            350.48,
+            145.21,
+            360.1
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "footer_gebucht_datum",
+          "number": 6,
+          "page": 3,
+          "label": "Datum (Gebucht)",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            221.76,
+            343.67,
+            290.04,
+            356.87
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        }
+      ]
+    }
+  },
+  "capability_types": {
+    "scan_or_manual": {
+      "description": "Tapping the cell opens the camera for DataMatrix or 1D barcode; decoded value is written into the cell. Manual numeric/text entry is also allowed.",
+      "scan_formats": [
+        "DataMatrix",
+        "1D_barcode"
+      ],
+      "manual_entry": true,
+      "write_decoded_to_cell": true
+    },
+    "tap_ok": {
+      "description": "Tapping the cell writes the fixed text \"OK\" into the field (stamp/confirm).",
+      "value": "OK",
+      "manual_entry": false
+    },
+    "manual_date": {
+      "description": "Manual date entry into the cell (datepicker or typed date).",
+      "manual_entry": true,
+      "value_kind": "date"
+    },
+    "removed": {
+      "description": "Field deleted — not an interactive input."
+    },
+    "tap_date_settings": {
+      "description": "On tap/press, write today's date in format DD.MM.YY (e.g. 15.09.26). Default date is today but user can set a different working date in settings.",
+      "format": "DD.MM.YY",
+      "settings_key": "stamp_date",
+      "default": "today"
+    },
+    "tap_initials_stamp": {
+      "description": "On tap/press, stamp configured user initials into the cell.",
+      "settings_key": "stamp_initials"
+    },
+    "manual_text": {
+      "description": "Opens the keyboard for free manual text/number entry into the cell.",
+      "manual_entry": true
+    },
+    "tap_x": {
+      "description": "On tap, write \"X\" into the cell (checkbox-style mark).",
+      "value": "X"
+    },
+    "tap_lager_clerk": {
+      "description": "On tap, write Sachbearbeiter Lager name from settings (default from settings) into the cell. No dialog.",
+      "settings_key": "sachbearbeiterLager",
+      "default": "Lager",
+      "manual_entry": false
+    }
+  }
+}

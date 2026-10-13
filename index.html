@@ -85,14 +85,14 @@
 
       <div class="home-footer-row">
         <p class="home-footer">
-          Version 1.40<br />
+          Version 1.41<br />
           © BEAK electronic engineering GmbH &amp; Co. KG
         </p>
         <button type="button" class="footer-settings-btn" id="btn-open-names" aria-label="Liste" title="Liste">
-          <img class="pill-icon" src="icons/list_btn.png?v=1.40" alt="" width="40" height="40" draggable="false" />
+          <img class="pill-icon" src="icons/list_btn.png?v=1.41" alt="" width="40" height="40" draggable="false" />
         </button>
         <button type="button" class="footer-settings-btn" id="btn-home-settings" aria-label="Einstellungen" title="Einstellungen">
-          <img class="pill-icon" src="icons/settings_btn.png?v=1.40" alt="" width="40" height="40" draggable="false" />
+          <img class="pill-icon" src="icons/settings_btn.png?v=1.41" alt="" width="40" height="40" draggable="false" />
         </button>
       </div>
     </div>
@@ -177,12 +177,13 @@
         <label class="field-label" for="pm-remove-field">Entfernen von Seite(n) nach dem Teilen</label>
         <input type="text" id="pm-remove-field" class="split-input" inputmode="numeric" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Keine Seite(n) entfernen" value="Keine Seite(n) entfernen" />
         <p class="status" id="pm-status" role="status">PDF auf den Button ziehen oder tippen</p>
-        <button type="button" class="btn btn-prominent pm-drop-btn" id="btn-pm-open">PDF öffnen</button>
+        <button type="button" class="btn btn-prominent pm-drop-btn" id="btn-pm-open">PDF öffnen &amp; bearbeiten</button>
       </section>
 
       <div id="pm-result" class="result-box pm-result hidden" aria-live="polite">
         <p class="result-line"><span class="muted">ZIP:</span> <strong id="pm-result-zip">—</strong></p>
         <ol id="pm-result-list" class="pm-result-list"></ol>
+        <p class="result-line muted hidden" id="pm-result-removed"></p>
         <button type="button" class="btn btn-secondary" id="btn-pm-save-again">ZIP erneut speichern</button>
       </div>
 
@@ -314,7 +315,7 @@
         </section>
         <section class="settings-section cardish">
           <h3>Info</h3>
-          <p class="hint">Geräte Laufzettel 1.40<br />© BEAK electronic engineering GmbH &amp; Co. KG</p>
+          <p class="hint">Geräte Laufzettel 1.41<br />© BEAK electronic engineering GmbH &amp; Co. KG</p>
         </section>
       </div>
     </form>
@@ -338,20 +339,26 @@
           <option value="200.412">200.412</option>
           <option value="200.413">200.413</option>
           <option value="200.414">200.414</option>
+          <option value="200.419">200.419</option>
           <option value="200.420">200.420</option>
           <option value="200.432">200.432</option>
           <option value="200.433">200.433</option>
           <option value="200.434">200.434</option>
           <option value="200.436">200.436</option>
+          <option value="200.447">200.447</option>
           <option value="200.455">200.455</option>
           <option value="200.461">200.461</option>
           <option value="200.463">200.463</option>
           <option value="200.464">200.464</option>
           <option value="200.465">200.465</option>
+          <option value="200.467">200.467</option>
+          <option value="200.468">200.468</option>
+          <option value="200.469">200.469</option>
           <option value="200.481">200.481</option>
           <option value="200.483">200.483</option>
           <option value="200.490">200.490</option>
           <option value="200.492">200.492</option>
+          <option value="200.499">200.499</option>
         </select>
         <p class="hint">Auto liest den Artikel aus Dateiname oder PDF-Kopfzeile (<code>DE-200.433-…</code>). Manuell überschreiben möglich.</p>
       </section>
@@ -453,12 +460,12 @@
     </div>
   </div>
 
-  <script src="vendor/pdf-lib.min.js?v=1.40"></script>
-  <script src="vendor/fontkit.umd.min.js?v=1.40"></script>
-  <script src="vendor/zxing-library.min.js?v=1.40"></script>
-  <script src="vendor/jszip.min.js?v=1.40"></script>
-  <script src="vendor/FileSaver.min.js?v=1.40"></script>
-  <script type="module" src="js/app.js?v=1.40"></script>
-  <script type="module" src="js/manipulator.js?v=1.40"></script>
+  <script src="vendor/pdf-lib.min.js?v=1.41"></script>
+  <script src="vendor/fontkit.umd.min.js?v=1.41"></script>
+  <script src="vendor/zxing-library.min.js?v=1.41"></script>
+  <script src="vendor/jszip.min.js?v=1.41"></script>
+  <script src="vendor/FileSaver.min.js?v=1.41"></script>
+  <script type="module" src="js/app.js?v=1.41"></script>
+  <script type="module" src="js/manipulator.js?v=1.41"></script>
 </body>
 </html>

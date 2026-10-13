@@ -1,0 +1,1102 @@
+{
+  "id": "200.419",
+  "label": "200.419",
+  "pages": {
+    "1": {
+      "page": 1,
+      "style": {
+        "fill_hex": "#ADD8E6",
+        "alpha": 0.59,
+        "stroke": null,
+        "label_mode": "number",
+        "number_color_hex": "#2F6FAE",
+        "omit_text_hint": true,
+        "omit_crosshair": true
+      },
+      "fields": [
+        {
+          "id": "sn_right_1",
+          "number": 1,
+          "page": 1,
+          "label": "SN Endstufe",
+          "type": "scan_or_manual",
+          "value": null,
+          "rect_pt": [
+            414.16,
+            342.1,
+            559.8,
+            363.8
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "101.181 BG Endstufe V1"
+        },
+        {
+          "id": "sn_right_2",
+          "number": 2,
+          "page": 1,
+          "label": "SN 101.018 BG Kabelsatz V1",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            369.7,
+            559.8,
+            391.4
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "101.018 BG Kabelsatz V1"
+        },
+        {
+          "id": "sn_right_3",
+          "number": 3,
+          "page": 1,
+          "label": "SN LCD",
+          "type": "scan_or_manual",
+          "value": null,
+          "rect_pt": [
+            414.16,
+            397.3,
+            559.8,
+            419.0
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "101.152 BG LCD Baugruppe V2"
+        },
+        {
+          "id": "sn_right_4",
+          "number": 4,
+          "page": 1,
+          "label": "SN 101.073 BG Lüfter 70-20-1 V1",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            424.9,
+            559.8,
+            446.6
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "101.073 BG Lüfter 70-20-1 V1"
+        },
+        {
+          "id": "sn_right_5",
+          "number": 5,
+          "page": 1,
+          "label": "SN 101.168 BG Netzbuchse 2,5A V1",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            452.5,
+            559.8,
+            474.2
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "101.168 BG Netzbuchse 2,5A V1"
+        },
+        {
+          "id": "sn_right_6",
+          "number": 6,
+          "page": 1,
+          "label": "SN 101.053 BG Netzschalter V1",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            480.1,
+            559.8,
+            501.8
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "101.053 BG Netzschalter V1"
+        },
+        {
+          "id": "sn_right_7",
+          "number": 7,
+          "page": 1,
+          "label": "SN Netzteil",
+          "type": "scan_or_manual",
+          "value": null,
+          "rect_pt": [
+            414.16,
+            507.7,
+            559.8,
+            529.4
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "101.076 BG Netzteil V4"
+        },
+        {
+          "id": "sn_right_8",
+          "number": 8,
+          "page": 1,
+          "label": "SN 101.051 BG Poti V1",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            535.3,
+            559.8,
+            557.0
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "101.051 BG Poti V1"
+        },
+        {
+          "id": "sn_right_9",
+          "number": 9,
+          "page": 1,
+          "label": "SN 101.054 BG Schalter Phase-UI V1",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            562.9,
+            559.8,
+            584.6
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "101.054 BG Schalter Phase-UI V1"
+        },
+        {
+          "id": "sn_right_10",
+          "number": 10,
+          "page": 1,
+          "label": "SN 101.074 BG Speakon NL-4 MP V2",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            590.5,
+            559.8,
+            612.2
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "101.074 BG Speakon NL-4 MP V2"
+        },
+        {
+          "id": "sn_right_11",
+          "number": 11,
+          "page": 1,
+          "label": "SN 101.001 Verpackung 2 HE Export 2.7 (V2)",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            618.1,
+            559.8,
+            639.8
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "101.001 Verpackung 2 HE Export 2.7 (V2)"
+        },
+        {
+          "id": "software_hex_ok",
+          "number": 12,
+          "page": 1,
+          "label": "ATTINY.hex bestätigt",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            413.5,
+            663.0,
+            560.0,
+            676.4
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "software_datum_1",
+          "number": 13,
+          "page": 1,
+          "label": "ATTINY.hex",
+          "type": "manual_date",
+          "value": null,
+          "rect_pt": [
+            386.0,
+            661.2,
+            412.5,
+            671.0
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "Software",
+          "prefill": false,
+          "no_stamp_date_default": true,
+          "font_size_pt": 6.0
+        },
+        {
+          "id": "pm_p1_1",
+          "number": 14,
+          "page": 1,
+          "label": "Prüfmittel verwendet: Rohde & Schwarz Audio Analyzer",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            699.0,
+            559.8,
+            714.5
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "pm_p1_2",
+          "number": 15,
+          "page": 1,
+          "label": "Prüfmittel verwendet: Oszilloskop HM 1507",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            718.0,
+            559.8,
+            733.5
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "pm_p1_3",
+          "number": 16,
+          "page": 1,
+          "label": "Prüfmittel verwendet: BEAK Lastwiderstand 4R",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            737.0,
+            559.8,
+            752.5
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "pm_p1_4",
+          "number": 17,
+          "page": 1,
+          "label": "Prüfmittel verwendet: HP Digital Multimeter HP 3456",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            757.0,
+            559.8,
+            772.5
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "pm_p1_5",
+          "number": 18,
+          "page": 1,
+          "label": "Prüfmittel verwendet: HP Digital Multimeter HP 3456",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            776.0,
+            559.8,
+            791.5
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "buchungsdatum_lager",
+          "number": 19,
+          "page": 1,
+          "label": "Buchungsdatum Lager",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            125.0,
+            270.5,
+            315.0,
+            292.5
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "sachbearbeiter_lager",
+          "number": 20,
+          "page": 1,
+          "label": "Sachbearbeiter Lager",
+          "type": "tap_lager_clerk",
+          "value": null,
+          "rect_pt": [
+            125.0,
+            300.5,
+            315.0,
+            322.5
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "bemerkung_text",
+          "number": 21,
+          "page": 1,
+          "label": "Bemerkung",
+          "type": "manual_text",
+          "value": null,
+          "rect_pt": [
+            326.08,
+            239.0,
+            559.8,
+            320.86
+          ],
+          "align": "left",
+          "kind": null,
+          "group": null,
+          "multiline": true,
+          "font_size_pt": 9
+        }
+      ]
+    },
+    "2": {
+      "page": 2,
+      "style": {
+        "fill_hex": "#ADD8E6",
+        "alpha": 0.59,
+        "stroke": null,
+        "label_mode": "number",
+        "number_color_hex": "#2F6FAE",
+        "omit_text_hint": true,
+        "omit_crosshair": true
+      },
+      "fields": [
+        {
+          "id": "pm_p2_1",
+          "number": 1,
+          "page": 2,
+          "label": "Prüfmittel verwendet: Stelltransformator EA-STT 2000",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            97.0,
+            559.8,
+            112.5
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "pm_p2_2",
+          "number": 2,
+          "page": 2,
+          "label": "Prüfmittel verwendet: Sicherheitstester LG1800B",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            116.0,
+            559.8,
+            131.5
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "mon_date_1",
+          "number": 3,
+          "page": 2,
+          "label": "Montage Datum: Montage Chassis",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            152.04,
+            452.17,
+            166.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "mon_sig_1",
+          "number": 4,
+          "page": 2,
+          "label": "Montage Unterschrift: Montage Chassis",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            152.04,
+            559.81,
+            166.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "mon_date_2",
+          "number": 5,
+          "page": 2,
+          "label": "Montage Datum: Montage Baugruppen",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            171.04,
+            452.17,
+            185.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "mon_sig_2",
+          "number": 6,
+          "page": 2,
+          "label": "Montage Unterschrift: Montage Baugruppen",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            171.04,
+            559.81,
+            185.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "mon_date_3",
+          "number": 7,
+          "page": 2,
+          "label": "Montage Datum: Montage Trafo (komplett)",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            190.04,
+            452.17,
+            204.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "mon_sig_3",
+          "number": 8,
+          "page": 2,
+          "label": "Montage Unterschrift: Montage Trafo (komplett)",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            190.04,
+            559.81,
+            204.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "mon_date_4",
+          "number": 9,
+          "page": 2,
+          "label": "Montage Datum: komplette Verkabelung",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            210.04,
+            452.17,
+            224.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "mon_sig_4",
+          "number": 10,
+          "page": 2,
+          "label": "Montage Unterschrift: komplette Verkabelung",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            210.04,
+            559.81,
+            224.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "mon_date_5",
+          "number": 11,
+          "page": 2,
+          "label": "Montage Datum: Endmontage / Deckel und Etiketten anbringen",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            229.04,
+            452.17,
+            243.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "mon_sig_5",
+          "number": 12,
+          "page": 2,
+          "label": "Montage Unterschrift: Endmontage / Deckel und Etiketten anbringen",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            229.04,
+            559.81,
+            243.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "mon_date_6",
+          "number": 13,
+          "page": 2,
+          "label": "Montage Datum: Verpackung für Versand",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            248.04,
+            452.17,
+            262.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "mon_sig_6",
+          "number": 14,
+          "page": 2,
+          "label": "Montage Unterschrift: Verpackung für Versand",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            248.04,
+            559.81,
+            262.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_date_1",
+          "number": 15,
+          "page": 2,
+          "label": "Prüfschritt Datum: Zwischenkontrolle / Sichtprüfung",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            284.04,
+            452.17,
+            298.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_sig_1",
+          "number": 16,
+          "page": 2,
+          "label": "Prüfschritt Unterschrift: Zwischenkontrolle / Sichtprüfung",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            284.04,
+            559.81,
+            298.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_date_2",
+          "number": 17,
+          "page": 2,
+          "label": "Prüfschritt Datum: Abgleich laut Abgleichanweisung",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            303.04,
+            452.17,
+            317.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_sig_2",
+          "number": 18,
+          "page": 2,
+          "label": "Prüfschritt Unterschrift: Abgleich laut Abgleichanweisung",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            303.04,
+            559.81,
+            317.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_date_3",
+          "number": 19,
+          "page": 2,
+          "label": "Prüfschritt Datum: Endkontrolle laut Prüfanweisung",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            322.04,
+            452.17,
+            336.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_sig_3",
+          "number": 20,
+          "page": 2,
+          "label": "Prüfschritt Unterschrift: Endkontrolle laut Prüfanweisung",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            322.04,
+            559.81,
+            336.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_date_4",
+          "number": 21,
+          "page": 2,
+          "label": "Prüfschritt Datum: Performance Test mit Abspeichern der Protokolle",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            342.04,
+            452.17,
+            356.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_sig_4",
+          "number": 22,
+          "page": 2,
+          "label": "Prüfschritt Unterschrift: Performance Test mit Abspeichern der Protokolle",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            342.04,
+            559.81,
+            356.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_date_5",
+          "number": 23,
+          "page": 2,
+          "label": "Prüfschritt Datum: Frequenzgang fahren mit 120 V",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            361.04,
+            452.17,
+            375.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_sig_5",
+          "number": 24,
+          "page": 2,
+          "label": "Prüfschritt Unterschrift: Frequenzgang fahren mit 120 V",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            361.04,
+            559.81,
+            375.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_date_6",
+          "number": 25,
+          "page": 2,
+          "label": "Prüfschritt Datum: Frequenzgang fahren mit 100 V",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            380.04,
+            452.17,
+            394.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_sig_6",
+          "number": 26,
+          "page": 2,
+          "label": "Prüfschritt Unterschrift: Frequenzgang fahren mit 100 V",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            380.04,
+            559.81,
+            394.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_date_7",
+          "number": 27,
+          "page": 2,
+          "label": "Prüfschritt Datum: Sicherheitstest mit 230 V",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            399.04,
+            452.17,
+            413.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_sig_7",
+          "number": 28,
+          "page": 2,
+          "label": "Prüfschritt Unterschrift: Sicherheitstest mit 230 V",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            399.04,
+            559.81,
+            413.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_date_8",
+          "number": 29,
+          "page": 2,
+          "label": "Prüfschritt Datum: Sicherheitstest mit 120 V",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            418.04,
+            452.17,
+            432.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_sig_8",
+          "number": 30,
+          "page": 2,
+          "label": "Prüfschritt Unterschrift: Sicherheitstest mit 120 V",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            418.04,
+            559.81,
+            432.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_date_9",
+          "number": 31,
+          "page": 2,
+          "label": "Prüfschritt Datum: Sicherheitstest mit 100 V",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            438.04,
+            452.17,
+            452.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_sig_9",
+          "number": 32,
+          "page": 2,
+          "label": "Prüfschritt Unterschrift: Sicherheitstest mit 100 V",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            438.04,
+            559.81,
+            452.04
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "footer_geprueft_x",
+          "number": 33,
+          "page": 2,
+          "label": "Geprüft checkbox (Vermerke)",
+          "type": "tap_x",
+          "value": "X",
+          "rect_pt": [
+            135.47,
+            539.0,
+            145.21,
+            548.62
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "footer_geprueft_datum",
+          "number": 34,
+          "page": 2,
+          "label": "Datum (Geprüft)",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            221.76,
+            532.19,
+            290.04,
+            545.39
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "footer_passed_x",
+          "number": 35,
+          "page": 2,
+          "label": "Test passed checkbox (Safety Test)",
+          "type": "tap_x",
+          "value": "X",
+          "rect_pt": [
+            135.47,
+            602.48,
+            145.21,
+            612.1
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "footer_passed_datum",
+          "number": 36,
+          "page": 2,
+          "label": "Datum (Test passed)",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            221.76,
+            595.67,
+            290.04,
+            608.87
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "footer_gebucht_x",
+          "number": 37,
+          "page": 2,
+          "label": "Gebucht checkbox (Buchungsvermerke)",
+          "type": "tap_x",
+          "value": "X",
+          "rect_pt": [
+            135.47,
+            724.76,
+            145.21,
+            734.38
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "footer_gebucht_datum",
+          "number": 38,
+          "page": 2,
+          "label": "Datum (Gebucht)",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            221.76,
+            717.95,
+            290.04,
+            731.15
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        }
+      ]
+    }
+  },
+  "capability_types": {
+    "scan_or_manual": {
+      "description": "Tapping the cell opens the camera for DataMatrix or 1D barcode; decoded value is written into the cell. Manual numeric/text entry is also allowed.",
+      "scan_formats": [
+        "DataMatrix",
+        "1D_barcode"
+      ],
+      "manual_entry": true,
+      "write_decoded_to_cell": true
+    },
+    "tap_ok": {
+      "description": "Tapping the cell writes the fixed text \"OK\" into the field (stamp/confirm).",
+      "value": "OK",
+      "manual_entry": false
+    },
+    "manual_date": {
+      "description": "Manual date entry into the cell (datepicker or typed date).",
+      "manual_entry": true,
+      "value_kind": "date"
+    },
+    "removed": {
+      "description": "Field deleted — not an interactive input."
+    },
+    "tap_date_settings": {
+      "description": "On tap/press, write today's date in format DD.MM.YY (e.g. 15.09.26). Default date is today but user can set a different working date in settings.",
+      "format": "DD.MM.YY",
+      "settings_key": "stamp_date",
+      "default": "today"
+    },
+    "tap_initials_stamp": {
+      "description": "On tap/press, stamp configured user initials into the cell.",
+      "settings_key": "stamp_initials"
+    },
+    "manual_text": {
+      "description": "Opens the keyboard for free manual text/number entry into the cell.",
+      "manual_entry": true
+    },
+    "tap_x": {
+      "description": "On tap, write \"X\" into the cell (checkbox-style mark).",
+      "value": "X"
+    },
+    "tap_lager_clerk": {
+      "description": "On tap, write Sachbearbeiter Lager name from settings (default from settings) into the cell. No dialog.",
+      "settings_key": "sachbearbeiterLager",
+      "default": "Lager",
+      "manual_entry": false
+    }
+  }
+}
