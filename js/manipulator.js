@@ -3,12 +3,12 @@
  * Eigene Ansicht, eigener Datei-Input: läuft NICHT über die Feldvorlagen-Prüfung
  * des Laufzettel-Öffnens (PDFs ohne Feldvorlage werden hier normal geteilt).
  */
-import * as pdfjsLib from '../vendor/pdf.min.mjs?v=1.39';
-import { buildSplitZip, sanitizeFilename } from './split.js?v=1.39';
-import { xpsToPdf, isXpsFile } from './xps2pdf.js?v=1.39';
+import * as pdfjsLib from '../vendor/pdf.min.mjs?v=1.40';
+import { buildSplitZip, sanitizeFilename } from './split.js?v=1.40';
+import { xpsToPdf, isXpsFile } from './xps2pdf.js?v=1.40';
 
 if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs?v=1.39', import.meta.url).href;
+  pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs?v=1.40', import.meta.url).href;
 }
 
 const $ = (sel) => document.querySelector(sel);

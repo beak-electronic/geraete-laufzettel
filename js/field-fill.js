@@ -15,8 +15,8 @@ import {
   stampInitialsForSettings,
   stampLagerClerkForSettings,
   normalizeStampDateYY,
-} from './fields.js?v=1.39';
-import { colorCss, colorRgb01 } from './settings.js?v=1.39';
+} from './fields.js?v=1.40';
+import { colorCss, colorRgb01 } from './settings.js?v=1.40';
 
 const { rgb, StandardFonts } = PDFLib;
 

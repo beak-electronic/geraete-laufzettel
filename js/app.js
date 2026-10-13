@@ -1,4 +1,4 @@
-import { extractSerialFromPayload, isUsableSerial } from "./sn.js?v=1.39";
+import { extractSerialFromPayload, isUsableSerial } from "./sn.js?v=1.40";
 import {
   decodeDataMatrixFromBlob,
   decodeDataMatrixFromElement,
@@ -7,7 +7,7 @@ import {
   stopCamera,
   releaseAllCameras,
   releaseAllCamerasAsync,
-} from "./scan.js?v=1.39";
+} from "./scan.js?v=1.40";
 import {
   findPdfBySerial,
   pickPdfFolder,
@@ -20,9 +20,9 @@ import {
   getIdbCatalogStats,
   clearIdbCatalog,
   formatCatalogUpdated,
-} from "./catalog.js?v=1.39";
-import { initFill, openFile, pickAndOpen } from "./fill.js?v=1.39";
-import { KNOWN_TEMPLATES } from "./fields.js?v=1.39";
+} from "./catalog.js?v=1.40";
+import { initFill, openFile, pickAndOpen } from "./fill.js?v=1.40";
+import { KNOWN_TEMPLATES } from "./fields.js?v=1.40";
 
 const STORAGE_KEY = "geraete-laufzettel-settings-v1";
 const DEMO_PAYLOAD = "DE-200.433-XXXX-XX0000E00A00K0001";
@@ -803,49 +803,9 @@ function closeNamesDialog() {
   else dlg.removeAttribute("open");
 }
 
-function renderFieldTemplatesList() {
-  const ul =
-    document.getElementById("settings-field-templates-list") ||
-    $("#settings-field-templates-list");
-  if (!ul) {
-    console.warn("Feldvorlagen-Liste nicht gefunden");
-    return;
-  }
-  const list = Array.isArray(KNOWN_TEMPLATES) ? [...KNOWN_TEMPLATES] : [];
-  list.sort((a, b) => String(a.id || "").localeCompare(String(b.id || ""), "de", { numeric: true }));
-  try {
-    ul.replaceChildren();
-  } catch (_) {
-    ul.innerHTML = "";
-  }
-  if (!list.length) {
-    const li = document.createElement("li");
-    li.className = "tmpl-empty";
-    li.textContent = "Keine Feldvorlagen hinterlegt.";
-    ul.appendChild(li);
-    return;
-  }
-  for (const t of list) {
-    const li = document.createElement("li");
-    const id = document.createElement("span");
-    id.className = "tmpl-id";
-    id.textContent = t.id || "";
-    li.appendChild(id);
-    const label = String(t.label || "").trim();
-    if (label && label !== t.id) {
-      const lab = document.createElement("span");
-      lab.className = "tmpl-label";
-      lab.textContent = label;
-      li.appendChild(lab);
-    }
-    ul.appendChild(li);
-  }
-}
-
 function openSettings() {
   const dlg = $("#home-settings-dialog");
   syncSettingsForm();
-  renderFieldTemplatesList();
   if (typeof dlg.showModal === "function") dlg.showModal();
   else dlg.setAttribute("open", "");
 }
@@ -960,7 +920,6 @@ function wireUi() {
   });
   $("#btn-home-settings")?.addEventListener("click", openSettings);
   initTemplateNamesUi();
-  renderFieldTemplatesList(); // home settings overview
   $("#btn-home-settings-done")?.addEventListener("click", (e) => {
     e.preventDefault();
     closeSettings();
