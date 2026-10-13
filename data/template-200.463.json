@@ -1,0 +1,901 @@
+{
+  "id": "200.463",
+  "label": "200.463",
+  "pages": {
+    "1": {
+      "page": 1,
+      "style": {
+        "fill_hex": "#ADD8E6",
+        "alpha": 0.59,
+        "stroke": null,
+        "label_mode": "number",
+        "number_color_hex": "#2F6FAE",
+        "omit_text_hint": true,
+        "omit_crosshair": true
+      },
+      "fields": [
+        {
+          "id": "sn_right_1",
+          "number": 1,
+          "page": 1,
+          "label": "SN 100.867 BG Strommessung V1.1",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            343.3,
+            559.8,
+            365.1
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "100.867 BG Strommessung V1.1"
+        },
+        {
+          "id": "sn_right_2",
+          "number": 2,
+          "page": 1,
+          "label": "SN 101.109 BG BNC EMV Adpater V2",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            371.1,
+            559.8,
+            392.9
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "101.109 BG BNC EMV Adpater V2"
+        },
+        {
+          "id": "sn_right_3",
+          "number": 3,
+          "page": 1,
+          "label": "SN 101.109 BG BNC EMV Adpater V2",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            398.8,
+            559.8,
+            420.6
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "101.109 BG BNC EMV Adpater V2"
+        },
+        {
+          "id": "sn_right_4",
+          "number": 4,
+          "page": 1,
+          "label": "SN 101.109 BG BNC EMV Adpater V2",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            426.3,
+            559.8,
+            448.1
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "101.109 BG BNC EMV Adpater V2"
+        },
+        {
+          "id": "sn_right_5",
+          "number": 5,
+          "page": 1,
+          "label": "SN Endstufe",
+          "type": "scan_or_manual",
+          "value": null,
+          "rect_pt": [
+            414.16,
+            454.1,
+            559.8,
+            475.7
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "SN Endstufe"
+        },
+        {
+          "id": "sn_right_6",
+          "number": 6,
+          "page": 1,
+          "label": "SN 100.940 BG Kabelsatz V1.1",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            481.5,
+            559.8,
+            503.3
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "100.940 BG Kabelsatz V1.1"
+        },
+        {
+          "id": "sn_right_7",
+          "number": 7,
+          "page": 1,
+          "label": "SN LCD",
+          "type": "scan_or_manual",
+          "value": null,
+          "rect_pt": [
+            414.16,
+            509.1,
+            559.8,
+            530.7
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "SN LCD"
+        },
+        {
+          "id": "sn_right_8",
+          "number": 8,
+          "page": 1,
+          "label": "SN Netzteil",
+          "type": "scan_or_manual",
+          "value": null,
+          "rect_pt": [
+            414.16,
+            536.8,
+            559.8,
+            558.4
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "SN Netzteil"
+        },
+        {
+          "id": "sn_right_9",
+          "number": 9,
+          "page": 1,
+          "label": "SN Netzverteiler",
+          "type": "scan_or_manual",
+          "value": null,
+          "rect_pt": [
+            414.16,
+            564.3,
+            559.8,
+            586.1
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "SN Netzverteiler"
+        },
+        {
+          "id": "sn_right_10",
+          "number": 10,
+          "page": 1,
+          "label": "SN 100.959 Verpackung Shell V1",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            592.1,
+            559.8,
+            613.9
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "100.959 Verpackung Shell V1"
+        },
+        {
+          "id": "software_right_path",
+          "number": 11,
+          "page": 1,
+          "label": "Software path row bestätigt (right)",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            635.4,
+            559.8,
+            649.0
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "software_datum_1",
+          "number": 12,
+          "page": 1,
+          "label": "Software",
+          "type": "manual_date",
+          "value": null,
+          "rect_pt": [
+            303.5,
+            635.4,
+            408.16,
+            649.0
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "Software",
+          "prefill": false,
+          "no_stamp_date_default": true
+        },
+        {
+          "id": "pruefmittel_right_1",
+          "number": 13,
+          "page": 1,
+          "label": "Prüfmittel verwendet: Rohde & Schwarz Audio Analyzer",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            672.0,
+            559.8,
+            685.5
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "pruefmittel_right_2",
+          "number": 14,
+          "page": 1,
+          "label": "Prüfmittel verwendet: Oszilloskop",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            691.2,
+            559.8,
+            704.7
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "pruefmittel_right_3",
+          "number": 15,
+          "page": 1,
+          "label": "Prüfmittel verwendet: BEAK Lastwiderstand",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            710.4,
+            559.8,
+            723.9
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "pruefmittel_right_4",
+          "number": 16,
+          "page": 1,
+          "label": "Prüfmittel verwendet: HP Digital Multimeter",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            729.6,
+            559.8,
+            743.1
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "pruefmittel_right_5",
+          "number": 17,
+          "page": 1,
+          "label": "Prüfmittel verwendet: HP Digital Multimeter (2)",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            748.8,
+            559.8,
+            762.3
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "pruefmittel_right_6",
+          "number": 18,
+          "page": 1,
+          "label": "Prüfmittel verwendet: Stelltransformator EA-STT 2000 / BEAK RKT-4",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            768.0,
+            559.8,
+            781.5
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "pruefmittel_right_7",
+          "number": 19,
+          "page": 1,
+          "label": "Prüfmittel verwendet: Sicherheitstester LG1800B",
+          "type": "tap_ok",
+          "value": "OK",
+          "rect_pt": [
+            414.16,
+            787.2,
+            559.8,
+            800.7
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "bemerkung_leerzeile",
+          "number": 20,
+          "page": 1,
+          "label": "Bemerkung (leere Zeile nach „-“)",
+          "type": "manual_text",
+          "value": null,
+          "rect_pt": [
+            326.08,
+            258.45,
+            559.8,
+            269.25
+          ],
+          "align": "left",
+          "kind": null,
+          "group": null,
+          "single_line": true,
+          "font_size_pt": 9
+        },
+        {
+          "id": "bemerkung_text",
+          "number": 21,
+          "page": 1,
+          "label": "Bemerkung",
+          "type": "manual_text",
+          "value": null,
+          "rect_pt": [
+            326.08,
+            281.0,
+            559.8,
+            320.86
+          ],
+          "align": "left",
+          "kind": null,
+          "group": null,
+          "multiline": true,
+          "font_size_pt": 9
+        },
+        {
+          "id": "buchungsdatum_lager",
+          "number": 22,
+          "page": 1,
+          "label": "Buchungsdatum Lager",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            124.88,
+            271.06,
+            315.36,
+            293.16
+          ],
+          "align": "center",
+          "kind": "text",
+          "group": "buchungsdaten"
+        },
+        {
+          "id": "sachbearbeiter_lager",
+          "number": 23,
+          "page": 1,
+          "label": "Sachbearbeiter Lager",
+          "type": "tap_lager_clerk",
+          "value": null,
+          "rect_pt": [
+            124.88,
+            299.16,
+            315.36,
+            320.86
+          ],
+          "align": "center",
+          "kind": "text",
+          "group": "buchungsdaten"
+        }
+      ]
+    },
+    "2": {
+      "page": 2,
+      "style": {
+        "fill_hex": "#ADD8E6",
+        "alpha": 0.59,
+        "stroke": null,
+        "label_mode": "number",
+        "number_color_hex": "#2F6FAE",
+        "omit_text_hint": true,
+        "omit_crosshair": true
+      },
+      "fields": [
+        {
+          "id": "montage_datum_1",
+          "number": 1,
+          "page": 2,
+          "label": "Montage Datum: Montage Chassis",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            97.72,
+            452.17,
+            111.02
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "montage_u_1",
+          "number": 2,
+          "page": 2,
+          "label": "Montage Unterschrift: Montage Chassis",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            97.72,
+            559.81,
+            111.02
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "montage_datum_2",
+          "number": 3,
+          "page": 2,
+          "label": "Montage Datum: komplette Verkabelung",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            116.92,
+            452.17,
+            130.22
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "montage_u_2",
+          "number": 4,
+          "page": 2,
+          "label": "Montage Unterschrift: komplette Verkabelung",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            116.92,
+            559.81,
+            130.22
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "montage_datum_3",
+          "number": 5,
+          "page": 2,
+          "label": "Montage Datum: Montage Trafo (komplett)",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            136.12,
+            452.17,
+            149.42
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "montage_u_3",
+          "number": 6,
+          "page": 2,
+          "label": "Montage Unterschrift: Montage Trafo (komplett)",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            136.12,
+            559.81,
+            149.42
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "montage_datum_4",
+          "number": 7,
+          "page": 2,
+          "label": "Montage Datum: Montage Baugruppen",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            155.32,
+            452.17,
+            168.62
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "montage_u_4",
+          "number": 8,
+          "page": 2,
+          "label": "Montage Unterschrift: Montage Baugruppen",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            155.32,
+            559.81,
+            168.62
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "montage_datum_5",
+          "number": 9,
+          "page": 2,
+          "label": "Montage Datum: Endmontage / Deckel und Etiketten anbringen",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            174.52,
+            452.17,
+            187.82
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "montage_u_5",
+          "number": 10,
+          "page": 2,
+          "label": "Montage Unterschrift: Endmontage / Deckel und Etiketten anbringen",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            174.52,
+            559.81,
+            187.82
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "montage_datum_6",
+          "number": 11,
+          "page": 2,
+          "label": "Montage Datum: Verpackung für Versand",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            193.72,
+            452.17,
+            207.02
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "montage_u_6",
+          "number": 12,
+          "page": 2,
+          "label": "Montage Unterschrift: Verpackung für Versand",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            193.72,
+            559.81,
+            207.02
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_qc_1",
+          "number": 13,
+          "page": 2,
+          "label": "Prüfschritt Q-C-passed: Zwischenkontrolle / Sichtprüfung",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            229.46,
+            559.81,
+            243.06
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_qc_2",
+          "number": 14,
+          "page": 2,
+          "label": "Prüfschritt Q-C-passed: Abgleich laut Abgleichanweisung",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            248.66,
+            559.81,
+            262.26
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_qc_3",
+          "number": 15,
+          "page": 2,
+          "label": "Prüfschritt Q-C-passed: Performance Test (Protokolle auf Server)",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            267.86,
+            559.81,
+            281.46
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_qc_4",
+          "number": 16,
+          "page": 2,
+          "label": "Prüfschritt Q-C-passed: Mains Power Confirmation",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            287.06,
+            559.81,
+            300.66
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "p3_mains_datum",
+          "number": 17,
+          "page": 2,
+          "label": "Mains Power Confirmation: Datum",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            380.5,
+            285.8,
+            452.17,
+            294.4
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "p3_mains_power",
+          "number": 18,
+          "page": 2,
+          "label": "Mains Power Confirmation: Mains Power",
+          "type": "manual_text",
+          "value": null,
+          "rect_pt": [
+            403.0,
+            295.0,
+            452.17,
+            303.0
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "ps_qc_5",
+          "number": 19,
+          "page": 2,
+          "label": "Prüfschritt Q-C-passed: Fuse Check",
+          "type": "tap_initials_stamp",
+          "value": null,
+          "rect_pt": [
+            458.17,
+            306.26,
+            559.81,
+            319.86
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "p2_fuse_datum",
+          "number": 20,
+          "page": 2,
+          "label": "Fuse Check: Datum",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            380.5,
+            305.0,
+            452.17,
+            313.6
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "p2_fuse",
+          "number": 21,
+          "page": 2,
+          "label": "Fuse Check: Fuse",
+          "type": "manual_text",
+          "value": null,
+          "rect_pt": [
+            386.5,
+            314.4,
+            452.17,
+            322.4
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "vermerke_geprueft",
+          "number": 22,
+          "page": 2,
+          "label": "Geprüft checkbox (Vermerke)",
+          "type": "tap_x",
+          "value": null,
+          "rect_pt": [
+            135.22,
+            406.3,
+            145.26,
+            417.2
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "vermerke_passed",
+          "number": 23,
+          "page": 2,
+          "label": "Test passed checkbox (Safety Test)",
+          "type": "tap_x",
+          "value": null,
+          "rect_pt": [
+            135.22,
+            469.6,
+            145.26,
+            480.2
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "vermerke_gebucht",
+          "number": 24,
+          "page": 2,
+          "label": "Gebucht checkbox (Buchungsvermerke)",
+          "type": "tap_x",
+          "value": null,
+          "rect_pt": [
+            135.22,
+            592.8,
+            145.26,
+            603.4
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "vermerke_datum_geprueft",
+          "number": 25,
+          "page": 2,
+          "label": "Datum (Vermerke / Geprüft)",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            221.76,
+            403.0,
+            290.04,
+            416.2
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "vermerke_datum_passed",
+          "number": 26,
+          "page": 2,
+          "label": "Datum (Safety Test / Test passed)",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            221.76,
+            466.4,
+            290.04,
+            479.6
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        },
+        {
+          "id": "vermerke_datum_gebucht",
+          "number": 27,
+          "page": 2,
+          "label": "Datum (Buchungsvermerke / Gebucht)",
+          "type": "tap_date_settings",
+          "value": null,
+          "rect_pt": [
+            221.76,
+            588.7,
+            290.04,
+            601.9
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null
+        }
+      ]
+    }
+  }
+}
