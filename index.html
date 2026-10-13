@@ -85,11 +85,14 @@
 
       <div class="home-footer-row">
         <p class="home-footer">
-          Version 1.38<br />
+          Version 1.39<br />
           © BEAK electronic engineering GmbH &amp; Co. KG
         </p>
+        <button type="button" class="footer-settings-btn" id="btn-open-names" aria-label="Liste" title="Liste">
+          <img class="pill-icon" src="icons/list_btn.png?v=1.39" alt="" width="40" height="40" draggable="false" />
+        </button>
         <button type="button" class="footer-settings-btn" id="btn-home-settings" aria-label="Einstellungen" title="Einstellungen">
-          <img class="pill-icon" src="icons/settings_btn.png?v=1.38" alt="" width="40" height="40" draggable="false" />
+          <img class="pill-icon" src="icons/settings_btn.png?v=1.39" alt="" width="40" height="40" draggable="false" />
         </button>
       </div>
     </div>
@@ -238,6 +241,30 @@
 
   <div id="toast" class="toast hidden" role="status"></div>
 
+  <!-- Liste: Vorlagennummern + lokale Namen -->
+  <dialog id="names-dialog" class="settings-dialog">
+    <form method="dialog" id="names-form">
+      <header class="settings-header">
+        <h2>Liste</h2>
+        <button type="button" class="btn-done" id="btn-names-done" value="done">Fertig</button>
+      </header>
+      <div class="settings-body">
+        <section class="settings-section cardish">
+          <p class="hint" id="names-status" hidden></p>
+          <div class="settings-btn-row">
+            <button type="button" class="btn btn-secondary" id="btn-import-names">Liste importieren</button>
+            <button type="button" class="btn btn-secondary" id="btn-clear-names">Liste entfernen</button>
+          </div>
+          <div class="names-reload-row" id="names-reload-row" hidden>
+            <button type="button" class="btn btn-secondary" id="btn-reload-names">Liste neu laden</button>
+          </div>
+          <input type="file" id="names-file-input" accept=".txt,.csv,.tsv,.xlsx,text/plain,text/csv" hidden />
+          <ul id="names-list" class="names-list" aria-label="Vorlagen mit Namen"></ul>
+        </section>
+      </div>
+    </form>
+  </dialog>
+
   <!-- Home settings -->
   <dialog id="home-settings-dialog" class="settings-dialog">
     <form method="dialog" id="home-settings-form">
@@ -347,7 +374,7 @@
         </section>
         <section class="settings-section cardish">
           <h3>Info</h3>
-          <p class="hint">Geräte Laufzettel 1.38<br />© BEAK electronic engineering GmbH &amp; Co. KG</p>
+          <p class="hint">Geräte Laufzettel 1.39<br />© BEAK electronic engineering GmbH &amp; Co. KG</p>
         </section>
       </div>
     </form>
@@ -486,12 +513,12 @@
     </div>
   </div>
 
-  <script src="vendor/pdf-lib.min.js?v=1.38"></script>
-  <script src="vendor/fontkit.umd.min.js?v=1.38"></script>
-  <script src="vendor/zxing-library.min.js?v=1.38"></script>
-  <script src="vendor/jszip.min.js?v=1.38"></script>
-  <script src="vendor/FileSaver.min.js?v=1.38"></script>
-  <script type="module" src="js/app.js?v=1.38"></script>
-  <script type="module" src="js/manipulator.js?v=1.38"></script>
+  <script src="vendor/pdf-lib.min.js?v=1.39"></script>
+  <script src="vendor/fontkit.umd.min.js?v=1.39"></script>
+  <script src="vendor/zxing-library.min.js?v=1.39"></script>
+  <script src="vendor/jszip.min.js?v=1.39"></script>
+  <script src="vendor/FileSaver.min.js?v=1.39"></script>
+  <script type="module" src="js/app.js?v=1.39"></script>
+  <script type="module" src="js/manipulator.js?v=1.39"></script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-import { extractSerialFromPayload, isUsableSerial } from "./sn.js?v=1.38";
+import { extractSerialFromPayload, isUsableSerial } from "./sn.js?v=1.39";
 import {
   decodeDataMatrixFromBlob,
   decodeDataMatrixFromElement,
@@ -7,7 +7,7 @@ import {
   stopCamera,
   releaseAllCameras,
   releaseAllCamerasAsync,
-} from "./scan.js?v=1.38";
+} from "./scan.js?v=1.39";
 import {
   findPdfBySerial,
   pickPdfFolder,
@@ -20,9 +20,9 @@ import {
   getIdbCatalogStats,
   clearIdbCatalog,
   formatCatalogUpdated,
-} from "./catalog.js?v=1.38";
-import { initFill, openFile, pickAndOpen } from "./fill.js?v=1.38";
-import { KNOWN_TEMPLATES } from "./fields.js?v=1.38";
+} from "./catalog.js?v=1.39";
+import { initFill, openFile, pickAndOpen } from "./fill.js?v=1.39";
+import { KNOWN_TEMPLATES } from "./fields.js?v=1.39";
 
 const STORAGE_KEY = "geraete-laufzettel-settings-v1";
 const DEMO_PAYLOAD = "DE-200.433-XXXX-XX0000E00A00K0001";
@@ -461,6 +461,348 @@ function readSettingsFromForm() {
 }
 
 
+/* —— Lokale Namensliste (nur localStorage auf diesem Gerät) —— */
+const NAMES_KEY = "laufzettel.templateNames.v1";
+let templateNames = loadTemplateNames();
+
+function loadTemplateNames() {
+  try {
+    const o = JSON.parse(localStorage.getItem(NAMES_KEY) || "{}");
+    return o && typeof o === "object" ? o : {};
+  } catch (_) {
+    return {};
+  }
+}
+
+function normalizeTemplateNumber(raw) {
+  const m = String(raw || "").trim().match(/^(\d{3})[.,]?(\d{3})$/);
+  return m ? `${m[1]}.${m[2]}` : "";
+}
+
+function rowsToNames(rows) {
+  const out = {};
+  for (const r of rows) {
+    if (!r || r.length < 2) continue;
+    const num = normalizeTemplateNumber(r[0]);
+    const name = String(r[1] ?? "").trim();
+    if (num && name) out[num] = name; // header / invalid rows skipped automatically
+  }
+  return out;
+}
+
+function parseNamesText(text) {
+  const lines = String(text).replace(/^\uFEFF/, "").split(/\r?\n/);
+  const rows = [];
+  for (const line of lines) {
+    if (!line.trim()) continue;
+    const sep = line.includes(";") ? ";" : line.includes("\t") ? "\t" : ",";
+    const i = line.indexOf(sep);
+    if (i < 0) continue;
+    const unq = (v) => v.trim().replace(/^"(.*)"$/, "$1").replace(/""/g, '"');
+    rows.push([unq(line.slice(0, i)), unq(line.slice(i + 1))]);
+  }
+  return rowsToNames(rows);
+}
+
+async function parseNamesXlsx(buf) {
+  const JSZip = window.JSZip;
+  if (!JSZip) throw new Error("XLSX nicht unterstützt");
+  const zip = await JSZip.loadAsync(buf);
+  const xml = async (p) => {
+    const f = zip.file(p);
+    return f ? new DOMParser().parseFromString(await f.async("string"), "application/xml") : null;
+  };
+  const shared = [];
+  const ss = await xml("xl/sharedStrings.xml");
+  if (ss) for (const si of ss.getElementsByTagName("si")) {
+    shared.push([...si.getElementsByTagName("t")].map((t) => t.textContent).join(""));
+  }
+  const sheetPath = Object.keys(zip.files).filter((p) => /^xl\/worksheets\/sheet\d+\.xml$/.test(p)).sort()[0];
+  const sheet = sheetPath ? await xml(sheetPath) : null;
+  if (!sheet) throw new Error("Kein Tabellenblatt gefunden");
+  const rows = [];
+  for (const row of sheet.getElementsByTagName("row")) {
+    const vals = {};
+    for (const c of row.getElementsByTagName("c")) {
+      const col = (c.getAttribute("r") || "").replace(/\d+/g, "");
+      const type = c.getAttribute("t");
+      let v = "";
+      if (type === "inlineStr") v = [...c.getElementsByTagName("t")].map((t) => t.textContent).join("");
+      else {
+        const ve = c.getElementsByTagName("v")[0];
+        v = ve ? ve.textContent : "";
+        if (type === "s") v = shared[Number(v)] ?? "";
+        else if (/^\d+\.\d+$/.test(v) && col === "A") v = Number(v).toFixed(3);
+      }
+      vals[col] = v;
+    }
+    rows.push([vals.A, vals.B]);
+  }
+  return rowsToNames(rows);
+}
+
+const NAMES_META_KEY = "laufzettel.templateNamesMeta.v1";
+const NAMES_IDB = "laufzettel-names";
+const NAMES_HANDLE_KEY = "fileHandle";
+let namesStatusNote = ""; // e.g. "Liste automatisch aktualisiert (…)"
+let namesNeedsPermission = false;
+
+function loadNamesMeta() {
+  try {
+    return JSON.parse(localStorage.getItem(NAMES_META_KEY) || "null") || {};
+  } catch (_) {
+    return {};
+  }
+}
+function saveNamesMeta(meta) {
+  try {
+    if (meta) localStorage.setItem(NAMES_META_KEY, JSON.stringify(meta));
+    else localStorage.removeItem(NAMES_META_KEY);
+  } catch (_) {}
+}
+
+function namesIdb(mode, fn) {
+  return new Promise((resolve, reject) => {
+    if (!("indexedDB" in window)) return resolve(undefined);
+    const req = indexedDB.open(NAMES_IDB, 1);
+    req.onupgradeneeded = () => req.result.createObjectStore("kv");
+    req.onerror = () => reject(req.error);
+    req.onsuccess = () => {
+      const db = req.result;
+      const tx = db.transaction("kv", mode);
+      const r = fn(tx.objectStore("kv"));
+      tx.oncomplete = () => {
+        db.close();
+        resolve(r && "result" in r ? r.result : undefined);
+      };
+      tx.onerror = tx.onabort = () => {
+        db.close();
+        reject(tx.error);
+      };
+    };
+  });
+}
+const getNamesHandle = () => namesIdb("readonly", (st) => st.get(NAMES_HANDLE_KEY)).catch(() => undefined);
+const putNamesHandle = (h) => namesIdb("readwrite", (st) => st.put(h, NAMES_HANDLE_KEY)).catch(() => {});
+const deleteNamesHandle = () => namesIdb("readwrite", (st) => st.delete(NAMES_HANDLE_KEY)).catch(() => {});
+
+function fmtStamp(ms) {
+  const d = new Date(ms);
+  const p = (n) => String(n).padStart(2, "0");
+  return `${p(d.getDate())}.${p(d.getMonth() + 1)}.${d.getFullYear()} ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+
+async function parseNamesFile(file) {
+  if (/\.xlsx$/i.test(file.name)) {
+    const buf = await file.arrayBuffer();
+    return { names: await parseNamesXlsx(buf), sig: `xlsx:${buf.byteLength}:${file.lastModified}` };
+  }
+  const text = await file.text();
+  return { names: parseNamesText(text), sig: text };
+}
+
+/** Returns true when names were stored. silent: no alerts (auto refresh). */
+async function importTemplateNames(file, { silent = false } = {}) {
+  const { names, sig } = await parseNamesFile(file);
+  const n = Object.keys(names).length;
+  if (!n) {
+    if (!silent) alert("Keine gültigen Zeilen gefunden (erwartet: Nummer;Name).");
+    return false;
+  }
+  templateNames = names;
+  try {
+    localStorage.setItem(NAMES_KEY, JSON.stringify(names));
+  } catch (_) {}
+  saveNamesMeta({ fileName: file.name, lastModified: file.lastModified, size: file.size, sig });
+  renderNamesList();
+  return true;
+}
+
+/**
+ * Re-read the linked file (Chrome/Edge) when the "Liste" view is opened.
+ * Not run on app start. userGesture=true allows requestPermission;
+ * if access is still not granted, "Liste neu laden" is offered.
+ * Re-imports only when lastModified/size and content changed (force: always).
+ */
+async function refreshLinkedNames({ userGesture = false, force = false } = {}) {
+  const handle = await getNamesHandle();
+  if (!handle || typeof handle.queryPermission !== "function") {
+    namesNeedsPermission = false;
+    renderNamesList();
+    return;
+  }
+  let perm = "denied";
+  try {
+    perm = await handle.queryPermission({ mode: "read" });
+    if (perm !== "granted" && userGesture) perm = await handle.requestPermission({ mode: "read" });
+  } catch (_) {}
+  if (perm !== "granted") {
+    namesNeedsPermission = true;
+    renderNamesList();
+    return;
+  }
+  namesNeedsPermission = false;
+  try {
+    const file = await handle.getFile();
+    const meta = loadNamesMeta();
+    let changed = file.lastModified !== meta.lastModified || file.size !== meta.size;
+    if (force) changed = true; // "Liste neu laden": always re-read
+    if (changed) {
+      const { sig } = await parseNamesFile(file);
+      if (sig !== meta.sig || force) {
+        const ok = await importTemplateNames(file, { silent: true });
+        namesStatusNote = ok
+          ? `Liste ${force ? "neu geladen" : "aktualisiert"} (${fmtStamp(Date.now())})`
+          : "Datei ohne gültige Zeilen";
+      } else {
+        saveNamesMeta({ ...meta, lastModified: file.lastModified, size: file.size });
+      }
+    }
+  } catch (err) {
+    namesStatusNote = "Listendatei nicht gefunden";
+  }
+  renderNamesList();
+}
+
+async function pickNamesFile(input) {
+  if (typeof window.showOpenFilePicker !== "function") {
+    input?.click(); // Safari/iPad/Firefox: manual import only
+    return;
+  }
+  let handle;
+  try {
+    [handle] = await window.showOpenFilePicker({
+      multiple: false,
+      types: [
+        {
+          description: "Namensliste",
+          accept: {
+            "text/plain": [".txt", ".csv", ".tsv"],
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [".xlsx"],
+          },
+        },
+      ],
+    });
+  } catch (err) {
+    if (err && err.name === "AbortError") return;
+    input?.click();
+    return;
+  }
+  try {
+    const ok = await importTemplateNames(await handle.getFile());
+    if (ok) {
+      await putNamesHandle(handle);
+      namesNeedsPermission = false;
+      namesStatusNote = "";
+      renderNamesList();
+    }
+  } catch (err) {
+    alert("Liste konnte nicht gelesen werden: " + (err && err.message ? err.message : err));
+  }
+}
+
+function clearTemplateNames() {
+  templateNames = {};
+  namesStatusNote = "";
+  namesNeedsPermission = false;
+  try {
+    localStorage.removeItem(NAMES_KEY);
+  } catch (_) {}
+  saveNamesMeta(null);
+  deleteNamesHandle();
+  renderNamesList();
+}
+
+function applyNamesToFillDropdown() {
+  const sel = document.getElementById("fill-settings-template");
+  if (!sel) return;
+  for (const opt of sel.options) {
+    if (opt.value === "auto") continue;
+    const name = templateNames[opt.value];
+    opt.textContent = name ? `${opt.value} – ${name}` : opt.value;
+  }
+}
+
+function initTemplateNamesUi() {
+  $("#btn-open-names")?.addEventListener("click", () => {
+    openNamesDialog();
+    // Click = user gesture → may ask for read permission, re-import only if changed
+    refreshLinkedNames({ userGesture: true });
+  });
+  $("#btn-names-done")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    closeNamesDialog();
+  });
+  applyNamesToFillDropdown();
+  const input = document.getElementById("names-file-input");
+  $("#btn-import-names")?.addEventListener("click", () => pickNamesFile(input));
+  input?.addEventListener("change", async () => {
+    const f = input.files && input.files[0];
+    input.value = "";
+    if (!f) return;
+    try {
+      if (await importTemplateNames(f)) {
+        namesStatusNote = "";
+        renderNamesList();
+      }
+    } catch (err) {
+      alert("Liste konnte nicht gelesen werden: " + (err && err.message ? err.message : err));
+    }
+  });
+  const reload = () => refreshLinkedNames({ userGesture: true, force: true });
+  $("#btn-reload-names")?.addEventListener("click", reload);
+  $("#btn-clear-names")?.addEventListener("click", () => {
+    if (!Object.keys(templateNames).length || confirm("Namensliste von diesem Gerät entfernen?")) clearTemplateNames();
+  });
+}
+
+function renderNamesList() {
+  applyNamesToFillDropdown();
+  const st = document.getElementById("names-status");
+  if (st) {
+    st.textContent = namesStatusNote;
+    st.hidden = !namesStatusNote;
+  }
+  const rb = document.getElementById("names-reload-row");
+  if (rb) rb.hidden = !namesNeedsPermission;
+
+  const ul = document.getElementById("names-list");
+  if (!ul) return;
+  ul.replaceChildren();
+  const list = (Array.isArray(KNOWN_TEMPLATES) ? [...KNOWN_TEMPLATES] : []).sort((a, b) =>
+    String(a.id || "").localeCompare(String(b.id || ""), "de", { numeric: true })
+  );
+  for (const t of list) {
+    const li = document.createElement("li");
+    const id = document.createElement("span");
+    id.className = "names-id";
+    id.textContent = t.id || "";
+    li.appendChild(id);
+    const name = String(templateNames[t.id] || "").trim();
+    if (name) {
+      li.appendChild(document.createTextNode(" "));
+      const nm = document.createElement("span");
+      nm.className = "names-name";
+      nm.textContent = name;
+      li.appendChild(nm);
+    }
+    ul.appendChild(li);
+  }
+}
+
+function openNamesDialog() {
+  renderNamesList();
+  const dlg = $("#names-dialog");
+  if (typeof dlg.showModal === "function") dlg.showModal();
+  else dlg.setAttribute("open", "");
+}
+
+function closeNamesDialog() {
+  const dlg = $("#names-dialog");
+  if (typeof dlg.close === "function") dlg.close();
+  else dlg.removeAttribute("open");
+}
+
 function renderFieldTemplatesList() {
   const ul =
     document.getElementById("settings-field-templates-list") ||
@@ -617,6 +959,7 @@ function wireUi() {
     }
   });
   $("#btn-home-settings")?.addEventListener("click", openSettings);
+  initTemplateNamesUi();
   renderFieldTemplatesList(); // home settings overview
   $("#btn-home-settings-done")?.addEventListener("click", (e) => {
     e.preventDefault();

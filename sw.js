@@ -1,5 +1,5 @@
 /* Geräte Laufzettel – offline app shell (scan + fill) */
-const CACHE = 'geraete-laufzettel-v89';
+const CACHE = 'geraete-laufzettel-v90';
 const ASSETS = [
   './',
   './index.html',
@@ -63,6 +63,7 @@ const ASSETS = [
   './icons/send_btn.png',
   './icons/send_btn_hover.png',
   './icons/settings_btn.png',
+  './icons/list_btn.png',
   './icons/settings_btn_hover.png',
   './icons/beak-logo.png',
   './apple-touch-icon.png',

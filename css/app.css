@@ -1582,6 +1582,29 @@ body.pen-drawing #main-fill {
   padding: 4px 0;
 }
 
+.names-reload-row { margin-top: 10px; }
+.names-reload-row[hidden] { display: none; }
+.names-list {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  user-select: text;
+}
+.names-list li {
+  padding: 9px 12px;
+  margin: 0 0 6px;
+  border-radius: 10px;
+  background: color-mix(in srgb, CanvasText 8%, Canvas);
+  border: 1px solid color-mix(in srgb, CanvasText 12%, transparent);
+  color: CanvasText;
+  font-size: 16px;
+  line-height: 1.35;
+}
+.names-list .names-id {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
 /* —— Scan page (panel swap from home) —— */
 .scan-section {
   display: flex;
