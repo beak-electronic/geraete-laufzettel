@@ -18,9 +18,9 @@
           "id": "sn_right_1",
           "number": 1,
           "page": 1,
-          "label": "SN 100.867 BG Strommessung V1.1",
-          "type": "tap_ok",
-          "value": "OK",
+          "label": "SN Strommessung",
+          "type": "scan_or_manual",
+          "value": null,
           "rect_pt": [
             414.16,
             343.3,
@@ -180,9 +180,9 @@
           "id": "sn_right_10",
           "number": 10,
           "page": 1,
-          "label": "SN 100.704 BG Netzverteiler V230-1",
-          "type": "tap_ok",
-          "value": "OK",
+          "label": "SN Netzverteiler",
+          "type": "scan_or_manual",
+          "value": null,
           "rect_pt": [
             414.16,
             592.1,
@@ -228,6 +228,27 @@
           "align": "center",
           "kind": null,
           "group": null
+        },
+        {
+          "id": "software_datum_1",
+          "number": 22,
+          "page": 1,
+          "label": "Software",
+          "type": "manual_date",
+          "value": null,
+          "rect_pt": [
+            383.5,
+            660.9,
+            406.3,
+            670.7
+          ],
+          "align": "center",
+          "kind": null,
+          "group": null,
+          "left_ref": "Software",
+          "prefill": false,
+          "no_stamp_date_default": true,
+          "font_size_pt": 6.0
         },
         {
           "id": "pruefmittel_right_1",
@@ -326,6 +347,25 @@
             236.85,
             559.8,
             247.65
+          ],
+          "align": "left",
+          "kind": null,
+          "group": null,
+          "single_line": true,
+          "font_size_pt": 9
+        },
+        {
+          "id": "bemerkung_dc",
+          "number": 23,
+          "page": 1,
+          "label": "Bemerkung DC",
+          "type": "manual_text",
+          "value": null,
+          "rect_pt": [
+            346.6,
+            247.75,
+            559.8,
+            258.55
           ],
           "align": "left",
           "kind": null,

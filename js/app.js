@@ -1,4 +1,4 @@
-import { extractSerialFromPayload, isUsableSerial } from "./sn.js?v=1.43";
+import { extractSerialFromPayload, isUsableSerial } from "./sn.js?v=1.44";
 import {
   decodeDataMatrixFromBlob,
   decodeDataMatrixFromElement,
@@ -7,7 +7,7 @@ import {
   stopCamera,
   releaseAllCameras,
   releaseAllCamerasAsync,
-} from "./scan.js?v=1.43";
+} from "./scan.js?v=1.44";
 import {
   findPdfBySerial,
   pickPdfFolder,
@@ -20,9 +20,9 @@ import {
   getIdbCatalogStats,
   clearIdbCatalog,
   formatCatalogUpdated,
-} from "./catalog.js?v=1.43";
-import { initFill, openFile, pickAndOpen } from "./fill.js?v=1.43";
-import { KNOWN_TEMPLATES } from "./fields.js?v=1.43";
+} from "./catalog.js?v=1.44";
+import { initFill, openFile, pickAndOpen } from "./fill.js?v=1.44";
+import { KNOWN_TEMPLATES } from "./fields.js?v=1.44";
 
 const STORAGE_KEY = "geraete-laufzettel-settings-v1";
 const DEMO_PAYLOAD = "DE-200.433-XXXX-XX0000E00A00K0001";
@@ -79,6 +79,181 @@ function showToast(msg) {
   showToast._t = setTimeout(() => el.classList.add("hidden"), 3600);
 }
 
+
+
+/* ---------- Zoom-Sperre im Scannen-Modus (iPad/Touch) ----------
+ * Pinch/Doppeltipp zoomte die SEITE (nicht die Kamera); der Zoom blieb danach bestehen,
+ * sodass der Laufzettel nicht mehr passte. Im Scan-Modus wird Seitenzoom blockiert,
+ * beim Verlassen wird der Zoom auf 1 zurückgesetzt. Gesteuert über body.scan-open,
+ * egal welcher Codepfad die Klasse setzt/entfernt. */
+const viewportMeta = document.querySelector('meta[name="viewport"]');
+const VIEWPORT_BASE = viewportMeta?.getAttribute("content") || "width=device-width, initial-scale=1";
+const VIEWPORT_LOCKED = `${VIEWPORT_BASE.replace(/,?\s*initial-scale=[^,]*/, "")}, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no`;
+let zoomResetTimer = 0;
+
+function setZoomLock(on) {
+  if (!viewportMeta) return;
+  clearTimeout(zoomResetTimer);
+  if (on) {
+    viewportMeta.setAttribute("content", VIEWPORT_LOCKED);
+  } else {
+    // Erzwingt Skalierung 1 (iOS übernimmt maximum-scale=1 sofort), dann Zoom wieder freigeben.
+    viewportMeta.setAttribute("content", VIEWPORT_LOCKED);
+    zoomResetTimer = setTimeout(() => viewportMeta.setAttribute("content", VIEWPORT_BASE), 400);
+  }
+}
+
+function initScanZoomLock() {
+  const inScan = () => document.body.classList.contains("scan-open");
+  const block = (e) => { if (inScan()) e.preventDefault(); };
+  // iOS Safari: Pinch-Gesten
+  ["gesturestart", "gesturechange", "gestureend"].forEach((t) =>
+    document.addEventListener(t, block, { passive: false })
+  );
+  // Mehrfinger-Bewegung (Pinch) in allen Browsern
+  document.addEventListener(
+    "touchmove",
+    (e) => { if (inScan() && e.touches && e.touches.length > 1) e.preventDefault(); },
+    { passive: false }
+  );
+  // Doppeltipp-Zoom (Fallback zu touch-action: manipulation)
+  let lastTouchEnd = 0;
+  document.addEventListener(
+    "touchend",
+    (e) => {
+      if (!inScan()) return;
+      const now = Date.now();
+      if (now - lastTouchEnd < 350 && e.cancelable) e.preventDefault();
+      lastTouchEnd = now;
+    },
+    { passive: false }
+  );
+  // Strg+Mausrad (Trackpad-Pinch am Desktop)
+  document.addEventListener("wheel", (e) => { if (inScan() && e.ctrlKey) e.preventDefault(); }, { passive: false });
+  let was = inScan();
+  if (was) setZoomLock(true);
+  new MutationObserver(() => {
+    const now = inScan();
+    if (now !== was) {
+      was = now;
+      setZoomLock(now);
+      if (!now) document.querySelectorAll(".scan-frame video").forEach((v) => resetScanZoom(v));
+    }
+  }).observe(document.body, { attributes: true, attributeFilter: ["class"] });
+}
+initScanZoomLock();
+
+/* ---------- Pinch → Kamera-Zoom im Scanner ----------
+ * Hardware-Zoom über MediaStreamTrack (capabilities.zoom), sonst digitaler Zoom:
+ * Video per CSS skalieren + Decoder-Ausschnitt verkleinern (video.dataset.dz, scan.js). */
+const DIGITAL_ZOOM_MAX = 4;
+
+function videoTrack(video) {
+  const s = video?.srcObject;
+  return s && typeof s.getVideoTracks === "function" ? s.getVideoTracks()[0] || null : null;
+}
+
+function zoomInfo(video) {
+  const t = videoTrack(video);
+  let caps = null;
+  try { caps = t && typeof t.getCapabilities === "function" ? t.getCapabilities() : null; } catch (_) {}
+  const z = caps && caps.zoom;
+  if (t && z && typeof z.max === "number" && z.max > (z.min || 1)) {
+    let cur = z.min || 1;
+    try { cur = t.getSettings().zoom ?? cur; } catch (_) {}
+    return { hw: true, track: t, min: z.min || 1, max: z.max, step: z.step || 0.1, cur };
+  }
+  return { hw: false, min: 1, max: DIGITAL_ZOOM_MAX, step: 0.05, cur: Number(video?.dataset.dz) || 1 };
+}
+
+function showZoomBadge(frame, factor) {
+  let b = frame.querySelector(".scan-zoom-badge");
+  if (!b) {
+    b = document.createElement("div");
+    b.className = "scan-zoom-badge";
+    frame.appendChild(b);
+  }
+  b.textContent = `${factor.toFixed(1)}×`;
+  b.classList.toggle("hidden", factor <= 1.01);
+}
+
+let hwZoomBusy = false;
+let hwZoomPending = null;
+async function applyHwZoom(track, value) {
+  hwZoomPending = value;
+  if (hwZoomBusy) return;
+  hwZoomBusy = true;
+  try {
+    while (hwZoomPending != null) {
+      const v = hwZoomPending;
+      hwZoomPending = null;
+      try { await track.applyConstraints({ advanced: [{ zoom: v }] }); } catch (_) {}
+    }
+  } finally { hwZoomBusy = false; }
+}
+
+function setScanZoom(video, value, info = zoomInfo(video)) {
+  const frame = video.closest(".scan-frame") || video.parentElement;
+  const v = Math.min(info.max, Math.max(info.min, value));
+  if (info.hw) {
+    video.style.transform = "";
+    delete video.dataset.dz;
+    applyHwZoom(info.track, Math.round(v / info.step) * info.step);
+    video.dataset.hwz = String(v);
+    showZoomBadge(frame, v / info.min);
+  } else {
+    video.style.transform = v > 1.001 ? `scale(${v})` : "";
+    if (v > 1.001) video.dataset.dz = String(v); else delete video.dataset.dz;
+    showZoomBadge(frame, v);
+  }
+  return v;
+}
+
+export function resetScanZoom(video) {
+  if (!video) return;
+  video.style.transform = "";
+  delete video.dataset.dz;
+  delete video.dataset.hwz;
+  const t = videoTrack(video);
+  try {
+    const z = t && t.getCapabilities?.().zoom;
+    if (z && t.readyState === "live") t.applyConstraints({ advanced: [{ zoom: z.min || 1 }] }).catch(() => {});
+  } catch (_) {}
+  const b = (video.closest(".scan-frame") || video.parentElement)?.querySelector(".scan-zoom-badge");
+  b?.classList.add("hidden");
+}
+
+function bindPinchZoom(frame) {
+  const video = frame.querySelector("video");
+  if (!video || frame.dataset.pinchBound === "1") return;
+  frame.dataset.pinchBound = "1";
+  let start = null;
+  const dist = (e) => Math.hypot(
+    e.touches[0].clientX - e.touches[1].clientX,
+    e.touches[0].clientY - e.touches[1].clientY
+  );
+  frame.addEventListener("touchstart", (e) => {
+    if (e.touches.length === 2) {
+      const info = zoomInfo(video);
+      const cur = info.hw ? Number(video.dataset.hwz) || info.cur : Number(video.dataset.dz) || 1;
+      start = { d: dist(e) || 1, z: cur, info };
+      e.preventDefault();
+    }
+  }, { passive: false });
+  frame.addEventListener("touchmove", (e) => {
+    if (!start || e.touches.length !== 2) return;
+    e.preventDefault();
+    setScanZoom(video, start.z * (dist(e) / start.d), start.info);
+  }, { passive: false });
+  const end = (e) => { if (e.touches.length < 2) start = null; };
+  frame.addEventListener("touchend", end);
+  frame.addEventListener("touchcancel", end);
+  // Neuer Stream → Zoom zurücksetzen
+  video.addEventListener("emptied", () => resetScanZoom(video));
+  video.addEventListener("loadedmetadata", () => resetScanZoom(video));
+}
+
+document.querySelectorAll(".scan-frame").forEach(bindPinchZoom);
 
 function showScanView() {
   const home = $("#home");

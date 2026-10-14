@@ -88,7 +88,10 @@ function videoRegionToCanvas(video, opts = {}) {
     canvas.height = 0;
     return canvas;
   }
-  const short = Math.min(vw, vh);
+  // Digitaler Zoom (CSS-Skalierung des Videos): Ausschnitt entsprechend verkleinern,
+  // damit der Decoder denselben vergrößerten Mittelbereich liest wie angezeigt.
+  const dz = Math.max(1, Number(video.dataset?.dz) || 1);
+  const short = Math.min(vw, vh) / dz;
   let sx;
   let sy;
   let sw;

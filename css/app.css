@@ -1722,3 +1722,16 @@ body.pen-drawing #main-fill {
 .pm-dir-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 10px 0 2px; font-size: 14px; }
 .pm-dir-row strong { overflow-wrap: anywhere; }
 .pm-dir-btn { padding: 4px 8px; min-height: 0; font-size: 14px; }
+
+/* Scannen: kein Pinch-/Doppeltipp-Zoom der Seite */
+body.scan-open, body.scan-open #scan-view, body.scan-open #scan-view * { touch-action: pan-y; }
+
+.scan-frame { touch-action: none; }
+.scan-frame video { transform-origin: 50% 50%; transition: transform 60ms linear; }
+.scan-zoom-badge {
+  position: absolute; top: 8px; right: 8px; z-index: 2;
+  padding: 2px 8px; border-radius: 999px;
+  background: rgba(0, 0, 0, 0.6); color: #fff;
+  font-size: 13px; font-weight: 600; pointer-events: none;
+}
+.scan-zoom-badge.hidden { display: none; }
