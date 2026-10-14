@@ -1749,3 +1749,21 @@ body.scan-open, body.scan-open #scan-view, body.scan-open #scan-view * { touch-a
   pointer-events: none;
 }
 .viewer .sticky-header canvas { display: block; }
+
+/* Hinweis unter Safety Test – nur Anzeige */
+.page-wrap .safety-hint {
+  position: absolute;
+  z-index: 3;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.3em;
+  color: #d00000;
+  font-weight: 700;
+  line-height: 1.25;
+  text-align: center;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+.page-wrap .safety-hint p { margin: 0; }

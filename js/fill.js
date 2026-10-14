@@ -1,4 +1,4 @@
-import * as pdfjsLib from '../vendor/pdf.min.mjs?v=1.45';
+import * as pdfjsLib from '../vendor/pdf.min.mjs?v=1.46';
 import {
   emptyCells,
   headerCells,
@@ -11,7 +11,7 @@ import {
   PAGE_HEIGHT,
   INSET,
   FILL_WHITE,
-} from './grid.js?v=1.45';
+} from './grid.js?v=1.46';
 import {
   loadSettings,
   saveInitials,
@@ -31,7 +31,7 @@ import {
   colorRgb01,
   DARK_COLORS,
   LAST_COLUMN_INDEX,
-} from './settings.js?v=1.45';
+} from './settings.js?v=1.46';
 import {
   KNOWN_TEMPLATES,
   resolveTemplateId,
@@ -40,14 +40,14 @@ import {
   extractArticleFromFilename,
   fieldKey,
   stampDateForSettings,
-} from './fields.js?v=1.45';
+} from './fields.js?v=1.46';
 import {
   drawGeraetePage,
   embedFieldValuesInPdf,
   serializeFieldValues,
   parseFieldValuesFromKeywords,
   applyParsedFieldValues,
-} from './field-fill.js?v=1.45';
+} from './field-fill.js?v=1.46';
 import {
   decodeBarcodeFromBlob,
   decodeBarcodeFromElement,
@@ -56,9 +56,9 @@ import {
   stopCamera,
   releaseAllCameras,
   releaseAllCamerasAsync,
-} from './scan.js?v=1.45';
+} from './scan.js?v=1.46';
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs?v=1.45', import.meta.url).href;
+pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs?v=1.46', import.meta.url).href;
 
 const { PDFDocument, rgb, StandardFonts, LineCapStyle } = PDFLib;
 
@@ -266,7 +266,7 @@ function clearDocument() {
     releaseAllCameras();
   } catch (_) {}
   // Release home + field cameras so the next home scan can start (iOS).
-  import('./app.js?v=1.45')
+  import('./app.js?v=1.46')
     .then((mod) => {
       if (typeof mod.ensureCamerasReleased === 'function') return mod.ensureCamerasReleased();
     })
@@ -360,7 +360,7 @@ function parseFilledFromKeywords(keywords) {
  */
 export async function openFile(file, fileHandle = null) {
   try {
-    const mod = await import('./app.js?v=1.45');
+    const mod = await import('./app.js?v=1.46');
     if (typeof mod.ensureCamerasReleased === 'function') await mod.ensureCamerasReleased();
   } catch (_) {}
 
@@ -518,6 +518,78 @@ function hasFieldsAbove(pageNo, yPt) {
   return !!pg?.fields?.some((f) => Array.isArray(f.rect_pt) && f.rect_pt[1] < yPt);
 }
 
+/* ---------- Hinweis unter „Safety Test“ (nur Anzeige, nie im PDF) ---------- */
+const SAFETY_HINT_LINES = [
+  'Nach dem Safety Test Gerätelaufzettel sichern.',
+  'Danach in der Dateien-App den fertiggestellten Gerätelaufzettel in den Ordner „Geräte fertiggestellt“ bewegen.',
+];
+
+/**
+ * Freien Bereich unter dem Safety-Test-Kasten finden (pt, top-left):
+ * oben = Grundlinie „Test passed“ + 14 pt (Kastenunterkante ≈ +10),
+ * unten = Oberkante des nächsten Textes darunter (z. B. „Buchungsvermerke“) − 10 pt (Kasten beginnt ≈ 6 pt darüber).
+ * Felder im Bereich verkleinern ihn. @returns {Promise<{top:number,bottom:number,left:number,right:number}|null>}
+ */
+async function findSafetyHintArea(page, pageNo, pw, ph) {
+  let tc;
+  try { tc = await page.getTextContent(); } catch (_) { return null; }
+  const items = (tc.items || []).map((it) => ({
+    str: String(it.str || ''),
+    base: ph - it.transform[5],
+    size: Math.abs(it.transform[3]) || it.height || 10,
+    x: it.transform[4],
+  })).filter((it) => it.str.trim());
+  const safety = items.find((it) => /Safety\s*Test/i.test(it.str));
+  if (!safety) return null;
+  const passed = items.find((it) => /passed/i.test(it.str) && it.base > safety.base && it.base < safety.base + 60);
+  let top = (passed ? passed.base : safety.base + 27) + 14;
+  const below = items
+    .filter((it) => it.base - it.size > top)
+    .sort((a, b) => a.base - b.base)[0];
+  let bottom = below ? below.base - below.size - 10 : ph - 60;
+  const pg = state.template?.pages?.[String(pageNo)];
+  for (const f of pg?.fields || []) {
+    const r = f.rect_pt;
+    if (!Array.isArray(r)) continue;
+    if (r[3] > top && r[1] < bottom) {
+      // Feld im Bereich: Hinweis darunter oder darüber, je nachdem was größer ist
+      if (r[1] - top > bottom - r[3]) bottom = r[1] - 4; else top = r[3] + 4;
+    }
+  }
+  if (bottom - top < 24) return null;
+  return { top, bottom, left: 66, right: Math.min(pw - 66, 529) };
+}
+
+async function addSafetyHint(wrap, page, pageNo) {
+  wrap.querySelector('.safety-hint')?.remove();
+  const pw = Number(wrap.dataset.pageWidth);
+  const ph = Number(wrap.dataset.pageHeight);
+  const area = await findSafetyHintArea(page, pageNo, pw, ph);
+  if (!area) return;
+  const crop = readWrapCrop(wrap, pw, ph);
+  const box = document.createElement('div');
+  box.className = 'safety-hint';
+  box.setAttribute('aria-hidden', 'true');
+  box.style.left = `${((area.left - crop.left) / crop.width) * 100}%`;
+  box.style.width = `${((area.right - area.left) / crop.width) * 100}%`;
+  box.style.top = `${((area.top - crop.top) / crop.height) * 100}%`;
+  box.style.height = `${((area.bottom - area.top) / crop.height) * 100}%`;
+  SAFETY_HINT_LINES.forEach((t) => {
+    const p = document.createElement('p');
+    p.textContent = t;
+    box.appendChild(p);
+  });
+  wrap.appendChild(box);
+  // Schriftgröße: ~11 pt auf der Seite, bei Platzmangel verkleinern
+  const scale = (wrap.getBoundingClientRect().width || 1) / crop.width;
+  let fs = 11 * scale;
+  box.style.fontSize = `${fs}px`;
+  for (let k = 0; k < 12 && box.scrollHeight > box.clientHeight + 1 && fs > 6 * scale; k++) {
+    fs *= 0.9;
+    box.style.fontSize = `${fs}px`;
+  }
+}
+
 async function renderAllPages() {
   if (!state.pdfDoc || state.rendering) return;
   state.rendering = true;
@@ -645,6 +717,8 @@ async function renderAllPages() {
 
       drawPageOverlay(wrap, pw, ph);
       drawInkCanvas(wrap, pw, ph);
+
+      if (i === wraps.length - 1) await addSafetyHint(wrap, page, i + 1);
 
       if (i === 0 && sticky) {
         const top = Number(sticky.dataset.headerTop);
@@ -1695,11 +1769,11 @@ function preferDownloadSave() {
 
 async function syncCatalogAfterSave(blob, name) {
   try {
-    const cat = await import('./catalog.js?v=1.45');
+    const cat = await import('./catalog.js?v=1.46');
     if (typeof cat.upsertSavedPdf === 'function') {
       await cat.upsertSavedPdf(blob, name);
     }
-    const mod = await import('./app.js?v=1.45');
+    const mod = await import('./app.js?v=1.46');
     if (typeof mod.onPdfCatalogUpdated === 'function') {
       await mod.onPdfCatalogUpdated();
     }
@@ -1713,7 +1787,7 @@ async function notifyStampSaved() {
   state.pendingQty = 0;
   if (!qty) return;
   try {
-    const mod = await import('./app.js?v=1.45');
+    const mod = await import('./app.js?v=1.46');
     if (typeof mod.onStampSaved === 'function') mod.onStampSaved(qty);
   } catch (err) {
     console.warn('onStampSaved failed', err);

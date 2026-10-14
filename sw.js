@@ -1,5 +1,5 @@
 /* Geräte Laufzettel – offline app shell (scan + fill) */
-const CACHE = 'geraete-laufzettel-v96';
+const CACHE = 'geraete-laufzettel-v97';
 const ASSETS = [
   './',
   './index.html',
