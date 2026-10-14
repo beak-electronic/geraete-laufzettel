@@ -1735,3 +1735,17 @@ body.scan-open, body.scan-open #scan-view, body.scan-open #scan-view * { touch-a
   font-size: 13px; font-weight: 600; pointer-events: none;
 }
 .scan-zoom-badge.hidden { display: none; }
+
+/* Fixierter Kopfbereich (Seite 1) im Bearbeiten-Modus */
+.viewer .sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: var(--card, #fff);
+  line-height: 0;
+  flex: 0 0 auto;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  margin-bottom: -10px; /* nahtlos an Seite 1 (viewer gap) */
+  pointer-events: none;
+}
+.viewer .sticky-header canvas { display: block; }

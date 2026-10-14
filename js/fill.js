@@ -1,4 +1,4 @@
-import * as pdfjsLib from '../vendor/pdf.min.mjs?v=1.44';
+import * as pdfjsLib from '../vendor/pdf.min.mjs?v=1.45';
 import {
   emptyCells,
   headerCells,
@@ -11,7 +11,7 @@ import {
   PAGE_HEIGHT,
   INSET,
   FILL_WHITE,
-} from './grid.js?v=1.44';
+} from './grid.js?v=1.45';
 import {
   loadSettings,
   saveInitials,
@@ -31,7 +31,7 @@ import {
   colorRgb01,
   DARK_COLORS,
   LAST_COLUMN_INDEX,
-} from './settings.js?v=1.44';
+} from './settings.js?v=1.45';
 import {
   KNOWN_TEMPLATES,
   resolveTemplateId,
@@ -40,14 +40,14 @@ import {
   extractArticleFromFilename,
   fieldKey,
   stampDateForSettings,
-} from './fields.js?v=1.44';
+} from './fields.js?v=1.45';
 import {
   drawGeraetePage,
   embedFieldValuesInPdf,
   serializeFieldValues,
   parseFieldValuesFromKeywords,
   applyParsedFieldValues,
-} from './field-fill.js?v=1.44';
+} from './field-fill.js?v=1.45';
 import {
   decodeBarcodeFromBlob,
   decodeBarcodeFromElement,
@@ -56,9 +56,9 @@ import {
   stopCamera,
   releaseAllCameras,
   releaseAllCamerasAsync,
-} from './scan.js?v=1.44';
+} from './scan.js?v=1.45';
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs?v=1.44', import.meta.url).href;
+pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs?v=1.45', import.meta.url).href;
 
 const { PDFDocument, rgb, StandardFonts, LineCapStyle } = PDFLib;
 
@@ -266,7 +266,7 @@ function clearDocument() {
     releaseAllCameras();
   } catch (_) {}
   // Release home + field cameras so the next home scan can start (iOS).
-  import('./app.js?v=1.44')
+  import('./app.js?v=1.45')
     .then((mod) => {
       if (typeof mod.ensureCamerasReleased === 'function') return mod.ensureCamerasReleased();
     })
@@ -360,7 +360,7 @@ function parseFilledFromKeywords(keywords) {
  */
 export async function openFile(file, fileHandle = null) {
   try {
-    const mod = await import('./app.js?v=1.44');
+    const mod = await import('./app.js?v=1.45');
     if (typeof mod.ensureCamerasReleased === 'function') await mod.ensureCamerasReleased();
   } catch (_) {}
 
@@ -491,6 +491,33 @@ function readWrapCrop(wrap, pageWidth, pageHeight) {
   return pageContentCrop(pageWidth, pageHeight);
 }
 
+/**
+ * Kopfbereich (Logo / Titel / DE-Nummer / „Seite X von Y“) einer Seite in pt (top-left).
+ * Vorlage kann header_bottom_pt vorgeben; sonst aus dem Text „Seite N von M“ oben rechts:
+ * Grundlinie + 7 pt = Unterkante des Kopfkastens (gemessen 80.4 pt bei Grundlinie ~73.3).
+ * @returns {Promise<number|null>}
+ */
+async function detectHeaderBottom(page, pageHeight) {
+  const fixed = Number(state.template?.header_bottom_pt);
+  if (fixed > 0) return fixed;
+  try {
+    const tc = await page.getTextContent();
+    for (const it of tc.items || []) {
+      const str = String(it.str || '').trim();
+      if (!/^Seite(\s+\d+)?/.test(str)) continue;
+      const y = pageHeight - it.transform[5];
+      if (y > 30 && y < pageHeight * 0.2) return y + 7;
+    }
+  } catch (_) {}
+  return null;
+}
+
+/** Hat die Vorlage auf dieser Seite Felder im Kopfbereich? Dann nicht abschneiden. */
+function hasFieldsAbove(pageNo, yPt) {
+  const pg = state.template?.pages?.[String(pageNo)];
+  return !!pg?.fields?.some((f) => Array.isArray(f.rect_pt) && f.rect_pt[1] < yPt);
+}
+
 async function renderAllPages() {
   if (!state.pdfDoc || state.rendering) return;
   state.rendering = true;
@@ -509,6 +536,8 @@ async function renderAllPages() {
   try {
     /** @type {HTMLElement[]} */
     const wraps = [];
+    /** @type {HTMLElement|null} */
+    let sticky = null;
     for (let i = 1; i <= pdf.numPages; i++) {
       const page = await pdf.getPage(i);
       const { width: pw, height: ph } = pageSize(page);
@@ -523,10 +552,30 @@ async function renderAllPages() {
       wrap.dataset.cropTop = String(crop0.top);
       wrap.dataset.cropWidth = String(crop0.width);
       wrap.dataset.cropHeight = String(crop0.height);
+      // Kopfbereich: Seite 1 → fixierter Kopf oben (eigene Leiste), Folgeseiten → ausgeblendet.
+      // Nur Anzeige (Crop); gespeichertes PDF bleibt vollständig.
+      const hb = await detectHeaderBottom(page, ph);
+      if (hb && hb > crop0.top && hb < ph / 3 && !hasFieldsAbove(i, hb)) {
+        const newH = Math.max(1, crop0.top + crop0.height - hb);
+        wrap.dataset.cropTop = String(hb);
+        wrap.dataset.cropHeight = String(newH);
+        wrap.dataset.headerCut = '1';
+        if (i === 1) {
+          sticky = document.createElement('div');
+          sticky.className = 'sticky-header';
+          sticky.dataset.headerTop = String(crop0.top);
+          sticky.dataset.headerBottom = String(hb);
+          const hc = document.createElement('canvas');
+          hc.className = 'sticky-header-canvas';
+          sticky.appendChild(hc);
+          el.viewer.appendChild(sticky);
+          wrap.classList.add('after-sticky');
+        }
+      }
       // Fill viewer width; height from cropped aspect-ratio until we measure.
       wrap.style.width = `${maxCss}px`;
       wrap.style.maxWidth = `${maxCss}px`;
-      wrap.style.aspectRatio = `${crop0.width} / ${crop0.height}`;
+      wrap.style.aspectRatio = `${crop0.width} / ${wrap.dataset.cropHeight}`;
       wrap.style.height = 'auto';
 
       const canvas = document.createElement('canvas');
@@ -596,6 +645,23 @@ async function renderAllPages() {
 
       drawPageOverlay(wrap, pw, ph);
       drawInkCanvas(wrap, pw, ph);
+
+      if (i === 0 && sticky) {
+        const top = Number(sticky.dataset.headerTop);
+        const bottom = Number(sticky.dataset.headerBottom);
+        const hc = sticky.querySelector('canvas');
+        const hCss = (bottom - top) * scale;
+        sticky.style.width = `${cssW}px`;
+        sticky.style.height = `${hCss}px`;
+        hc.style.width = `${cssW}px`;
+        hc.style.height = `${hCss}px`;
+        hc.width = Math.max(1, Math.floor(cssW * dpr));
+        hc.height = Math.max(1, Math.floor(hCss * dpr));
+        const hctx = hc.getContext('2d');
+        hctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        hctx.translate(-crop.left * scale, -top * scale);
+        await page.render({ canvasContext: hctx, viewport }).promise;
+      }
     }
   } finally {
     state.rendering = false;
@@ -1629,11 +1695,11 @@ function preferDownloadSave() {
 
 async function syncCatalogAfterSave(blob, name) {
   try {
-    const cat = await import('./catalog.js?v=1.44');
+    const cat = await import('./catalog.js?v=1.45');
     if (typeof cat.upsertSavedPdf === 'function') {
       await cat.upsertSavedPdf(blob, name);
     }
-    const mod = await import('./app.js?v=1.44');
+    const mod = await import('./app.js?v=1.45');
     if (typeof mod.onPdfCatalogUpdated === 'function') {
       await mod.onPdfCatalogUpdated();
     }
@@ -1647,7 +1713,7 @@ async function notifyStampSaved() {
   state.pendingQty = 0;
   if (!qty) return;
   try {
-    const mod = await import('./app.js?v=1.44');
+    const mod = await import('./app.js?v=1.45');
     if (typeof mod.onStampSaved === 'function') mod.onStampSaved(qty);
   } catch (err) {
     console.warn('onStampSaved failed', err);
