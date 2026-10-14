@@ -1767,3 +1767,21 @@ body.scan-open, body.scan-open #scan-view, body.scan-open #scan-view * { touch-a
   box-sizing: border-box;
 }
 .page-wrap .safety-hint p { margin: 0; }
+
+/* Seriennummer-Endung über dem Logo – nur Anzeige */
+.logo-badge {
+  position: absolute;
+  z-index: 3;
+  pointer-events: none;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  line-height: 1;
+}
+.logo-badge span {
+  font-weight: 800;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+}

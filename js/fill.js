@@ -1,4 +1,4 @@
-import * as pdfjsLib from '../vendor/pdf.min.mjs?v=1.46';
+import * as pdfjsLib from '../vendor/pdf.min.mjs?v=1.47';
 import {
   emptyCells,
   headerCells,
@@ -11,7 +11,7 @@ import {
   PAGE_HEIGHT,
   INSET,
   FILL_WHITE,
-} from './grid.js?v=1.46';
+} from './grid.js?v=1.47';
 import {
   loadSettings,
   saveInitials,
@@ -31,7 +31,7 @@ import {
   colorRgb01,
   DARK_COLORS,
   LAST_COLUMN_INDEX,
-} from './settings.js?v=1.46';
+} from './settings.js?v=1.47';
 import {
   KNOWN_TEMPLATES,
   resolveTemplateId,
@@ -40,14 +40,14 @@ import {
   extractArticleFromFilename,
   fieldKey,
   stampDateForSettings,
-} from './fields.js?v=1.46';
+} from './fields.js?v=1.47';
 import {
   drawGeraetePage,
   embedFieldValuesInPdf,
   serializeFieldValues,
   parseFieldValuesFromKeywords,
   applyParsedFieldValues,
-} from './field-fill.js?v=1.46';
+} from './field-fill.js?v=1.47';
 import {
   decodeBarcodeFromBlob,
   decodeBarcodeFromElement,
@@ -56,9 +56,9 @@ import {
   stopCamera,
   releaseAllCameras,
   releaseAllCamerasAsync,
-} from './scan.js?v=1.46';
+} from './scan.js?v=1.47';
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs?v=1.46', import.meta.url).href;
+pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs?v=1.47', import.meta.url).href;
 
 const { PDFDocument, rgb, StandardFonts, LineCapStyle } = PDFLib;
 
@@ -266,7 +266,7 @@ function clearDocument() {
     releaseAllCameras();
   } catch (_) {}
   // Release home + field cameras so the next home scan can start (iOS).
-  import('./app.js?v=1.46')
+  import('./app.js?v=1.47')
     .then((mod) => {
       if (typeof mod.ensureCamerasReleased === 'function') return mod.ensureCamerasReleased();
     })
@@ -360,7 +360,7 @@ function parseFilledFromKeywords(keywords) {
  */
 export async function openFile(file, fileHandle = null) {
   try {
-    const mod = await import('./app.js?v=1.46');
+    const mod = await import('./app.js?v=1.47');
     if (typeof mod.ensureCamerasReleased === 'function') await mod.ensureCamerasReleased();
   } catch (_) {}
 
@@ -590,6 +590,58 @@ async function addSafetyHint(wrap, page, pageNo) {
   }
 }
 
+/* ---------- Seriennummer-Endung über dem Logo (nur Anzeige, nie im PDF) ---------- */
+const LOGO_BOX_PT = { left: 58.0, top: 19.6, right: 178.0, bottom: 79.2 }; // Logo-Zelle im Kopf
+const DEVICE_ID_RE = /DE-\d{3}\.\d{3}-([A-Z0-9]+)/i;
+
+/** Teil der Seriennummer nach dem letzten „K“; '' wenn keins. */
+export function serialTailAfterK(serial) {
+  const s = String(serial || '').toUpperCase();
+  const k = s.lastIndexOf('K');
+  return k >= 0 ? s.slice(k + 1) : '';
+}
+
+/** Seriennummer aus Kopftext von Seite 1 (oben rechts), sonst aus dem Dateinamen. */
+async function readDeviceSerial(page, ph) {
+  try {
+    const tc = await page.getTextContent();
+    for (const it of tc.items || []) {
+      const y = ph - it.transform[5];
+      if (y > 60) continue;
+      const m = DEVICE_ID_RE.exec(String(it.str || ''));
+      if (m) return m[1];
+    }
+  } catch (_) {}
+  const m = DEVICE_ID_RE.exec(String(state.fileName || ''));
+  return m ? m[1] : '';
+}
+
+/** Weißes Feld mit roter Endung über die Logo-Zelle legen. crop = sichtbarer Ausschnitt des Containers (pt). */
+function addLogoBadge(container, crop, text) {
+  container.querySelector('.logo-badge')?.remove();
+  if (!text) return;
+  if (LOGO_BOX_PT.top < crop.top - 0.5 || LOGO_BOX_PT.bottom > crop.top + crop.height + 0.5) return;
+  const b = document.createElement('div');
+  b.className = 'logo-badge';
+  b.setAttribute('aria-hidden', 'true');
+  b.style.left = `${((LOGO_BOX_PT.left - crop.left) / crop.width) * 100}%`;
+  b.style.width = `${((LOGO_BOX_PT.right - LOGO_BOX_PT.left) / crop.width) * 100}%`;
+  b.style.top = `${((LOGO_BOX_PT.top - crop.top) / crop.height) * 100}%`;
+  b.style.height = `${((LOGO_BOX_PT.bottom - LOGO_BOX_PT.top) / crop.height) * 100}%`;
+  const span = document.createElement('span');
+  span.textContent = text;
+  span.style.color = colorCss(0); // Stempel-Dunkelblau (DARK_COLORS[0], navy)
+  b.appendChild(span);
+  container.appendChild(b);
+  const h = b.clientHeight || 1;
+  let fs = h * 0.78;
+  span.style.fontSize = `${fs}px`;
+  for (let k = 0; k < 30 && (span.offsetWidth > b.clientWidth * 0.92 || span.offsetHeight > h) && fs > 6; k++) {
+    fs *= 0.92;
+    span.style.fontSize = `${fs}px`;
+  }
+}
+
 async function renderAllPages() {
   if (!state.pdfDoc || state.rendering) return;
   state.rendering = true;
@@ -718,6 +770,11 @@ async function renderAllPages() {
       drawPageOverlay(wrap, pw, ph);
       drawInkCanvas(wrap, pw, ph);
 
+      if (i === 0) {
+        const tail = serialTailAfterK(await readDeviceSerial(page, ph));
+        addLogoBadge(wrap, crop, tail);
+        state.logoTail = tail;
+      }
       if (i === wraps.length - 1) await addSafetyHint(wrap, page, i + 1);
 
       if (i === 0 && sticky) {
@@ -735,6 +792,7 @@ async function renderAllPages() {
         hctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         hctx.translate(-crop.left * scale, -top * scale);
         await page.render({ canvasContext: hctx, viewport }).promise;
+        addLogoBadge(sticky, { left: crop.left, top, width: crop.width, height: bottom - top }, state.logoTail);
       }
     }
   } finally {
@@ -1769,11 +1827,11 @@ function preferDownloadSave() {
 
 async function syncCatalogAfterSave(blob, name) {
   try {
-    const cat = await import('./catalog.js?v=1.46');
+    const cat = await import('./catalog.js?v=1.47');
     if (typeof cat.upsertSavedPdf === 'function') {
       await cat.upsertSavedPdf(blob, name);
     }
-    const mod = await import('./app.js?v=1.46');
+    const mod = await import('./app.js?v=1.47');
     if (typeof mod.onPdfCatalogUpdated === 'function') {
       await mod.onPdfCatalogUpdated();
     }
@@ -1787,7 +1845,7 @@ async function notifyStampSaved() {
   state.pendingQty = 0;
   if (!qty) return;
   try {
-    const mod = await import('./app.js?v=1.46');
+    const mod = await import('./app.js?v=1.47');
     if (typeof mod.onStampSaved === 'function') mod.onStampSaved(qty);
   } catch (err) {
     console.warn('onStampSaved failed', err);
