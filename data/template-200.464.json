@@ -72,7 +72,7 @@
           "id": "sn_right_4",
           "number": 4,
           "page": 1,
-          "label": "SN 101.313 BG BNC EMV Adapter V3",
+          "label": "SN 101.109 BG BNC EMV Adapter V2",
           "type": "tap_ok",
           "value": "OK",
           "rect_pt": [
@@ -84,7 +84,7 @@
           "align": "center",
           "kind": null,
           "group": null,
-          "left_ref": "101.313 BG BNC EMV Adapter V3"
+          "left_ref": "101.109 BG BNC EMV Adapter V2"
         },
         {
           "id": "sn_right_5",
@@ -344,9 +344,9 @@
           "value": null,
           "rect_pt": [
             326.08,
-            247.75,
+            236.85,
             559.8,
-            258.45
+            247.65
           ],
           "align": "left",
           "kind": null,
@@ -363,9 +363,9 @@
           "value": null,
           "rect_pt": [
             346.6,
-            258.55,
+            247.75,
             559.8,
-            269.35
+            258.55
           ],
           "align": "left",
           "kind": null,
