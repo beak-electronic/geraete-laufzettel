@@ -90,9 +90,9 @@
           "id": "sn_right_5",
           "number": 5,
           "page": 1,
-          "label": "SN Schalter",
-          "type": "scan_or_manual",
-          "value": null,
+          "label": "SN 101.054 BG Schalter V1",
+          "type": "tap_ok",
+          "value": "OK",
           "rect_pt": [
             414.16,
             452.5,
@@ -102,7 +102,7 @@
           "align": "center",
           "kind": null,
           "group": null,
-          "left_ref": "SN Schalter"
+          "left_ref": "101.054 BG Schalter V1"
         },
         {
           "id": "sn_right_6",
@@ -686,6 +686,25 @@
           "align": "center",
           "kind": null,
           "group": null
+        },
+        {
+          "id": "ps_strombegrenzung",
+          "number": 16,
+          "page": 2,
+          "label": "Strombegrenzung testen",
+          "type": "manual_text",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            209.84,
+            452.17,
+            223.84
+          ],
+          "align": "left",
+          "kind": null,
+          "group": null,
+          "single_line": true,
+          "font_size_pt": 9
         },
         {
           "id": "ps_qc_6",
