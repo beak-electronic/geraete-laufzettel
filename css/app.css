@@ -1785,3 +1785,42 @@ body.scan-open, body.scan-open #scan-view, body.scan-open #scan-view * { touch-a
   white-space: nowrap;
   letter-spacing: 0.02em;
 }
+
+/* Inline free-text editor directly in the PDF cell (manual_text). Page stays white in dark mode too. */
+.page-wrap .inline-edit-layer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+  line-height: normal;
+}
+.inline-field-editor {
+  position: absolute;
+  pointer-events: auto;
+  touch-action: manipulation;
+  box-sizing: border-box;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  outline: 2px solid #2f6fae;
+  outline-offset: 0;
+  background: #ffffff;
+  color-scheme: light;
+  caret-color: currentColor;
+  font-weight: 400;
+  transform-origin: 0 0;
+  -webkit-appearance: none;
+  appearance: none;
+  -webkit-text-size-adjust: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  box-shadow: 0 0 0 4px rgba(47, 111, 174, 0.25);
+}
+textarea.inline-field-editor {
+  white-space: pre-wrap;
+  overflow-y: auto;
+  resize: none;
+}

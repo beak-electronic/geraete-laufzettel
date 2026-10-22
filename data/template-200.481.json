@@ -495,6 +495,12 @@
             315.0,
             292.5
           ],
+          "white_rect_pt": [
+            182.0,
+            270.5,
+            315.0,
+            292.5
+          ],
           "align": "center",
           "kind": null,
           "group": null
@@ -508,6 +514,12 @@
           "value": null,
           "rect_pt": [
             125.0,
+            300.5,
+            315.0,
+            322.5
+          ],
+          "white_rect_pt": [
+            182.0,
             300.5,
             315.0,
             322.5
@@ -601,6 +613,25 @@
           "group": null
         },
         {
+          "id": "ps_zwischenpruefung",
+          "number": 17,
+          "page": 2,
+          "label": "Zwischenprüfung / Sichtprüfung",
+          "type": "manual_text",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            132.8,
+            452.17,
+            146.8
+          ],
+          "align": "left",
+          "kind": null,
+          "group": null,
+          "single_line": true,
+          "font_size_pt": 9
+        },
+        {
           "id": "ps_qc_2",
           "number": 4,
           "page": 2,
@@ -618,6 +649,25 @@
           "group": null
         },
         {
+          "id": "ps_abgleich",
+          "number": 18,
+          "page": 2,
+          "label": "Abgleich laut Abgleichanweisung",
+          "type": "manual_text",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            152.24,
+            452.17,
+            166.24
+          ],
+          "align": "left",
+          "kind": null,
+          "group": null,
+          "single_line": true,
+          "font_size_pt": 9
+        },
+        {
           "id": "ps_qc_3",
           "number": 5,
           "page": 2,
@@ -633,6 +683,25 @@
           "align": "center",
           "kind": null,
           "group": null
+        },
+        {
+          "id": "ps_feldmessung",
+          "number": 19,
+          "page": 2,
+          "label": "Feldmessung am Lastwiderstand",
+          "type": "manual_text",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            171.44,
+            452.17,
+            185.44
+          ],
+          "align": "left",
+          "kind": null,
+          "group": null,
+          "single_line": true,
+          "font_size_pt": 9
         },
         {
           "id": "ps_qc_4",
@@ -722,6 +791,25 @@
           "align": "center",
           "kind": null,
           "group": null
+        },
+        {
+          "id": "ps_funktionalitaet",
+          "number": 20,
+          "page": 2,
+          "label": "Funktionalität testen",
+          "type": "manual_text",
+          "value": null,
+          "rect_pt": [
+            351.37,
+            229.04,
+            452.17,
+            243.04
+          ],
+          "align": "left",
+          "kind": null,
+          "group": null,
+          "single_line": true,
+          "font_size_pt": 9
         },
         {
           "id": "footer_geprueft_x",

@@ -1,4 +1,4 @@
-import * as pdfjsLib from '../vendor/pdf.min.mjs?v=1.50';
+import * as pdfjsLib from '../vendor/pdf.min.mjs?v=1.51';
 import {
   emptyCells,
   headerCells,
@@ -11,7 +11,7 @@ import {
   PAGE_HEIGHT,
   INSET,
   FILL_WHITE,
-} from './grid.js?v=1.50';
+} from './grid.js?v=1.51';
 import {
   loadSettings,
   saveInitials,
@@ -31,7 +31,7 @@ import {
   colorRgb01,
   DARK_COLORS,
   LAST_COLUMN_INDEX,
-} from './settings.js?v=1.50';
+} from './settings.js?v=1.51';
 import {
   KNOWN_TEMPLATES,
   resolveTemplateId,
@@ -40,14 +40,16 @@ import {
   extractArticleFromFilename,
   fieldKey,
   stampDateForSettings,
-} from './fields.js?v=1.50';
+} from './fields.js?v=1.51';
 import {
   drawGeraetePage,
   embedFieldValuesInPdf,
   serializeFieldValues,
   parseFieldValuesFromKeywords,
   applyParsedFieldValues,
-} from './field-fill.js?v=1.50';
+  closeInlineEditor,
+  isInlineEditing,
+} from './field-fill.js?v=1.51';
 import {
   decodeBarcodeFromBlob,
   decodeBarcodeFromElement,
@@ -56,9 +58,9 @@ import {
   stopCamera,
   releaseAllCameras,
   releaseAllCamerasAsync,
-} from './scan.js?v=1.50';
+} from './scan.js?v=1.51';
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs?v=1.50', import.meta.url).href;
+pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs?v=1.51', import.meta.url).href;
 
 const { PDFDocument, rgb, StandardFonts, LineCapStyle } = PDFLib;
 
@@ -239,6 +241,7 @@ function pushUndo(entry) {
 }
 
 function clearDocument() {
+  closeInlineEditor(false);
   // Stop field-scan camera if still open
   try {
     if (typeof stopScanUi === 'function') stopScanUi();
@@ -266,7 +269,7 @@ function clearDocument() {
     releaseAllCameras();
   } catch (_) {}
   // Release home + field cameras so the next home scan can start (iOS).
-  import('./app.js?v=1.50')
+  import('./app.js?v=1.51')
     .then((mod) => {
       if (typeof mod.ensureCamerasReleased === 'function') return mod.ensureCamerasReleased();
     })
@@ -340,7 +343,18 @@ function getFieldApi() {
     isPenPointer,
     pageScales,
     eraseMode: () => !!state.eraseMode,
+    onInlineEditorClosed,
   };
+}
+
+/** Window resized while an inline field editor was open (e.g. on-screen keyboard): re-render afterwards. */
+let rerenderAfterInlineEdit = false;
+function onInlineEditorClosed() {
+  if (!rerenderAfterInlineEdit) return;
+  rerenderAfterInlineEdit = false;
+  setTimeout(() => {
+    if (state.pdfDoc && !isInlineEditing()) renderAllPages();
+  }, 250);
 }
 
 function parseFilledFromKeywords(keywords) {
@@ -360,11 +374,12 @@ function parseFilledFromKeywords(keywords) {
  */
 export async function openFile(file, fileHandle = null) {
   try {
-    const mod = await import('./app.js?v=1.50');
+    const mod = await import('./app.js?v=1.51');
     if (typeof mod.ensureCamerasReleased === 'function') await mod.ensureCamerasReleased();
   } catch (_) {}
 
   if (!file) return;
+  closeInlineEditor(false);
   try {
     showToast('PDF wird geladen…');
     const buf = await file.arrayBuffer();
@@ -644,6 +659,7 @@ function addLogoBadge(container, crop, text) {
 
 async function renderAllPages() {
   if (!state.pdfDoc || state.rendering) return;
+  closeInlineEditor(true);
   state.rendering = true;
   el.viewer.innerHTML = '';
   const pdf = state.pdfDoc;
@@ -1161,6 +1177,7 @@ function attachInkHandlers(wrap) {
 }
 
 function undoLastAction() {
+  closeInlineEditor(true);
   const entry = state.undoStack.pop();
   if (!entry) {
     updateInkUndoButton();
@@ -1827,11 +1844,11 @@ function preferDownloadSave() {
 
 async function syncCatalogAfterSave(blob, name) {
   try {
-    const cat = await import('./catalog.js?v=1.50');
+    const cat = await import('./catalog.js?v=1.51');
     if (typeof cat.upsertSavedPdf === 'function') {
       await cat.upsertSavedPdf(blob, name);
     }
-    const mod = await import('./app.js?v=1.50');
+    const mod = await import('./app.js?v=1.51');
     if (typeof mod.onPdfCatalogUpdated === 'function') {
       await mod.onPdfCatalogUpdated();
     }
@@ -1845,7 +1862,7 @@ async function notifyStampSaved() {
   state.pendingQty = 0;
   if (!qty) return;
   try {
-    const mod = await import('./app.js?v=1.50');
+    const mod = await import('./app.js?v=1.51');
     if (typeof mod.onStampSaved === 'function') mod.onStampSaved(qty);
   } catch (err) {
     console.warn('onStampSaved failed', err);
@@ -2165,6 +2182,7 @@ async function finishSaveBlob(blob, name) {
 
 async function saveDocument() {
   if (!state.pdfBytes) return;
+  closeInlineEditor(true); // Sichern while typing: keep the typed text
   try {
     showToast('PDF wird gespeichert…');
     const pdfDoc = await PDFDocument.load(state.pdfBytes, { ignoreEncryption: true });
@@ -2712,6 +2730,11 @@ export function initFill() {
   let resizeTimer = 0;
   function scheduleRerender() {
     if (!state.pdfDoc) return;
+    if (isInlineEditing()) {
+      // Keyboard opening/closing resizes the viewport on Android — do not rebuild the page under the editor.
+      rerenderAfterInlineEdit = true;
+      return;
+    }
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(() => renderAllPages(), 250);
   }

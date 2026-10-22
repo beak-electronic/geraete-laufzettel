@@ -15,8 +15,8 @@ import {
   stampInitialsForSettings,
   stampLagerClerkForSettings,
   normalizeStampDateYY,
-} from './fields.js?v=1.50';
-import { colorCss, colorRgb01 } from './settings.js?v=1.50';
+} from './fields.js?v=1.51';
+import { colorCss, colorRgb01 } from './settings.js?v=1.51';
 
 const { rgb, StandardFonts } = PDFLib;
 
@@ -99,6 +99,10 @@ export function drawGeraetePage(wrap, pageWidth, pageHeight, api) {
       const key = fieldKey(f.page, f.number);
       const val = api.fieldValues.get(key);
       if (!val?.text) continue;
+      if (inlineState && inlineState.key === key) continue; // inline editor covers this cell
+      // White box under every new value: hides an older value already baked into a saved PDF.
+      // white_rect_pt (optional) keeps printed form content (ERP value, [ ] brackets, lines) visible.
+      drawWhiteBoxCanvas(ctx, f.white_rect_pt || f.rect_pt, scaleX, scaleY);
       const color = colorCss(val.colorIndex ?? api.settings.colorIndex);
       const typ = val.type || f.type;
       if (typ === 'tap_initials_stamp') {
@@ -111,42 +115,253 @@ export function drawGeraetePage(wrap, pageWidth, pageHeight, api) {
   }
 
   if (hit) {
-    hit.innerHTML = '';
-    for (const f of fields) {
-      const key = fieldKey(f.page, f.number);
-      const filled = api.fieldValues.has(key) && !!api.fieldValues.get(key)?.text;
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = filled ? 'hit-cell hit-field filled' : 'hit-cell hit-field';
-      btn.dataset.fieldKey = key;
-      btn.setAttribute('aria-label', f.label || `Feld ${f.number}`);
-      const pct = rectCssPercent(f.rect_pt, pageWidth, pageHeight, crop);
-      btn.style.left = `${pct.left}%`;
-      btn.style.top = `${pct.top}%`;
-      btn.style.width = `${pct.width}%`;
-      btn.style.height = `${pct.height}%`;
-      btn.addEventListener('pointerdown', (e) => {
-        if (e.pointerType === 'pen' || api.isPenPointer(e)) {
-          api.markPenStampSuppress();
-          e.preventDefault();
-          e.stopPropagation();
-        }
-      });
-      btn.addEventListener('click', (e) => {
-        if (api.shouldIgnoreStampClick(e)) {
-          e.preventDefault();
-          e.stopPropagation();
-          return;
-        }
-        onFieldTap(f, pageIndex, api);
-      });
-      hit.appendChild(btn);
+    hit._fieldApi = api;
+    const keys = fields.map((f) => fieldKey(f.page, f.number)).join('|');
+    if (hit.dataset.fieldKeys === keys && hit.children.length === fields.length) {
+      // Same fields: keep the buttons (a tap that closes the inline editor must still reach its target).
+      for (const btn of hit.children) {
+        const k = btn.dataset.fieldKey;
+        const filled = api.fieldValues.has(k) && !!api.fieldValues.get(k)?.text;
+        btn.className = filled ? 'hit-cell hit-field filled' : 'hit-cell hit-field';
+      }
+    } else {
+      hit.innerHTML = '';
+      hit.dataset.fieldKeys = keys;
+      for (const f of fields) {
+        const key = fieldKey(f.page, f.number);
+        const filled = api.fieldValues.has(key) && !!api.fieldValues.get(key)?.text;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = filled ? 'hit-cell hit-field filled' : 'hit-cell hit-field';
+        btn.dataset.fieldKey = key;
+        btn.setAttribute('aria-label', f.label || `Feld ${f.number}`);
+        const pct = rectCssPercent(f.rect_pt, pageWidth, pageHeight, crop);
+        btn.style.left = `${pct.left}%`;
+        btn.style.top = `${pct.top}%`;
+        btn.style.width = `${pct.width}%`;
+        btn.style.height = `${pct.height}%`;
+        btn.addEventListener('pointerdown', (e) => {
+          const a = hit._fieldApi;
+          if (e.pointerType === 'pen' || a.isPenPointer(e)) {
+            a.markPenStampSuppress();
+            e.preventDefault();
+            e.stopPropagation();
+          }
+        });
+        btn.addEventListener('click', (e) => {
+          const a = hit._fieldApi;
+          if (a.shouldIgnoreStampClick(e)) {
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+          }
+          onFieldTap(f, pageIndex, a, wrap);
+        });
+        hit.appendChild(btn);
+      }
     }
   }
 }
 
-async function onFieldTap(field, pageIndex, api) {
+/** White plate exactly over rect_pt (canvas, top-left origin). */
+function drawWhiteBoxCanvas(ctx, rect, scaleX, scaleY) {
+  const [x0, y0, x1, y1] = rect;
+  ctx.save();
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(x0 * scaleX, y0 * scaleY, (x1 - x0) * scaleX, (y1 - y0) * scaleY);
+  ctx.restore();
+}
+
+/** manual_text fields are edited inline in the cell unless the template sets "inline": false. */
+export function isInlineField(field) {
+  return field?.type === 'manual_text' && field.inline !== false;
+}
+
+function storeFieldValue(api, field, type, text) {
+  api.fieldValues.set(fieldKey(field.page, field.number), {
+    page: field.page,
+    number: field.number,
+    id: field.id,
+    type,
+    text,
+    colorIndex: api.settings.colorIndex,
+    rect_pt: field.rect_pt,
+    white_rect_pt: field.white_rect_pt,
+    multiline: !!field.multiline,
+    single_line: !!field.single_line,
+    font_size_pt: field.font_size_pt,
+  });
+}
+
+/* ---------- Inline cell editor (manual_text) ---------- */
+
+/** @type {null|{key:string,field:object,pageIndex:number,wrap:HTMLElement,api:object,el:HTMLElement,layer:HTMLElement,oldText:string,cleanup:()=>void}} */
+let inlineState = null;
+
+export function isInlineEditing() {
+  return !!inlineState;
+}
+
+/** Close the inline editor (save=true keeps the typed text, false discards). */
+export function closeInlineEditor(save = true) {
+  const s = inlineState;
+  if (!s) return;
+  inlineState = null;
+  s.cleanup();
+  const raw = String(s.el.value ?? '');
+  try { s.el.remove(); } catch (_) {}
+  if (save) {
+    const text = s.field.multiline
+      ? raw.replace(/\r\n?/g, '\n').replace(/[ \t]+$/gm, '').trim()
+      : raw.replace(/\s+/g, ' ').trim();
+    if (text !== s.oldText) {
+      const before = s.api.snapshotFieldKeys([s.key]);
+      if (text) storeFieldValue(s.api, s.field, s.field.type, text);
+      else s.api.fieldValues.delete(s.key);
+      s.api.pushUndo({ kind: 'fields', pageIndex: s.pageIndex, before });
+    }
+  }
+  s.api.redrawPage(s.pageIndex);
+  s.api.onInlineEditorClosed?.();
+}
+
+function inlineLayer(wrap) {
+  let layer = wrap.querySelector('.inline-edit-layer');
+  if (!layer) {
+    layer = document.createElement('div');
+    layer.className = 'inline-edit-layer';
+    wrap.appendChild(layer);
+  }
+  syncFieldsLayer(wrap, layer);
+  return layer;
+}
+
+/** Position/size the editor from rect_pt and the current page scale; text size = filled text size. */
+function layoutInlineEditor(s) {
+  const { wrap, field, el, layer } = s;
+  const pw = Number(wrap.dataset.pageWidth);
+  const ph = Number(wrap.dataset.pageHeight);
+  syncFieldsLayer(wrap, layer);
+  const { scaleX, scaleY, crop } = s.api.pageScales(wrap, pw, ph);
+  const [x0, y0, x1, y1] = field.rect_pt;
+  const L = (x0 - crop.left) * scaleX;
+  const T = (y0 - crop.top) * scaleY;
+  const W = (x1 - x0) * scaleX;
+  const H = (y1 - y0) * scaleY;
+  const free = field.multiline || field.single_line;
+  let fpx;
+  if (free) fpx = (field.font_size_pt || 9) * scaleY;
+  else {
+    const pad = Math.max(1, Math.min(W, H) * 0.08);
+    fpx = Math.min((H - pad * 2) * 0.85, 28);
+    if (field.font_size_pt) fpx = Math.min(fpx, field.font_size_pt * scaleY);
+  }
+  fpx = Math.max(4, fpx);
+  // Visible box: the cell, at least ~1.6 lines tall and ~5 em wide (tiny Istwert cells).
+  const visW = Math.max(W, field.multiline ? W : fpx * 5);
+  const visH = field.multiline ? H : Math.max(H, fpx * 1.6);
+  const layerW = layer.offsetWidth || W;
+  let left = free ? L : L - (visW - W) / 2;
+  left = Math.max(0, Math.min(left, layerW - visW));
+  const top = T - (visH - H) / 2;
+  // iOS zooms into inputs with font-size < 16px: keep 16px computed size, scale the box down.
+  const k = fpx < 16 ? fpx / 16 : 1;
+  const cssFont = fpx < 16 ? 16 : fpx;
+  el.style.left = `${left}px`;
+  el.style.top = `${top}px`;
+  el.style.width = `${visW / k}px`;
+  el.style.height = `${visH / k}px`;
+  el.style.transform = k === 1 ? '' : `scale(${k})`;
+  el.style.fontSize = `${cssFont}px`;
+  const padPx = (1.5 * scaleX) / k;
+  el.style.padding = field.multiline ? `${(1.5 * scaleY) / k}px ${padPx}px` : `0 ${padPx}px`;
+  el.style.lineHeight = field.multiline ? '1.2' : `${visH / k}px`;
+  el.style.textAlign = free ? 'left' : 'center';
+  // Keep the focus ring ~2 px on screen regardless of the scale-down.
+  el.style.outlineWidth = `${2 / k}px`;
+  el.style.boxShadow = `0 0 0 ${4 / k}px rgba(47, 111, 174, 0.25)`;
+}
+
+function openInlineEditor(field, pageIndex, api, wrap) {
+  closeInlineEditor(true);
   const key = fieldKey(field.page, field.number);
+  const oldText = String(api.fieldValues.get(key)?.text || '');
+  const layer = inlineLayer(wrap);
+  const ed = document.createElement(field.multiline ? 'textarea' : 'input');
+  if (!field.multiline) ed.type = 'text';
+  ed.className = field.multiline ? 'inline-field-editor multiline' : 'inline-field-editor';
+  ed.value = oldText;
+  ed.setAttribute('autocapitalize', 'sentences');
+  ed.setAttribute('autocorrect', 'on');
+  ed.setAttribute('spellcheck', 'false');
+  ed.setAttribute('enterkeyhint', field.multiline ? 'enter' : 'done');
+  ed.setAttribute('aria-label', fieldDialogTitle(field, 'Text'));
+  ed.dataset.fieldKey = key;
+  ed.style.color = colorCss(api.settings.colorIndex);
+  ed.style.fontFamily = field.multiline || field.single_line
+    ? 'Helvetica, Arial, sans-serif'
+    : '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+  layer.appendChild(ed);
+
+  const s = { key, field, pageIndex, wrap, api, el: ed, layer, oldText, cleanup: () => {} };
+  inlineState = s;
+  layoutInlineEditor(s);
+  api.redrawPage(pageIndex); // hide the old canvas text under the editor
+
+  const onKey = (e) => {
+    if (e.isComposing) return;
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      e.stopPropagation();
+      closeInlineEditor(false);
+    } else if (e.key === 'Enter' && (!field.multiline || e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      e.stopPropagation();
+      closeInlineEditor(true);
+    }
+  };
+  const onBlur = () => {
+    if (inlineState === s) closeInlineEditor(true);
+  };
+  // iOS does not blur an input when tapping non-focusable page areas: treat a tap outside as „fertig“.
+  let downAt = null;
+  const onDocDown = (e) => {
+    downAt = ed.contains(e.target) ? null : { x: e.clientX, y: e.clientY };
+  };
+  const onDocUp = (e) => {
+    if (!downAt || ed.contains(e.target)) return;
+    const moved = Math.hypot(e.clientX - downAt.x, e.clientY - downAt.y);
+    downAt = null;
+    if (moved < 10 && inlineState === s) closeInlineEditor(true);
+  };
+  const onResize = () => {
+    if (inlineState === s) layoutInlineEditor(s);
+  };
+  ed.addEventListener('keydown', onKey);
+  ed.addEventListener('blur', onBlur);
+  document.addEventListener('pointerdown', onDocDown, true);
+  document.addEventListener('pointerup', onDocUp, true);
+  window.addEventListener('resize', onResize);
+  s.cleanup = () => {
+    ed.removeEventListener('keydown', onKey);
+    ed.removeEventListener('blur', onBlur);
+    document.removeEventListener('pointerdown', onDocDown, true);
+    document.removeEventListener('pointerup', onDocUp, true);
+    window.removeEventListener('resize', onResize);
+  };
+
+  try { ed.focus({ preventScroll: true }); } catch (_) { ed.focus(); }
+  const end = ed.value.length;
+  try { ed.setSelectionRange(end, end); } catch (_) {}
+  if (field.multiline) ed.scrollTop = ed.scrollHeight;
+  try { ed.scrollIntoView({ block: 'nearest', inline: 'nearest' }); } catch (_) {}
+}
+
+async function onFieldTap(field, pageIndex, api, wrap) {
+  const key = fieldKey(field.page, field.number);
+  // Any tap on a field finishes an open inline edit first.
+  if (inlineState && inlineState.key !== key) closeInlineEditor(true);
   const before = api.snapshotFieldKeys([key]);
 
   if (api.eraseMode?.()) {
@@ -155,6 +370,13 @@ async function onFieldTap(field, pageIndex, api) {
       api.pushUndo({ kind: 'fields', pageIndex, before });
       api.redrawPage(pageIndex);
     }
+    return;
+  }
+
+  // Free text: edit directly in the cell, pre-filled with the current text.
+  if (isInlineField(field) && wrap) {
+    if (inlineState?.key === key) return;
+    openInlineEditor(field, pageIndex, api, wrap);
     return;
   }
 
@@ -227,18 +449,7 @@ async function onFieldTap(field, pageIndex, api) {
     return;
   }
 
-  api.fieldValues.set(key, {
-    page: field.page,
-    number: field.number,
-    id: field.id,
-    type,
-    text,
-    colorIndex: api.settings.colorIndex,
-    rect_pt: field.rect_pt,
-    multiline: !!field.multiline,
-    single_line: !!field.single_line,
-    font_size_pt: field.font_size_pt,
-  });
+  storeFieldValue(api, field, type, text);
   api.pushUndo({ kind: 'fields', pageIndex, before });
   api.redrawPage(pageIndex);
 }
@@ -266,6 +477,11 @@ export async function embedFieldValuesInPdf(pdfDoc, pages, fieldValues, settings
     const c = colorRgb01(val.colorIndex ?? settings.colorIndex);
     const textColor = rgb(c.r, c.g, c.b);
     const text = String(val.text);
+    // White box over the field rect (or white_rect_pt): covers an older value already baked into the PDF.
+    {
+      const [wx0, wy0, wx1, wy1] = val.white_rect_pt || val.rect_pt;
+      page.drawRectangle({ x: wx0, y: pageHeight - wy1, width: wx1 - wx0, height: wy1 - wy0, color: rgb(1, 1, 1), borderWidth: 0, opacity: 1 });
+    }
     if (val.multiline || val.single_line) {
       const fit = fitMultilineText(text, val.rect_pt, val.font_size_pt, (s, pt) => helvetica.widthOfTextAtSize(s, pt), !!val.single_line);
       fit.lines.forEach((ln, i) => {
@@ -376,6 +592,7 @@ export function applyParsedFieldValues(fieldValues, parsed, template) {
       text: String(text),
       colorIndex: colorIndex ?? 0,
       rect_pt: f.rect_pt,
+      white_rect_pt: f.white_rect_pt,
       multiline: !!f.multiline,
       single_line: !!f.single_line,
       font_size_pt: f.font_size_pt,
