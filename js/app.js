@@ -1,4 +1,4 @@
-import { extractSerialFromPayload, isUsableSerial } from "./sn.js?v=1.55";
+import { extractSerialFromPayload, isUsableSerial } from "./sn.js?v=1.56";
 import {
   decodeDataMatrixFromBlob,
   decodeDataMatrixFromElement,
@@ -7,7 +7,7 @@ import {
   stopCamera,
   releaseAllCameras,
   releaseAllCamerasAsync,
-} from "./scan.js?v=1.55";
+} from "./scan.js?v=1.56";
 import {
   findPdfBySerial,
   pickPdfFolder,
@@ -20,9 +20,9 @@ import {
   getIdbCatalogStats,
   clearIdbCatalog,
   formatCatalogUpdated,
-} from "./catalog.js?v=1.55";
-import { initFill, openFile, pickAndOpen } from "./fill.js?v=1.55";
-import { KNOWN_TEMPLATES } from "./fields.js?v=1.55";
+} from "./catalog.js?v=1.56";
+import { initFill, openFile, pickAndOpen } from "./fill.js?v=1.56";
+import { KNOWN_TEMPLATES } from "./fields.js?v=1.56";
 
 const STORAGE_KEY = "geraete-laufzettel-settings-v1";
 const DEMO_PAYLOAD = "DE-200.433-XXXX-XX0000E00A00K0001";
@@ -1006,19 +1006,8 @@ function registerSW() {
 }
 
 function syncThemeChrome() {
-  const dark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-  const color = dark ? "#1c1c1e" : "#ffffff";
-  let live = document.querySelector('meta[name="theme-color"]:not([media])');
-  if (!live) {
-    live = document.createElement("meta");
-    live.name = "theme-color";
-    document.head.insertBefore(live, document.head.firstChild);
-  }
-  live.setAttribute("content", color);
-  for (const m of document.querySelectorAll('meta[name="theme-color"][media]')) {
-    if (m.media.includes("dark") && dark) m.setAttribute("content", color);
-    if (m.media.includes("light") && !dark) m.setAttribute("content", color);
-  }
+  // Single source: inline script in index.html (Bauteile-Suchen-Mechanik, view-aware).
+  try { window.__syncThemeChrome?.(); } catch (_) {}
 }
 
 /**

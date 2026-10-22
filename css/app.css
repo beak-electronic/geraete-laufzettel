@@ -47,7 +47,10 @@
     --card: #1c1c1e;
     --toolbar-bg: rgba(28, 28, 30, 0.92);
     --toolbar-border: rgba(84, 84, 88, 0.45);
-    --theme-chrome: #1c1c1e;
+    --theme-chrome: #0b0b0d; /* Willkommen/Seiten wie Bauteile Suchen */
+  }
+  body.fill-open {
+    --theme-chrome: #1c1c1e; /* Bearbeiten: Statusleiste = Toolbar-Grau */
   }
 }
 
@@ -1846,3 +1849,298 @@ textarea.inline-field-editor {
   white-space: nowrap;
   letter-spacing: 0;
 }
+
+
+/* =====================================================================
+   Willkommen + Dialoge im Stil von Bauteile Suchen V1.5.9
+   (schlichte Umrandung, Hell/Dunkel per System-Einstellung, BEAK im Kärtchen)
+   ===================================================================== */
+:root {
+  --wl-bg: #ffffff;
+  --wl-card: #ffffff;
+  --wl-card-border: rgba(26, 31, 39, 0.10);
+  --wl-card-shadow: 0 24px 64px rgba(0, 0, 0, 0.08);
+  --wl-title: #1a1f27;
+  --wl-sub: #6b7280;
+  --wl-btn2-bg: #f4f5f7;
+  --wl-btn2-border: rgba(26, 31, 39, 0.10);
+  --wl-btn2-text: #1a1f27;
+  --wl-section: #f4f5f7;
+  --wl-section-border: rgba(26, 31, 39, 0.08);
+  --wl-inner-btn: #ffffff;
+  --wl-done: #dd007a;
+  --wl-gradient:
+    radial-gradient(ellipse 80% 60% at 50% 30%, rgba(221, 0, 122, 0.12), transparent 55%),
+    radial-gradient(ellipse 70% 50% at 80% 90%, rgba(59, 130, 246, 0.06), transparent 50%);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --wl-bg: #0b0b0d;
+    --wl-card: #1c1c1e;
+    --wl-card-border: rgba(255, 255, 255, 0.10);
+    --wl-card-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
+    --wl-title: #f2f2f7;
+    --wl-sub: #98989f;
+    --wl-btn2-bg: #2c2c2e;
+    --wl-btn2-border: rgba(255, 255, 255, 0.12);
+    --wl-btn2-text: #f2f2f7;
+    --wl-section: #2c2c2e;
+    --wl-section-border: rgba(255, 255, 255, 0.08);
+    --wl-inner-btn: #1c1c1e;
+    --wl-done: #ff4da6;
+    --wl-gradient:
+      radial-gradient(ellipse 80% 60% at 50% 30%, rgba(221, 0, 122, 0.18), transparent 55%),
+      radial-gradient(ellipse 70% 50% at 80% 90%, rgba(59, 130, 246, 0.08), transparent 50%);
+  }
+}
+
+/* --- Willkommen --- */
+body:not(.fill-open) {
+  background-color: var(--wl-bg);
+}
+body:not(.fill-open) .home.welcome-screen,
+.home.welcome-screen {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+  padding: max(16px, env(safe-area-inset-top)) 20px max(20px, env(safe-area-inset-bottom));
+  background: var(--wl-gradient), var(--wl-bg);
+  color: var(--wl-title);
+}
+.welcome-card {
+  position: relative; /* Anker für BEAK oben rechts */
+  width: min(420px, 100%);
+  margin: auto;
+  background: var(--wl-card);
+  border: 1px solid var(--wl-card-border);
+  border-radius: 16px;
+  padding: 28px 24px 22px;
+  box-shadow: var(--wl-card-shadow);
+  text-align: center;
+}
+.welcome-card .welcome-beak {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 2;
+  pointer-events: none;
+}
+.welcome-card .welcome-beak .beak-letters,
+.welcome-card .welcome-beak .beak-dot { font-size: 14px; }
+@media (prefers-color-scheme: dark) {
+  .app-beak .beak-letters { color: #a1a1a6; }
+}
+.welcome-brand { margin-bottom: 22px; }
+.welcome-icon {
+  width: 72px;
+  height: 72px;
+  border-radius: 16px;
+  display: block;
+  margin: 0 auto 14px;
+  box-shadow: 0 8px 24px rgba(221, 0, 122, 0.22);
+}
+@media (prefers-color-scheme: dark) {
+  .welcome-icon { box-shadow: 0 8px 28px rgba(221, 0, 122, 0.35); }
+}
+.welcome-title {
+  margin: 0 0 6px;
+  font-size: 1.75rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  color: var(--wl-title);
+}
+.welcome-sub {
+  margin: 0;
+  color: var(--wl-sub);
+  font-size: clamp(0.72rem, 3.5vw, 0.9rem);
+  line-height: 1.4;
+}
+.welcome-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.welcome-btn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 10px;
+  border: 1px solid var(--wl-btn2-border);
+  background: var(--wl-btn2-bg);
+  color: var(--wl-btn2-text);
+}
+.welcome-btn.primary {
+  background: var(--pink);
+  border-color: #a8005c;
+  color: #fff;
+}
+.welcome-btn.primary:hover,
+.welcome-btn.primary:focus-visible { border-color: #ff4da6; }
+.welcome-btn.primary:active { background: var(--pink-hover); }
+.welcome-btn:not(.primary):active { opacity: 0.8; }
+
+/* Öffnen | Kamera — Trennstrich wie Schaltkreise (.enter-hint), Kamera-Icon wie Anweisungen, weiß */
+.welcome-split {
+  position: relative;
+  display: flex;
+  width: 100%;
+}
+.welcome-split-cam { display: none; }
+html.ios-touch .welcome-split-main {
+  padding-right: 64px;
+  padding-left: 64px; /* Text bleibt mittig */
+}
+html.ios-touch .welcome-split-cam {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 60px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 0 10px 10px 0;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+html.ios-touch .welcome-split-cam::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 12px;
+  border-left: 1px solid rgba(255, 255, 255, 0.55);
+}
+html.ios-touch .welcome-split-cam:active { background: rgba(0, 0, 0, 0.12); }
+.welcome-cam-ico { width: 24px; height: 24px; display: block; }
+
+.welcome-version {
+  margin: 16px 0 0;
+  padding: 0 92px; /* Platz für die Eck-Buttons (Liste, Einstellungen) */
+  font-size: 0.72rem;
+  line-height: 1.4;
+  color: var(--wl-sub);
+  opacity: 0.85;
+  letter-spacing: 0.02em;
+  text-align: center;
+}
+.welcome-corner-btns {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  display: flex;
+  gap: 0;
+}
+.welcome-corner-btn {
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  color: #505050;
+  transition: color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.welcome-corner-btn:hover,
+.welcome-corner-btn:focus-visible { color: var(--pink); }
+.welcome-corner-btn:focus { outline: none; }
+.welcome-corner-btn:focus-visible { outline: 2px solid var(--pink); outline-offset: 2px; }
+.welcome-corner-btn:active { opacity: 0.75; }
+.welcome-corner-btn .corner-icon { width: 40px; height: 40px; display: block; pointer-events: none; }
+@media (prefers-color-scheme: dark) {
+  .welcome-corner-btn { color: #c7c7cc; }
+  .welcome-corner-btn:hover,
+  .welcome-corner-btn:focus-visible { color: #ff4da6; }
+  .welcome-corner-btn:focus-visible { outline-color: #ff4da6; }
+}
+@media (max-width: 420px) {
+  .welcome-card { padding: 26px 18px 20px; }
+  .welcome-version { padding: 0 0 44px; }
+}
+
+/* --- Unterseiten (Scannen, PDF Manipulator): gleicher Hintergrund, Inhalt als Kärtchen --- */
+body:not(.fill-open) .scan-view .home-scroll,
+body:not(.fill-open) .pm-view .home-scroll {
+  background: var(--wl-gradient), var(--wl-bg);
+}
+body:not(.fill-open) .scan-view .home-scroll > .wrap,
+body:not(.fill-open) .pm-view .home-scroll > .wrap {
+  background: var(--wl-card);
+  border: 1px solid var(--wl-card-border);
+  border-radius: 16px;
+  box-shadow: var(--wl-card-shadow);
+  padding: 18px 18px 14px;
+  margin-top: 10px;
+  margin-bottom: 16px;
+}
+.app-topbar { border-bottom-color: var(--wl-card-border); }
+.scan-view .result-box,
+.pm-view .result-box,
+.scan-view .not-found-box,
+.scan-view .pdf-refresh-banner {
+  border-radius: 12px;
+}
+
+/* --- Dialoge: schlichte Umrandung wie Bauteile-Suchen-Kärtchen --- */
+.settings-dialog {
+  background: var(--wl-card);
+  color: var(--wl-title);
+  border: 1px solid var(--wl-card-border);
+  border-radius: 16px;
+  box-shadow: var(--wl-card-shadow);
+}
+.settings-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.18);
+  -webkit-backdrop-filter: blur(10px) saturate(1.1);
+  backdrop-filter: blur(10px) saturate(1.1);
+}
+@media (prefers-color-scheme: dark) {
+  .settings-dialog::backdrop { background: rgba(0, 0, 0, 0.6); }
+}
+.settings-dialog .settings-header {
+  background: var(--wl-card);
+  border-bottom: 1px solid var(--wl-card-border);
+}
+.settings-dialog .settings-header h2 {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--wl-title);
+}
+.settings-dialog .settings-header .btn-done {
+  color: var(--wl-done);
+  font-weight: 700;
+}
+.settings-dialog .settings-section {
+  background: var(--wl-section);
+  border: 1px solid var(--wl-section-border);
+}
+.settings-dialog .settings-section .btn-secondary {
+  background: var(--wl-inner-btn);
+  border: 1px solid var(--wl-btn2-border);
+  color: var(--wl-btn2-text);
+}
+.settings-dialog .settings-section h3,
+.settings-dialog .hint { color: var(--wl-sub); }
+.settings-dialog .settings-header .btn-done:focus { outline: none; }
+.settings-dialog .settings-header .btn-done:focus-visible,
+.settings-dialog .settings-header .btn-done:hover { text-decoration: underline; }

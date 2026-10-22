@@ -8,7 +8,8 @@
   <meta name="apple-mobile-web-app-title" content="Geräte Laufzettel" />
   <meta name="theme-color" content="#ffffff" />
   <meta name="theme-color" media="(prefers-color-scheme: light)" content="#ffffff" />
-  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1c1c1e" />
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0b0b0d" />
+  <meta name="color-scheme" content="light dark" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="description" content="Geräte-Laufzettel per DataMatrix öffnen und ausfüllen – offline PWA" />
   <link rel="manifest" href="manifest.webmanifest" />
@@ -33,7 +34,59 @@
           || window.matchMedia('(display-mode: standalone)').matches
           || window.matchMedia('(display-mode: window-controls-overlay)').matches;
         if (standalone) document.documentElement.setAttribute('data-standalone', '1');
+        // iPad/iPhone (iPadOS meldet sich als Mac → maxTouchPoints): Kamera im Öffnen-Button
+        var ua = navigator.userAgent || '';
+        var ios = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && (navigator.maxTouchPoints || 0) > 1);
+        if (ios) document.documentElement.classList.add('ios-touch');
       } catch (e) {}
+
+      /* Statusleiste (iOS/PWA) folgt Hell/Dunkel wie Bauteile Suchen: theme-color-Metas neu
+         einsetzen + html/body color-scheme/Hintergrund. WebKit übernimmt media=-Wechsel sonst
+         oft erst nach Drehen. Im Bearbeiten-Modus (body.fill-open) dunkel = Toolbar-Grau. */
+      var THEME_LIGHT = '#ffffff';
+      var THEME_DARK = '#0b0b0d';
+      var THEME_DARK_FILL = '#1c1c1e';
+      var lastColor = '';
+      function syncThemeChrome() {
+        try {
+          var dark = !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          var body = document.body;
+          var fill = !!(body && body.classList.contains('fill-open'));
+          var color = dark ? (fill ? THEME_DARK_FILL : THEME_DARK) : THEME_LIGHT;
+          var root = document.documentElement;
+          root.style.colorScheme = dark ? 'dark' : 'light';
+          root.style.backgroundColor = color;
+          if (body) body.style.colorScheme = dark ? 'dark' : 'light';
+          if (color === lastColor) return;
+          lastColor = color;
+          var head = document.head;
+          var old = head.querySelectorAll('meta[name="theme-color"]');
+          for (var i = 0; i < old.length; i++) old[i].parentNode.removeChild(old[i]);
+          function addMeta(content, media) {
+            var m = document.createElement('meta');
+            m.setAttribute('name', 'theme-color');
+            m.setAttribute('content', content);
+            if (media) m.setAttribute('media', media);
+            head.insertBefore(m, head.firstChild);
+          }
+          addMeta(color); /* live — iOS liest den ersten */
+          addMeta(THEME_LIGHT, '(prefers-color-scheme: light)');
+          addMeta(fill ? THEME_DARK_FILL : THEME_DARK, '(prefers-color-scheme: dark)');
+          void root.offsetHeight;
+        } catch (e) {}
+      }
+      window.__syncThemeChrome = syncThemeChrome;
+      syncThemeChrome();
+      try {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        if (mq.addEventListener) mq.addEventListener('change', syncThemeChrome);
+        else if (mq.addListener) mq.addListener(syncThemeChrome);
+        new MutationObserver(syncThemeChrome).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+      } catch (e) {}
+      document.addEventListener('visibilitychange', function () {
+        if (document.visibilityState === 'visible') syncThemeChrome();
+      });
+      window.addEventListener('pageshow', syncThemeChrome);
     })();
     // Nach einem Update übernimmt der neue Service Worker. Früher wurde dann sofort neu
     // geladen – das warf Nutzer mitten in einer Ansicht (z. B. Liste) auf den Startbildschirm.
@@ -83,52 +136,41 @@
     })();
   </script>
   <div class="ios-pwa-status-strip" aria-hidden="true"></div>
-  <!-- HOME: Öffnen + Scannen (button) → Scan-Seite / Fill -->
-  <div id="home" class="home">
-    <header class="app-topbar">
-      <h1 class="app-heading">Geräte Laufzettel</h1>
-      <span class="app-beak" aria-label="BEAK"><span class="beak-letters">B&nbsp;E&nbsp;A&nbsp;K</span><span class="beak-dot">•</span></span>
-    </header>
-    <div class="home-scroll">
-    <div class="wrap">
-      <section class="open-section" aria-labelledby="open-heading">
-        <h2 id="open-heading" class="section-title open-title">Öffnen</h2>
-        <p class="open-copy">
-          PDF direkt wählen und im Stempel-/Zeichenmodus bearbeiten
-          (Initialen, Datum, Apple Pencil). Speichern teilt oder lädt die Datei herunter.
-        </p>
-        <button type="button" class="btn btn-prominent" id="btn-pdf-open">Geräte Laufzettel öffnen</button>
-      </section>
-
-      <section class="scan-section" aria-labelledby="scan-heading">
-        <h2 id="scan-heading" class="section-title">Scannen</h2>
-        <p class="open-copy scan-intro">
-          DataMatrix Code von der Geräterückseite mit der Kamera scannen.
-        </p>
-        <button type="button" class="btn btn-prominent" id="btn-go-scan">Scannen</button>
-      </section>
-
-      <section class="scan-section pm-section" aria-labelledby="pm-heading">
-        <h2 id="pm-heading" class="section-title">PDF teilen oder Dateien zu einer PDF verbinden</h2>
-        <p class="open-copy">
-          Mehrseitige PDFs nach Geräte-ID aufteilen oder einen Gerätelaufzettel mit bis zu drei Safety Tests zu einer PDF verbinden.
-        </p>
-        <button type="button" class="btn btn-prominent" id="btn-pdf-manipulator">PDF Manipulator</button>
-      </section>
-
-      <div class="home-footer-row">
-        <p class="home-footer">
-          Version 1.55<br />
-          © BEAK electronic engineering GmbH &amp; Co. KG
-        </p>
-        <button type="button" class="footer-settings-btn" id="btn-open-names" aria-label="Liste" title="Liste">
-          <img class="pill-icon" src="icons/list_btn.png?v=1.55" alt="" width="40" height="40" draggable="false" />
+  <!-- HOME: Willkommen (Bauteile-Suchen-Stil): Öffnen [| Kamera nur iPad/iPhone] + Neu (PDFs teilen/verbinden) -->
+  <div id="home" class="home welcome-screen" role="main" aria-labelledby="welcome-title">
+    <div class="welcome-card">
+      <span class="app-beak welcome-beak" aria-label="BEAK"><span class="beak-letters">B&nbsp;E&nbsp;A&nbsp;K</span><span class="beak-dot">•</span></span>
+      <div class="welcome-brand">
+        <img class="welcome-icon" src="icons/apple-touch-icon.png" alt="" width="72" height="72" draggable="false" />
+        <h1 class="welcome-title" id="welcome-title">Geräte Laufzettel</h1>
+        <p class="welcome-sub">Laufzettel öffnen, ausfüllen und sichern</p>
+      </div>
+      <div class="welcome-actions">
+        <div class="welcome-split" role="group" aria-label="Öffnen">
+          <button type="button" class="btn welcome-btn primary welcome-split-main" id="btn-pdf-open">Öffnen</button>
+          <!-- Nur iPad/iPhone (html.ios-touch): Kamera = bisheriger „Scannen“-Button -->
+          <button type="button" class="welcome-split-cam" id="btn-go-scan" aria-label="Scannen (Kamera)" title="Scannen">
+            <svg class="welcome-cam-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.2 8.4h2.3l1.3-2.1h8.4l1.3 2.1h2.3c.9 0 1.6.7 1.6 1.6v8.4c0 .9-.7 1.6-1.6 1.6H4.2c-.9 0-1.6-.7-1.6-1.6V10c0-.9.7-1.6 1.6-1.6z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="13.3" r="3.1" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+          </button>
+        </div>
+        <button type="button" class="btn welcome-btn" id="btn-pdf-manipulator">Neu (PDFs teilen/verbinden)</button>
+      </div>
+      <p class="welcome-version home-footer" title="© BEAK electronic engineering GmbH &amp; Co. KG">Geräte Laufzettel · Version 1.56</p>
+      <div class="welcome-corner-btns">
+        <!-- Gezeichnete Icons wie Bauteile Suchen V1.5.9 (currentColor: dunkel auf hell, hell auf dunkel) -->
+        <button type="button" class="welcome-corner-btn" id="btn-open-names" aria-label="Liste" title="Liste">
+          <svg class="corner-icon" viewBox="0 0 120 120" width="40" height="40" aria-hidden="true" focusable="false">
+            <g stroke="currentColor" stroke-width="7" stroke-linecap="round"><path d="M50 38h40M50 60h40M50 81h40" /></g>
+            <g fill="currentColor"><circle cx="33" cy="38" r="6.5" /><circle cx="33" cy="60" r="6.5" /><circle cx="33" cy="81" r="6.5" /></g>
+          </svg>
         </button>
-        <button type="button" class="footer-settings-btn" id="btn-home-settings" aria-label="Einstellungen" title="Einstellungen">
-          <img class="pill-icon" src="icons/settings_btn.png?v=1.55" alt="" width="40" height="40" draggable="false" />
+        <button type="button" class="welcome-corner-btn" id="btn-home-settings" aria-label="Einstellungen" title="Einstellungen">
+          <svg class="corner-icon" viewBox="0 0 120 120" width="40" height="40" aria-hidden="true" focusable="false">
+            <g stroke="currentColor" stroke-width="7" stroke-linecap="round"><path d="M29.5 38h60M29.5 60h60M29.5 81h60" /></g>
+            <g fill="currentColor"><circle cx="44" cy="38" r="9.5" /><circle cx="74" cy="60" r="9.5" /><circle cx="51" cy="81" r="9.5" /></g>
+          </svg>
         </button>
       </div>
-    </div>
     </div>
   </div>
 
@@ -353,7 +395,7 @@
         </section>
         <section class="settings-section cardish">
           <h3>Info</h3>
-          <p class="hint">Geräte Laufzettel 1.55<br />© BEAK electronic engineering GmbH &amp; Co. KG</p>
+          <p class="hint">Geräte Laufzettel 1.56<br />© BEAK electronic engineering GmbH &amp; Co. KG</p>
         </section>
       </div>
     </form>
@@ -417,7 +459,7 @@
         <h3>Änderungsprotokoll</h3>
         <label for="fill-settings-device-name" class="hint">Gerätename (optional, z. B. „iPad Montage 2“)</label>
         <input type="text" id="fill-settings-device-name" maxlength="60" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Gerätename" />
-        <p class="hint">Beim Sichern wird unsichtbar ein Protokoll (aenderungsprotokoll.json) an das PDF angehängt: wer, wann, welches Gerät, welches Feld/welche Stelle, wie. Kein Standort.</p>
+        <p class="hint">Beim Sichern wird unsichtbar ein Protokoll (aenderungsprotokoll.json) an das PDF angehängt: wer, wann, welches Gerät, welches Feld/welche Stelle, wie.</p>
         <button type="button" class="btn btn-secondary" id="btn-fill-show-log">Protokoll anzeigen</button>
       </section>
 
@@ -506,12 +548,12 @@
     </div>
   </div>
 
-  <script src="vendor/pdf-lib.min.js?v=1.55"></script>
-  <script src="vendor/fontkit.umd.min.js?v=1.55"></script>
-  <script src="vendor/zxing-library.min.js?v=1.55"></script>
-  <script src="vendor/jszip.min.js?v=1.55"></script>
-  <script src="vendor/FileSaver.min.js?v=1.55"></script>
-  <script type="module" src="js/app.js?v=1.55"></script>
-  <script type="module" src="js/manipulator.js?v=1.55"></script>
+  <script src="vendor/pdf-lib.min.js?v=1.56"></script>
+  <script src="vendor/fontkit.umd.min.js?v=1.56"></script>
+  <script src="vendor/zxing-library.min.js?v=1.56"></script>
+  <script src="vendor/jszip.min.js?v=1.56"></script>
+  <script src="vendor/FileSaver.min.js?v=1.56"></script>
+  <script type="module" src="js/app.js?v=1.56"></script>
+  <script type="module" src="js/manipulator.js?v=1.56"></script>
 </body>
 </html>

@@ -90,46 +90,71 @@ function isIpadLike() {
   return /iPad/.test(ua) || (/Macintosh/.test(ua) && (navigator.maxTouchPoints || 0) > 1);
 }
 
+/** Browser name only; Edge before Chrome, CriOS (Chrome on iOS) as Chrome. */
+function browserFromUa(ua) {
+  if (/Edg(?:e|A|iOS)?\//.test(ua)) return 'Edge';
+  if (/(?:OPR|Opera)\//.test(ua)) return 'Opera';
+  if (/(?:Firefox|FxiOS)\//.test(ua)) return 'Firefox';
+  if (/SamsungBrowser\//.test(ua)) return 'Samsung Internet';
+  if (/(?:CriOS|HeadlessChrome|Chrome|Chromium)\//.test(ua)) return 'Chrome';
+  if (/Safari\//.test(ua) || /AppleWebKit/.test(ua)) return 'Safari';
+  return '';
+}
+
+/** Short system name for display, also for older logs ('Windows NT 10.0', 'iPadOS 17.4', 'macOS 10.15'). */
+export function osShort(os) {
+  const v = String(os || '').trim();
+  if (!v) return '';
+  if (/ipad/i.test(v)) return 'iPad';
+  if (/iphone|ios/i.test(v)) return 'iPhone';
+  if (/windows/i.test(v)) return 'Windows';
+  if (/mac/i.test(v)) return 'Mac';
+  if (/android/i.test(v)) return 'Android';
+  if (/chrome ?os/i.test(v)) return 'ChromeOS';
+  if (/linux/i.test(v)) return 'Linux';
+  return v.replace(/\s*[\d._]+(\s|$)/g, ' ').trim();
+}
+
+/** Browser name for display, also for older logs ('Chrome 156.0.0.0', 'Chrome (iOS) 120.0', 'HeadlessChrome 155.0.0.0'). */
+export function browserShort(browser) {
+  const v = String(browser || '').trim();
+  if (!v) return '';
+  if (/edg/i.test(v)) return 'Edge';
+  if (/chrom|crios/i.test(v)) return 'Chrome';
+  for (const n of ['Firefox', 'Safari', 'Opera', 'Samsung Internet']) if (v.toLowerCase().includes(n.toLowerCase())) return n;
+  return v.replace(/\s*\(.*?\)|\s*[\d._]+/g, '').trim();
+}
+
+/** Device parts for viewer/PDF: no user agent, no versions, system hidden when equal to type/name. */
+function deviceDisplay(dev = {}) {
+  const name = dev.device_name || '';
+  const type = dev.type && dev.type !== 'Unbekannt' ? dev.type : '';
+  const sys = osShort(dev.os);
+  const seen = new Set([name, type].filter(Boolean).map((x) => x.toLowerCase()));
+  return {
+    name,
+    type: type && type.toLowerCase() !== name.toLowerCase() ? type : '',
+    system: sys && !seen.has(sys.toLowerCase()) ? sys : '',
+    browser: browserShort(dev.browser),
+  };
+}
+
 /** Device type / OS / browser from the user agent (best effort, no fingerprinting beyond UA). */
 export function deviceInfo() {
   const ua = navigator.userAgent || '';
   let type = 'Unbekannt';
   let os = '';
-  if (isIpadLike()) {
-    type = 'iPad';
-    const m = ua.match(/OS (\d+)[_.](\d+)/) || ua.match(/Version\/(\d+)\.(\d+)/);
-    os = m ? `iPadOS ${m[1]}.${m[2]}` : 'iPadOS';
-  } else if (/iPhone|iPod/.test(ua)) {
-    type = 'iPhone';
-    const m = ua.match(/OS (\d+)[_.](\d+)/);
-    os = m ? `iOS ${m[1]}.${m[2]}` : 'iOS';
-  } else if (/Android/.test(ua)) {
+  // Short names only (no NT, no version numbers); raw details stay in user_agent.
+  if (isIpadLike()) type = os = 'iPad';
+  else if (/iPhone|iPod/.test(ua)) type = os = 'iPhone';
+  else if (/Android/.test(ua)) {
     type = /Mobile/.test(ua) ? 'Android-Phone' : 'Android-Tablet';
-    const m = ua.match(/Android ([\d.]+)/);
-    os = m ? `Android ${m[1]}` : 'Android';
-  } else if (/Windows/.test(ua)) {
-    type = 'Windows';
-    const m = ua.match(/Windows NT ([\d.]+)/);
-    os = m ? `Windows NT ${m[1]}` : 'Windows';
-  } else if (/Macintosh|Mac OS X/.test(ua)) {
-    type = 'Mac';
-    const m = ua.match(/Mac OS X (\d+)[_.](\d+)/);
-    os = m ? `macOS ${m[1]}.${m[2]}` : 'macOS';
-  } else if (/CrOS/.test(ua)) {
-    type = 'ChromeOS';
-    os = 'ChromeOS';
-  } else if (/Linux/.test(ua)) {
-    type = 'Linux';
-    os = 'Linux';
-  }
-  let browser = '';
-  let m;
-  if ((m = ua.match(/Edg(?:A|iOS)?\/([\d.]+)/))) browser = `Edge ${m[1]}`;
-  else if ((m = ua.match(/(?:OPR|Opera)\/([\d.]+)/))) browser = `Opera ${m[1]}`;
-  else if ((m = ua.match(/(?:Firefox|FxiOS)\/([\d.]+)/))) browser = `Firefox ${m[1]}`;
-  else if ((m = ua.match(/CriOS\/([\d.]+)/))) browser = `Chrome (iOS) ${m[1]}`;
-  else if ((m = ua.match(/(?:HeadlessChrome|Chrome)\/([\d.]+)/))) browser = `${/HeadlessChrome/.test(ua) ? 'HeadlessChrome' : 'Chrome'} ${m[1]}`;
-  else if ((m = ua.match(/Version\/([\d.]+).*Safari/))) browser = `Safari ${m[1]}`;
+    os = 'Android';
+  } else if (/Windows/.test(ua)) type = os = 'Windows';
+  else if (/Macintosh|Mac OS X/.test(ua)) type = os = 'Mac';
+  else if (/CrOS/.test(ua)) type = os = 'ChromeOS';
+  else if (/Linux/.test(ua)) type = os = 'Linux';
+  const browser = browserFromUa(ua);
   let standalone = false;
   try {
     standalone = !!(window.matchMedia?.('(display-mode: standalone)').matches || navigator.standalone);
@@ -533,8 +558,10 @@ export function showLogDialog(log, { title = 'Änderungsprotokoll' } = {}) {
     const h3 = document.createElement('h3');
     const dev = s.device || {};
     const who = s.who || {};
+    const dd = deviceDisplay(dev);
+    const devTxt = [dd.name, dd.type, dd.system].filter(Boolean).join(' · ');
     h3.textContent = `${fmtTime(s.started)}${s.saved ? '' : ' (nicht gesichert)'} · ${who.kuerzel || '—'}` +
-      ` · ${dev.device_name || dev.type || ''} ${dev.browser ? `(${dev.browser})` : ''}`;
+      `${devTxt ? ` · ${devTxt}` : ''}${dd.browser ? ` (${dd.browser})` : ''}`;
     const meta = document.createElement('p');
     meta.className = 'hint';
     // who.sachbearbeiter_lager (older logs) stays in the JSON but is not shown.
@@ -734,11 +761,12 @@ export async function renderLogPdf(log, PDFLib = window.PDFLib) {
     const kind = { merge: ' · Verbinden', split: ' · Teilen' }[s.kind] || '';
     const title = `${fmtTime(s.started)}${kind}`;
     const savedTxt = s.saved ? `gesichert ${fmtTime(s.saved)}` : 'nicht gesichert';
+    const dd = deviceDisplay(dev); // user_agent stays in the JSON only
     const meta = [
       ['Kürzel', who.kuerzel || '—'],
-      ['Gerät', [dev.device_name, dev.type].filter(Boolean).join(' · ') || '—'],
-      ['System', dev.os || '—'],
-      ['Browser', dev.browser || '—'],
+      ['Gerät', [dd.name, dd.type].filter(Boolean).join(' · ') || '—'],
+      ...(dd.system ? [['System', dd.system]] : []),
+      ['Browser', dd.browser || '—'],
       ['Datei', s.file_name || '—'],
       ['Vorlage', s.template || '—'],
       ['App', s.app_version || '—'],
@@ -821,7 +849,7 @@ export async function renderLogPdf(log, PDFLib = window.PDFLib) {
 
   const pages = doc.getPages();
   pages.forEach((pg, i) => {
-    text(pg, `Erzeugt von Geräte Laufzettel ${APP_VERSION}. Kein Standort gespeichert.`, M, M - 14, F.reg, 7.5, C.muted);
+    text(pg, `Erzeugt von Geräte Laufzettel ${APP_VERSION}`, M, M - 14, F.reg, 7.5, C.muted);
     const pn = clean(`Seite ${i + 1} von ${pages.length}`);
     text(pg, pn, PW - M - F.reg.widthOfTextAtSize(pn, 7.5), M - 14, F.reg, 7.5, C.muted);
   });

@@ -3,7 +3,7 @@
  * Pure-ish helpers; pdf.js / pdf-lib / JSZip come from the caller (browser or node test).
  */
 
-import { readLogFromPdfJs, attachLogToPdfLib, derivedLog } from './protokoll.js?v=1.55';
+import { readLogFromPdfJs, attachLogToPdfLib, derivedLog } from './protokoll.js?v=1.56';
 
 /** @typedef {{ start: number, end: number }} PageRange  1-based inclusive */
 
