@@ -1832,6 +1832,13 @@ textarea.inline-field-editor {
 .protokoll-time { font-variant-numeric: tabular-nums; color: var(--muted); }
 .protokoll-how { color: var(--muted); font-size: 12px; }
 .protokoll-detail { color: inherit; word-break: break-word; }
+.protokoll-list li.protokoll-covered {
+  font-weight: 600;
+  background: rgba(221, 0, 122, 0.08);
+  box-shadow: inset 3px 0 0 #dd007a;
+  border-radius: 4px;
+  padding: 2px 4px;
+}
 /* Title: one real bold face for the whole word (no mixed 600/synthetic rendering) */
 .protokoll-dialog .settings-header h2.protokoll-title {
   font-weight: 700;

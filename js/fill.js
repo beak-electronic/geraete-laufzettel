@@ -1,5 +1,5 @@
-import * as pdfjsLib from '../vendor/pdf.min.mjs?v=1.53';
-import { callPickerInPdfFolder, getCachedPdfFolderHandle, getPdfFolderHandle } from './catalog.js?v=1.53';
+import * as pdfjsLib from '../vendor/pdf.min.mjs?v=1.54';
+import { callPickerInPdfFolder, getCachedPdfFolderHandle, getPdfFolderHandle } from './catalog.js?v=1.54';
 import {
   emptyCells,
   headerCells,
@@ -12,7 +12,7 @@ import {
   PAGE_HEIGHT,
   INSET,
   FILL_WHITE,
-} from './grid.js?v=1.53';
+} from './grid.js?v=1.54';
 import {
   loadSettings,
   saveInitials,
@@ -32,7 +32,7 @@ import {
   colorRgb01,
   DARK_COLORS,
   LAST_COLUMN_INDEX,
-} from './settings.js?v=1.53';
+} from './settings.js?v=1.54';
 import {
   KNOWN_TEMPLATES,
   resolveTemplateId,
@@ -41,7 +41,7 @@ import {
   extractArticleFromFilename,
   fieldKey,
   stampDateForSettings,
-} from './fields.js?v=1.53';
+} from './fields.js?v=1.54';
 import {
   drawGeraetePage,
   embedFieldValuesInPdf,
@@ -51,7 +51,7 @@ import {
   closeInlineEditor,
   isInlineEditing,
   isInlineField,
-} from './field-fill.js?v=1.53';
+} from './field-fill.js?v=1.54';
 import {
   isoLocal,
   newSession,
@@ -66,7 +66,7 @@ import {
   showLogDialog,
   getDeviceName,
   setDeviceName,
-} from './protokoll.js?v=1.53';
+} from './protokoll.js?v=1.54';
 import {
   decodeBarcodeFromBlob,
   decodeBarcodeFromElement,
@@ -75,9 +75,9 @@ import {
   stopCamera,
   releaseAllCameras,
   releaseAllCamerasAsync,
-} from './scan.js?v=1.53';
+} from './scan.js?v=1.54';
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs?v=1.53', import.meta.url).href;
+pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs?v=1.54', import.meta.url).href;
 
 const { PDFDocument, rgb, StandardFonts, LineCapStyle } = PDFLib;
 
@@ -113,6 +113,8 @@ const state = {
   templateId: '',
   /** @type {Map<string, {page:number,number:number,id:string,type:string,text:string,colorIndex:number,rect_pt:number[]}>} */
   fieldValues: new Map(),
+  /** „Zellen löschen“ white covers of this session: key → {page, number, id, rect_pt}. */
+  fieldCovers: new Map(),
   pdfHeaderText: '',
   /**
    * Änderungsprotokoll of the open document.
@@ -174,7 +176,8 @@ function markPenStampSuppress(ms = 900) {
 
 function shouldIgnoreStampClick(e) {
   if (performance.now() < suppressStampClickUntil) return true;
-  if (e && e.pointerType === 'pen') return true;
+  // „Zellen löschen“ on template fields: Pencil taps cover like finger/mouse.
+  if (e && e.pointerType === 'pen' && !(state.eraseMode && usesGeraeteFields())) return true;
   return false;
 }
 
@@ -278,9 +281,9 @@ let lastPointerType = '';
 let lastEntryWasScan = false;
 
 function logWho() {
+  // Only the Kürzel; Sachbearbeiter Lager is logged only when that field is actually filled.
   return {
     kuerzel: (state.settings.initials || '').trim() || null,
-    sachbearbeiter_lager: lagerClerkName(state.settings) || null,
   };
 }
 
@@ -368,6 +371,20 @@ function logUndoableChange(entry) {
       });
       if (e) seqs.push(e.seq);
     }
+  } else if (entry.kind === 'cover') {
+    const f = templateFieldByKey(entry.key);
+    const cov = state.fieldCovers.get(entry.key);
+    const oldText = entry.before?.[0]?.value?.text ?? '';
+    const e = logEntry({
+      action: 'field_covered',
+      page: f?.page || entry.pageIndex + 1,
+      field: fieldRef(f, entry.key),
+      ...(oldText ? { old: oldText } : {}),
+      method: 'zellen_loeschen',
+      input: inputDevice(lastPointerType),
+      where: { cover_rect_pt: cov?.rect_pt },
+    });
+    if (e) seqs.push(e.seq);
   } else if (entry.kind === 'ink') {
     const strokes = state.ink.get(entry.pageIndex) || [];
     const stroke = strokes[strokes.length - 1];
@@ -427,6 +444,9 @@ function summarizeLogEntry(le) {
     const w = le.where || {};
     return [`Seite ${le.page}`, w.section, w.row_label, w.near_text].filter(Boolean).join(' › ');
   }
+  if (le.action === 'field_covered') {
+    return `Seite ${le.page} Nr. ${le.field?.number ?? ''} ${le.field?.label || ''} (weiß überdeckt${le.old ? `, Wert „${le.old}“` : ''})`;
+  }
   if (le.field) return `Seite ${le.page} Nr. ${le.field.number} ${le.field.label || ''}: „${le.old ?? ''}“ → „${le.new ?? ''}“`.trim();
   return `Seite ${le.page || '?'}`;
 }
@@ -447,7 +467,12 @@ function logUndo(entry) {
   });
 }
 
-/** Merged log (prior sessions + this session) as it would be saved now. */
+/**
+ * Merged log (prior sessions + this session) as it would be saved now.
+ * The session lives only in memory (state.changeLog) — never in localStorage/IndexedDB.
+ * It reaches a file only via embedChangeLog() inside Sichern; a cancelled save or closing
+ * without saving discards it (clearDocument). Works on copies, so state is never marked saved.
+ */
 function currentMergedLog({ markSaved = false, outName = '' } = {}) {
   const L = state.changeLog;
   if (!L) return null;
@@ -503,6 +528,7 @@ function clearDocument() {
   state.template = null;
   state.templateId = '';
   state.fieldValues.clear();
+  state.fieldCovers.clear();
   state.pdfHeaderText = '';
   state.changeLog = null;
   textLinesCache.clear();
@@ -513,7 +539,7 @@ function clearDocument() {
     releaseAllCameras();
   } catch (_) {}
   // Release home + field cameras so the next home scan can start (iOS).
-  import('./app.js?v=1.53')
+  import('./app.js?v=1.54')
     .then((mod) => {
       if (typeof mod.ensureCamerasReleased === 'function') return mod.ensureCamerasReleased();
     })
@@ -573,6 +599,7 @@ function getFieldApi() {
   return {
     template: state.template,
     fieldValues: state.fieldValues,
+    fieldCovers: state.fieldCovers,
     settings: state.settings,
     showToast,
     openSettings,
@@ -618,7 +645,7 @@ function parseFilledFromKeywords(keywords) {
  */
 export async function openFile(file, fileHandle = null) {
   try {
-    const mod = await import('./app.js?v=1.53');
+    const mod = await import('./app.js?v=1.54');
     if (typeof mod.ensureCamerasReleased === 'function') await mod.ensureCamerasReleased();
   } catch (_) {}
 
@@ -645,6 +672,7 @@ export async function openFile(file, fileHandle = null) {
     state.undoStack = [];
     state.settings.dateOverride = null;
     state.fieldValues.clear();
+    state.fieldCovers.clear();
     state.template = null;
     state.templateId = '';
 
@@ -1385,6 +1413,8 @@ function attachInkHandlers(wrap) {
       };
       return;
     }
+    // „Zellen löschen“: a Pencil tap on a template field covers it (no ink).
+    if (isPenPointer(e) && state.eraseMode && usesGeraeteFields() && e.target?.closest?.('.hit-field')) return;
     if (!isPenPointer(e)) return;
     // Pen must not stamp / header-hit.
     markPenStampSuppress();
@@ -1583,6 +1613,11 @@ function undoLastAction() {
     restoreKeySnapshot(entry.before);
     redrawPage(entry.pageIndex);
   } else if (entry.kind === 'fields') {
+    restoreFieldSnapshot(entry.before);
+    redrawPage(entry.pageIndex);
+  } else if (entry.kind === 'cover') {
+    // One step: remove the cover and bring back the value removed with it.
+    state.fieldCovers.delete(entry.key);
     restoreFieldSnapshot(entry.before);
     redrawPage(entry.pageIndex);
   }
@@ -2232,11 +2267,11 @@ function preferDownloadSave() {
 
 async function syncCatalogAfterSave(blob, name) {
   try {
-    const cat = await import('./catalog.js?v=1.53');
+    const cat = await import('./catalog.js?v=1.54');
     if (typeof cat.upsertSavedPdf === 'function') {
       await cat.upsertSavedPdf(blob, name);
     }
-    const mod = await import('./app.js?v=1.53');
+    const mod = await import('./app.js?v=1.54');
     if (typeof mod.onPdfCatalogUpdated === 'function') {
       await mod.onPdfCatalogUpdated();
     }
@@ -2250,7 +2285,7 @@ async function notifyStampSaved() {
   state.pendingQty = 0;
   if (!qty) return;
   try {
-    const mod = await import('./app.js?v=1.53');
+    const mod = await import('./app.js?v=1.54');
     if (typeof mod.onStampSaved === 'function') mod.onStampSaved(qty);
   } catch (err) {
     console.warn('onStampSaved failed', err);
@@ -2581,7 +2616,7 @@ async function saveDocument() {
     const pages = pdfDoc.getPages();
 
     if (usesGeraeteFields()) {
-      await embedFieldValuesInPdf(pdfDoc, pages, state.fieldValues, state.settings);
+      await embedFieldValuesInPdf(pdfDoc, pages, state.fieldValues, state.settings, state.fieldCovers);
       for (const [pageIndex, strokes] of state.ink.entries()) {
         const page = pages[pageIndex];
         if (!page || !strokes?.length) continue;

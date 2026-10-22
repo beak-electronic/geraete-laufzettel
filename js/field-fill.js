@@ -15,8 +15,8 @@ import {
   stampInitialsForSettings,
   stampLagerClerkForSettings,
   normalizeStampDateYY,
-} from './fields.js?v=1.53';
-import { colorCss, colorRgb01 } from './settings.js?v=1.53';
+} from './fields.js?v=1.54';
+import { colorCss, colorRgb01 } from './settings.js?v=1.54';
 
 const { rgb, StandardFonts } = PDFLib;
 
@@ -95,14 +95,26 @@ export function drawGeraetePage(wrap, pageWidth, pageHeight, api) {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.translate(-crop.left * scaleX, -crop.top * scaleY);
 
+    // „Zellen löschen“: white covers (only on demand), below any new value.
+    for (const f of fields) {
+      const cov = api.fieldCovers?.get(fieldKey(f.page, f.number));
+      if (!cov) continue;
+      drawWhiteBoxCanvas(ctx, cov.rect_pt, scaleX, scaleY);
+      // Keep the light-blue field hint visible on the cover (clipped to the cover rect).
+      const [cx0, cy0, cx1, cy1] = cov.rect_pt;
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(cx0 * scaleX, cy0 * scaleY, (cx1 - cx0) * scaleX, (cy1 - cy0) * scaleY);
+      ctx.clip();
+      drawFieldHighlights(ctx, [f], scaleX, scaleY);
+      ctx.restore();
+    }
     for (const f of fields) {
       const key = fieldKey(f.page, f.number);
       const val = api.fieldValues.get(key);
       if (!val?.text) continue;
       if (inlineState && inlineState.key === key) continue; // inline editor covers this cell
-      // White box under every new value: hides an older value already baked into a saved PDF.
-      // white_rect_pt (optional) keeps printed form content (ERP value, [ ] brackets, lines) visible.
-      drawWhiteBoxCanvas(ctx, f.white_rect_pt || f.rect_pt, scaleX, scaleY);
+      // No automatic white box under values: only „Zellen löschen“ covers (drawn above).
       const color = colorCss(val.colorIndex ?? api.settings.colorIndex);
       const typ = val.type || f.type;
       if (typ === 'tap_initials_stamp') {
@@ -116,6 +128,7 @@ export function drawGeraetePage(wrap, pageWidth, pageHeight, api) {
 
   if (hit) {
     hit._fieldApi = api;
+    hit.dataset.eraseMode = api.eraseMode?.() ? '1' : '';
     const keys = fields.map((f) => fieldKey(f.page, f.number)).join('|');
     if (hit.dataset.fieldKeys === keys && hit.children.length === fields.length) {
       // Same fields: keep the buttons (a tap that closes the inline editor must still reach its target).
@@ -142,6 +155,7 @@ export function drawGeraetePage(wrap, pageWidth, pageHeight, api) {
         btn.style.height = `${pct.height}%`;
         btn.addEventListener('pointerdown', (e) => {
           const a = hit._fieldApi;
+          if (a.eraseMode?.()) return; // „Zellen löschen“: Pencil taps cover like finger/mouse
           if (e.pointerType === 'pen' || a.isPenPointer(e)) {
             a.markPenStampSuppress();
             e.preventDefault();
@@ -163,7 +177,7 @@ export function drawGeraetePage(wrap, pageWidth, pageHeight, api) {
   }
 }
 
-/** White plate exactly over rect_pt (canvas, top-left origin). */
+/** White plate exactly over a rect (canvas, top-left origin). Used only by „Zellen löschen“. */
 function drawWhiteBoxCanvas(ctx, rect, scaleX, scaleY) {
   const [x0, y0, x1, y1] = rect;
   ctx.save();
@@ -171,6 +185,11 @@ function drawWhiteBoxCanvas(ctx, rect, scaleX, scaleY) {
   ctx.fillStyle = '#ffffff';
   ctx.fillRect(x0 * scaleX, y0 * scaleY, (x1 - x0) * scaleX, (y1 - y0) * scaleY);
   ctx.restore();
+}
+
+/** Cover rect of a field for „Zellen löschen“: white_rect_pt where defined (keeps printed form values), else rect_pt. */
+export function coverRectForField(field) {
+  return (field.white_rect_pt || field.rect_pt).slice();
 }
 
 /** manual_text fields are edited inline in the cell unless the template sets "inline": false. */
@@ -187,7 +206,6 @@ function storeFieldValue(api, field, type, text) {
     text,
     colorIndex: api.settings.colorIndex,
     rect_pt: field.rect_pt,
-    white_rect_pt: field.white_rect_pt,
     multiline: !!field.multiline,
     single_line: !!field.single_line,
     font_size_pt: field.font_size_pt,
@@ -364,12 +382,14 @@ async function onFieldTap(field, pageIndex, api, wrap) {
   if (inlineState && inlineState.key !== key) closeInlineEditor(true);
   const before = api.snapshotFieldKeys([key]);
 
+  // „Zellen löschen“: remove this session's value (if any) and white-cover the field. One undo step.
   if (api.eraseMode?.()) {
-    if (api.fieldValues.has(key)) {
-      api.fieldValues.delete(key);
-      api.pushUndo({ kind: 'fields', pageIndex, before });
-      api.redrawPage(pageIndex);
-    }
+    if (!api.fieldCovers || api.fieldCovers.has(key)) return; // already covered: nothing more
+    if (inlineState?.key === key) closeInlineEditor(false);
+    api.fieldValues.delete(key);
+    api.fieldCovers.set(key, { page: field.page, number: field.number, id: field.id, rect_pt: coverRectForField(field) });
+    api.pushUndo({ kind: 'cover', pageIndex, key, before });
+    api.redrawPage(pageIndex);
     return;
   }
 
@@ -457,9 +477,18 @@ async function onFieldTap(field, pageIndex, api, wrap) {
 /**
  * Write field values into pdf-lib document (no blue overlays).
  */
-export async function embedFieldValuesInPdf(pdfDoc, pages, fieldValues, settings) {
+export async function embedFieldValuesInPdf(pdfDoc, pages, fieldValues, settings, fieldCovers = null) {
   const helvetica = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const helveticaBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+  // „Zellen löschen“ covers first, so new values are drawn on top of them.
+  for (const [, cov] of fieldCovers || []) {
+    const page = pages[(cov.page || 1) - 1];
+    if (!page || !cov.rect_pt) continue;
+    const { height: pageHeight } = page.getSize();
+    const [wx0, wy0, wx1, wy1] = cov.rect_pt;
+    page.drawRectangle({ x: wx0, y: pageHeight - wy1, width: wx1 - wx0, height: wy1 - wy0, color: rgb(1, 1, 1), borderWidth: 0, opacity: 1 });
+  }
 
   for (const [, val] of fieldValues) {
     if (!val?.text || !val.rect_pt) continue;
@@ -477,11 +506,6 @@ export async function embedFieldValuesInPdf(pdfDoc, pages, fieldValues, settings
     const c = colorRgb01(val.colorIndex ?? settings.colorIndex);
     const textColor = rgb(c.r, c.g, c.b);
     const text = String(val.text);
-    // White box over the field rect (or white_rect_pt): covers an older value already baked into the PDF.
-    {
-      const [wx0, wy0, wx1, wy1] = val.white_rect_pt || val.rect_pt;
-      page.drawRectangle({ x: wx0, y: pageHeight - wy1, width: wx1 - wx0, height: wy1 - wy0, color: rgb(1, 1, 1), borderWidth: 0, opacity: 1 });
-    }
     if (val.multiline || val.single_line) {
       const fit = fitMultilineText(text, val.rect_pt, val.font_size_pt, (s, pt) => helvetica.widthOfTextAtSize(s, pt), !!val.single_line);
       fit.lines.forEach((ln, i) => {
@@ -592,7 +616,6 @@ export function applyParsedFieldValues(fieldValues, parsed, template) {
       text: String(text),
       colorIndex: colorIndex ?? 0,
       rect_pt: f.rect_pt,
-      white_rect_pt: f.white_rect_pt,
       multiline: !!f.multiline,
       single_line: !!f.single_line,
       font_size_pt: f.font_size_pt,
