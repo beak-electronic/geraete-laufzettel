@@ -1824,3 +1824,18 @@ textarea.inline-field-editor {
   overflow-y: auto;
   resize: none;
 }
+
+/* Änderungsprotokoll viewer */
+.protokoll-dialog .protokoll-body { max-height: 70vh; overflow: auto; }
+.protokoll-list { margin: 4px 0 0; padding-left: 22px; font-size: 13px; line-height: 1.35; }
+.protokoll-list li { margin: 0 0 6px; }
+.protokoll-time { font-variant-numeric: tabular-nums; color: var(--muted); }
+.protokoll-how { color: var(--muted); font-size: 12px; }
+.protokoll-detail { color: inherit; word-break: break-word; }
+/* Title: one real bold face for the whole word (no mixed 600/synthetic rendering) */
+.protokoll-dialog .settings-header h2.protokoll-title {
+  font-weight: 700;
+  font-synthesis: none;
+  white-space: nowrap;
+  letter-spacing: 0;
+}

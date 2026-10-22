@@ -3,6 +3,8 @@
  * Pure-ish helpers; pdf.js / pdf-lib / JSZip come from the caller (browser or node test).
  */
 
+import { readLogFromPdfJs, attachLogToPdfLib, derivedLog } from './protokoll.js?v=1.53';
+
 /** @typedef {{ start: number, end: number }} PageRange  1-based inclusive */
 
 const ID_RE = /DE-\d{1,4}\.\d{1,4}-[A-Z0-9]+/i;
@@ -550,7 +552,7 @@ export async function extractIdFromPage(pdf, pageNumber) {
  * @param {(msg: string) => void} [onProgress]
  * @returns {Promise<Uint8Array[]>}
  */
-export async function splitPdfBytes(srcBytes, ranges, PDFLib, onProgress) {
+export async function splitPdfBytes(srcBytes, ranges, PDFLib, onProgress, logOpts = null) {
   const { PDFDocument } = PDFLib;
   const src = await PDFDocument.load(srcBytes.slice());
   const out = [];
@@ -562,6 +564,16 @@ export async function splitPdfBytes(srcBytes, ranges, PDFLib, onProgress) {
     for (let p = start; p <= end; p++) indices.push(p - 1);
     const pages = await doc.copyPages(src, indices);
     for (const pg of pages) doc.addPage(pg);
+    // Änderungsprotokoll der Quelle (falls vorhanden) in jeden Teil übernehmen.
+    if (logOpts?.log) {
+      const name = logOpts.filenames?.[i] || `Teil ${i + 1}`;
+      await attachLogToPdfLib(doc, derivedLog([logOpts.log], {
+        kind: 'split',
+        action: 'split',
+        fileName: name,
+        details: { source_file: logOpts.originalName || '', source_pages: `${start}-${end}` },
+      }), PDFLib);
+    }
     const bytes = await doc.save();
     out.push(bytes);
   }
@@ -630,13 +642,15 @@ export async function buildSplitZip(opts) {
       ids.push(null);
     }
   }
+  const { log: srcLog } = await readLogFromPdfJs(pdf);
   try {
     await pdf.destroy?.();
   } catch (_) {}
 
   const filenames = uniqueFilenames(ids);
   const parts = await splitPdfBytes(pdfBytes, ranges, PDFLib, (m) =>
-    onStatus?.(m, 'busy')
+    onStatus?.(m, 'busy'),
+    srcLog ? { log: srcLog, filenames, originalName } : null
   );
 
   onStatus?.('ZIP wird erzeugt…', 'busy');

@@ -1,5 +1,5 @@
-import * as pdfjsLib from '../vendor/pdf.min.mjs?v=1.52';
-import { callPickerInPdfFolder, getCachedPdfFolderHandle, getPdfFolderHandle } from './catalog.js?v=1.52';
+import * as pdfjsLib from '../vendor/pdf.min.mjs?v=1.53';
+import { callPickerInPdfFolder, getCachedPdfFolderHandle, getPdfFolderHandle } from './catalog.js?v=1.53';
 import {
   emptyCells,
   headerCells,
@@ -12,7 +12,7 @@ import {
   PAGE_HEIGHT,
   INSET,
   FILL_WHITE,
-} from './grid.js?v=1.52';
+} from './grid.js?v=1.53';
 import {
   loadSettings,
   saveInitials,
@@ -32,7 +32,7 @@ import {
   colorRgb01,
   DARK_COLORS,
   LAST_COLUMN_INDEX,
-} from './settings.js?v=1.52';
+} from './settings.js?v=1.53';
 import {
   KNOWN_TEMPLATES,
   resolveTemplateId,
@@ -41,7 +41,7 @@ import {
   extractArticleFromFilename,
   fieldKey,
   stampDateForSettings,
-} from './fields.js?v=1.52';
+} from './fields.js?v=1.53';
 import {
   drawGeraetePage,
   embedFieldValuesInPdf,
@@ -50,7 +50,23 @@ import {
   applyParsedFieldValues,
   closeInlineEditor,
   isInlineEditing,
-} from './field-fill.js?v=1.52';
+  isInlineField,
+} from './field-fill.js?v=1.53';
+import {
+  isoLocal,
+  newSession,
+  readLogFromPdfJs,
+  mergeLogs,
+  emptyLog,
+  attachLogToPdfLib,
+  inputDevice,
+  pageTextLines,
+  describeStrokeLocation,
+  strokeBBox,
+  showLogDialog,
+  getDeviceName,
+  setDeviceName,
+} from './protokoll.js?v=1.53';
 import {
   decodeBarcodeFromBlob,
   decodeBarcodeFromElement,
@@ -59,9 +75,9 @@ import {
   stopCamera,
   releaseAllCameras,
   releaseAllCamerasAsync,
-} from './scan.js?v=1.52';
+} from './scan.js?v=1.53';
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs?v=1.52', import.meta.url).href;
+pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs?v=1.53', import.meta.url).href;
 
 const { PDFDocument, rgb, StandardFonts, LineCapStyle } = PDFLib;
 
@@ -98,6 +114,12 @@ const state = {
   /** @type {Map<string, {page:number,number:number,id:string,type:string,text:string,colorIndex:number,rect_pt:number[]}>} */
   fieldValues: new Map(),
   pdfHeaderText: '',
+  /**
+   * Änderungsprotokoll of the open document.
+   * prior = log read from the opened PDF (or null), session = this editing session.
+   * @type {{prior: object|null, unparsed: string|null, session: object, seq: number, pending: Promise[]}|null}
+   */
+  changeLog: null,
 };
 
 const el = {
@@ -123,6 +145,8 @@ const el = {
   eraseMode: document.getElementById('fill-settings-erase-mode'),
   lastColDateOnly: document.getElementById('fill-settings-last-col-date-only'),
   settingsForm: document.getElementById('fill-settings-form'),
+  deviceName: document.getElementById('fill-settings-device-name'),
+  btnShowLog: document.getElementById('btn-fill-show-log'),
   fieldTemplate: document.getElementById('fill-settings-template'),
   fieldEntryDialog: document.getElementById('field-entry-dialog'),
   fieldEntryTitle: document.getElementById('field-entry-title'),
@@ -237,8 +261,225 @@ function restoreKeySnapshot(snap) {
 }
 
 function pushUndo(entry) {
+  try {
+    entry.logSeqs = logUndoableChange(entry);
+  } catch (err) {
+    console.warn('Änderungsprotokoll: Eintrag fehlgeschlagen', err);
+  }
   state.undoStack.push(entry);
   updateInkUndoButton();
+}
+
+/* ---------- Änderungsprotokoll (JSON-Anhang im PDF) ---------- */
+
+/** Last pointerType seen anywhere (mouse / touch / pen) → input device of a tap. */
+let lastPointerType = '';
+/** Set when the field-entry dialog was closed by a barcode/DataMatrix scan. */
+let lastEntryWasScan = false;
+
+function logWho() {
+  return {
+    kuerzel: (state.settings.initials || '').trim() || null,
+    sachbearbeiter_lager: lagerClerkName(state.settings) || null,
+  };
+}
+
+function startChangeLog(prior, unparsed) {
+  state.changeLog = {
+    prior: prior || null,
+    unparsed: unparsed || null,
+    session: newSession({ fileName: state.fileName, templateId: state.templateId, who: logWho() }),
+    seq: 0,
+    pending: [],
+  };
+}
+
+function logEntry(obj) {
+  const L = state.changeLog;
+  if (!L) return null;
+  const e = { seq: ++L.seq, t: isoLocal(), ...obj };
+  L.session.entries.push(e);
+  return e;
+}
+
+function templateFieldByKey(key) {
+  const tpl = state.template;
+  if (!tpl?.pages) return null;
+  for (const blk of Object.values(tpl.pages)) {
+    for (const f of blk.fields || []) if (fieldKey(f.page, f.number) === key) return f;
+  }
+  return null;
+}
+
+function fieldRef(f, key) {
+  if (!f) return { key };
+  return { number: f.number, id: f.id, label: f.label || '', type: f.type };
+}
+
+/** How a field value was produced (type of action), independent of the pointer device. */
+function fieldMethod(f, action) {
+  if (state.eraseMode) return 'erase_mode';
+  if (!f) return 'unknown';
+  if (action === 'field_cleared' && !isInlineField(f)) return 'tap_clear';
+  switch (f.type) {
+    case 'tap_ok':
+    case 'tap_x':
+      return 'tap';
+    case 'tap_date_settings':
+      return 'tap_date';
+    case 'tap_initials_stamp':
+      return 'stamp';
+    case 'tap_lager_clerk':
+      return 'tap_name';
+    case 'manual_date':
+      return 'date_entry';
+    case 'manual_text':
+      return isInlineField(f) ? 'inline_text' : 'text_dialog';
+    case 'scan_or_manual':
+      return lastEntryWasScan ? 'scan' : 'keyboard';
+    default:
+      return f.type || 'unknown';
+  }
+}
+
+/** @returns {number[]} log sequence numbers created for this undo step */
+function logUndoableChange(entry) {
+  if (!state.changeLog) return [];
+  const seqs = [];
+  if (entry.kind === 'fields') {
+    for (const b of entry.before || []) {
+      const oldText = b.value?.text ?? '';
+      const nv = state.fieldValues.get(b.key);
+      const newText = nv?.text ?? '';
+      if (oldText === newText) continue;
+      const action = !oldText ? 'field_filled' : !newText ? 'field_cleared' : 'field_changed';
+      const f = templateFieldByKey(b.key);
+      const page = f?.page || Number(String(b.key).split(':')[0]) || entry.pageIndex + 1;
+      const e = logEntry({
+        action,
+        page,
+        field: fieldRef(f, b.key),
+        old: oldText,
+        new: newText,
+        method: fieldMethod(f, action),
+        input: inputDevice(lastPointerType),
+        where: f?.rect_pt ? { rect_pt: f.rect_pt } : undefined,
+        stamp_color: nv ? nv.colorIndex : undefined,
+      });
+      if (e) seqs.push(e.seq);
+    }
+  } else if (entry.kind === 'ink') {
+    const strokes = state.ink.get(entry.pageIndex) || [];
+    const stroke = strokes[strokes.length - 1];
+    const bbox = strokeBBox(stroke);
+    const e = logEntry({
+      action: 'stroke',
+      page: entry.pageIndex + 1,
+      method: 'freehand',
+      input: inputDevice(entry.pointerType || 'pen'),
+      where: { bbox_pt: bbox },
+      points: stroke?.points?.length || 0,
+      color: stroke?.color,
+    });
+    if (e) {
+      seqs.push(e.seq);
+      enrichStrokeWhere(e, entry.pageIndex, bbox);
+    }
+  } else if (entry.kind === 'cells') {
+    const e = logEntry({
+      action: 'cells_changed',
+      page: entry.pageIndex + 1,
+      cells: (entry.before || []).map((b) => b.key),
+      method: state.eraseMode ? 'erase_mode' : 'tap',
+      input: inputDevice(lastPointerType),
+    });
+    if (e) seqs.push(e.seq);
+  }
+  return seqs;
+}
+
+/** Per open document: pdf.js text lines per page, used to describe stroke locations. */
+const textLinesCache = new Map();
+
+function enrichStrokeWhere(e, pageIndex, bbox) {
+  const L = state.changeLog;
+  const pdf = state.pdfDoc;
+  if (!L || !pdf || !bbox) return;
+  const p = (async () => {
+    try {
+      let lines = textLinesCache.get(pageIndex);
+      if (!lines) {
+        lines = await pageTextLines(await pdf.getPage(pageIndex + 1));
+        textLinesCache.set(pageIndex, lines);
+      }
+      const fields = (state.template?.pages?.[String(pageIndex + 1)]?.fields) || [];
+      Object.assign(e.where, describeStrokeLocation(bbox, lines, fields));
+    } catch (err) {
+      console.warn('Änderungsprotokoll: Ort des Strichs nicht bestimmbar', err);
+    }
+  })();
+  L.pending.push(p);
+}
+
+function summarizeLogEntry(le) {
+  if (!le) return '';
+  if (le.action === 'stroke') {
+    const w = le.where || {};
+    return [`Seite ${le.page}`, w.section, w.row_label, w.near_text].filter(Boolean).join(' › ');
+  }
+  if (le.field) return `Seite ${le.page} Nr. ${le.field.number} ${le.field.label || ''}: „${le.old ?? ''}“ → „${le.new ?? ''}“`.trim();
+  return `Seite ${le.page || '?'}`;
+}
+
+function logUndo(entry) {
+  const L = state.changeLog;
+  if (!L) return;
+  const undone = (entry.logSeqs || []).map((seq) => L.session.entries.find((x) => x.seq === seq)).filter(Boolean);
+  logEntry({
+    action: 'undo',
+    page: entry.kind ? entry.pageIndex + 1 : undefined,
+    undoes_seq: entry.logSeqs || [],
+    undone: undone.length === 1
+      ? { action: undone[0].action, summary: summarizeLogEntry(undone[0]) }
+      : { action: entry.kind, summary: undone.map(summarizeLogEntry).join(' | ') },
+    method: 'undo_button',
+    input: inputDevice(lastPointerType),
+  });
+}
+
+/** Merged log (prior sessions + this session) as it would be saved now. */
+function currentMergedLog({ markSaved = false, outName = '' } = {}) {
+  const L = state.changeLog;
+  if (!L) return null;
+  const base = L.prior ? mergeLogs([L.prior]) : emptyLog();
+  if (L.prior?.created) base.created = L.prior.created;
+  if (!L.prior && L.unparsed) base.previous_unparsed = L.unparsed;
+  const session = { ...L.session, who: logWho(), entries: [...L.session.entries] };
+  if (markSaved) {
+    session.saved = isoLocal();
+    session.entries.push({ seq: L.seq + 1, t: session.saved, action: 'saved', file_name: outName || state.fileName });
+  }
+  base.sessions = base.sessions.filter((s) => s.session_id !== session.session_id);
+  base.sessions.push(session);
+  return base;
+}
+
+/** Attach the merged log to the pdf-lib document before save(). Never throws. */
+async function embedChangeLog(pdfDoc, outName) {
+  try {
+    const L = state.changeLog;
+    if (!L) return;
+    await Promise.allSettled(L.pending);
+    const log = currentMergedLog({ markSaved: true, outName });
+    await attachLogToPdfLib(pdfDoc, log, PDFLib);
+  } catch (err) {
+    console.warn('Änderungsprotokoll: Anhängen fehlgeschlagen — PDF wird ohne Protokoll gespeichert', err);
+  }
+}
+
+export function showChangeLog() {
+  const log = currentMergedLog() || emptyLog();
+  showLogDialog(log, { title: 'Änderungsprotokoll' });
 }
 
 function clearDocument() {
@@ -263,6 +504,8 @@ function clearDocument() {
   state.templateId = '';
   state.fieldValues.clear();
   state.pdfHeaderText = '';
+  state.changeLog = null;
+  textLinesCache.clear();
   el.viewer.innerHTML = '';
   setDocumentUI(false);
   fieldScanStream = null;
@@ -270,7 +513,7 @@ function clearDocument() {
     releaseAllCameras();
   } catch (_) {}
   // Release home + field cameras so the next home scan can start (iOS).
-  import('./app.js?v=1.52')
+  import('./app.js?v=1.53')
     .then((mod) => {
       if (typeof mod.ensureCamerasReleased === 'function') return mod.ensureCamerasReleased();
     })
@@ -375,7 +618,7 @@ function parseFilledFromKeywords(keywords) {
  */
 export async function openFile(file, fileHandle = null) {
   try {
-    const mod = await import('./app.js?v=1.52');
+    const mod = await import('./app.js?v=1.53');
     if (typeof mod.ensureCamerasReleased === 'function') await mod.ensureCamerasReleased();
   } catch (_) {}
 
@@ -419,6 +662,13 @@ export async function openFile(file, fileHandle = null) {
           : 'Keine Feldvorlage für diese PDF hinterlegt — PDF wurde nicht geöffnet.',
       );
       return;
+    }
+
+    // Änderungsprotokoll: read an existing attachment and continue it.
+    textLinesCache.clear();
+    {
+      const { log: priorLog, unparsed } = await readLogFromPdfJs(pdf);
+      startChangeLog(priorLog, unparsed);
     }
 
     // Do NOT restore glfill/bgfill overlays on open. A partially filled PDF already
@@ -968,7 +1218,7 @@ function finishActiveInk(commit) {
   if (commit && active.stroke.points.length > 0) {
     pageInk(active.pageIndex).push(active.stroke);
     state.lastInkPage = active.pageIndex;
-    pushUndo({ kind: 'ink', pageIndex: active.pageIndex });
+    pushUndo({ kind: 'ink', pageIndex: active.pageIndex, pointerType: active.pointerType || 'pen' });
   }
   state.activeInk = null;
   if (wrap) {
@@ -1315,6 +1565,11 @@ function undoLastAction() {
   if (!entry) {
     updateInkUndoButton();
     return;
+  }
+  try {
+    logUndo(entry);
+  } catch (err) {
+    console.warn('Änderungsprotokoll: Undo-Eintrag fehlgeschlagen', err);
   }
   if (entry.kind === 'ink') {
     const strokes = state.ink.get(entry.pageIndex);
@@ -1977,11 +2232,11 @@ function preferDownloadSave() {
 
 async function syncCatalogAfterSave(blob, name) {
   try {
-    const cat = await import('./catalog.js?v=1.52');
+    const cat = await import('./catalog.js?v=1.53');
     if (typeof cat.upsertSavedPdf === 'function') {
       await cat.upsertSavedPdf(blob, name);
     }
-    const mod = await import('./app.js?v=1.52');
+    const mod = await import('./app.js?v=1.53');
     if (typeof mod.onPdfCatalogUpdated === 'function') {
       await mod.onPdfCatalogUpdated();
     }
@@ -1995,7 +2250,7 @@ async function notifyStampSaved() {
   state.pendingQty = 0;
   if (!qty) return;
   try {
-    const mod = await import('./app.js?v=1.52');
+    const mod = await import('./app.js?v=1.53');
     if (typeof mod.onStampSaved === 'function') mod.onStampSaved(qty);
   } catch (err) {
     console.warn('onStampSaved failed', err);
@@ -2041,6 +2296,7 @@ function closeFieldEntryDialog(result) {
  * @returns {Promise<string|null>}
  */
 function promptFieldInput(opts) {
+  lastEntryWasScan = false;
   return new Promise((resolve) => {
     fieldEntryResolver = resolve;
     const dlg = el.fieldEntryDialog;
@@ -2345,9 +2601,10 @@ async function saveDocument() {
       } catch (_) {}
       pdfDoc.setKeywords(kept);
 
+      let name = state.fileName || 'Laufzettel.pdf'; // keep opened PDF name exactly (no date suffix)
+      await embedChangeLog(pdfDoc, name);
       const out = await pdfDoc.save();
       const blob = new Blob([out], { type: 'application/pdf' });
-      let name = state.fileName || 'Laufzettel.pdf'; // keep opened PDF name exactly (no date suffix)
       await finishSaveBlob(blob, name);
       return;
     }
@@ -2497,9 +2754,10 @@ async function saveDocument() {
     kept.push(`bgfill=${keys.join(',')}`);
     pdfDoc.setKeywords(kept);
 
+    let name = state.fileName || 'Laufzettel.pdf'; // keep opened PDF name exactly (no date suffix)
+    await embedChangeLog(pdfDoc, name);
     const out = await pdfDoc.save();
     const blob = new Blob([out], { type: 'application/pdf' });
-    let name = state.fileName || 'Laufzettel.pdf'; // keep opened PDF name exactly (no date suffix)
     await finishSaveBlob(blob, name);
   } catch (err) {
     if (err && err.name === 'AbortError') {
@@ -2597,6 +2855,7 @@ function buildColorGrid() {
 
 function openSettings() {
   el.initials.value = state.settings.initials;
+  if (el.deviceName) el.deviceName.value = getDeviceName();
   el.date.value = state.settings.dateOverride || '';
   if (el.lagerClerk) el.lagerClerk.value = lagerClerkName(state.settings);
 
@@ -2637,6 +2896,7 @@ function applySettingsFromForm() {
   const initials = el.initials.value.trim() || 'TK';
   state.settings.initials = initials;
   saveInitials(initials);
+  if (el.deviceName) el.deviceName.value = setDeviceName(el.deviceName.value);
 
   const raw = el.date.value.trim();
   state.settings.dateOverride = raw ? normalizeStampDateYY(raw) : null;
@@ -2732,6 +2992,22 @@ export function initFill() {
     redrawSettingsStampBadge();
   });
 
+  el.deviceName?.addEventListener('change', () => {
+    el.deviceName.value = setDeviceName(el.deviceName.value);
+  });
+  el.btnShowLog?.addEventListener('click', () => {
+    if (el.deviceName) el.deviceName.value = setDeviceName(el.deviceName.value);
+    applySettingsFromForm(); // same as „Fertig“
+    try {
+      if (typeof el.dialog.close === 'function') el.dialog.close();
+      else el.dialog.removeAttribute('open');
+    } catch (_) {}
+    showChangeLog();
+  });
+  // Input device of the last tap/click (mouse / finger / Apple Pencil) for the log.
+  document.addEventListener('pointerdown', (e) => {
+    lastPointerType = e.pointerType || '';
+  }, { capture: true, passive: true });
   el.lagerClerk?.addEventListener('change', () => {
     state.settings.sachbearbeiterLager = saveSachbearbeiterLager(el.lagerClerk.value);
     el.lagerClerk.value = state.settings.sachbearbeiterLager;
@@ -2819,6 +3095,7 @@ export function initFill() {
       const scanned = await scanIntoField();
       if (scanned != null) {
         if (el.fieldEntryInput) el.fieldEntryInput.value = scanned;
+        lastEntryWasScan = true;
         closeFieldEntryDialog(scanned);
       }
     });

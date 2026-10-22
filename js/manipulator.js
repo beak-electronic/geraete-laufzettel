@@ -3,13 +3,14 @@
  * Eigene Ansicht, eigener Datei-Input: läuft NICHT über die Feldvorlagen-Prüfung
  * des Laufzettel-Öffnens (PDFs ohne Feldvorlage werden hier normal geteilt).
  */
-import * as pdfjsLib from '../vendor/pdf.min.mjs?v=1.52';
-import { buildSplitZip, sanitizeFilename } from './split.js?v=1.52';
-import { xpsToPdf, isXpsFile } from './xps2pdf.js?v=1.52';
-import { callPickerInPdfFolder } from './catalog.js?v=1.52';
+import * as pdfjsLib from '../vendor/pdf.min.mjs?v=1.53';
+import { buildSplitZip, sanitizeFilename } from './split.js?v=1.53';
+import { xpsToPdf, isXpsFile } from './xps2pdf.js?v=1.53';
+import { callPickerInPdfFolder } from './catalog.js?v=1.53';
+import { readLogFromPdfJs, attachLogToPdfLib, derivedLog } from './protokoll.js?v=1.53';
 
 if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs?v=1.52', import.meta.url).href;
+  pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs?v=1.53', import.meta.url).href;
 }
 
 const $ = (sel) => document.querySelector(sel);
@@ -498,6 +499,8 @@ async function handleMergeFiles(fileList) {
     setMergeStatus('PDFs werden verbunden…', 'busy');
     const out = await PDFLib.PDFDocument.create();
     const counts = [];
+    /** Änderungsprotokolle der Eingabe-PDFs (normalerweise nur der Laufzettel). */
+    const srcLogs = [];
     for (const f of plan.ordered) {
       if (isXpsFile(f)) {
         setMergeStatus(`XPS wird umgewandelt: ${f.name}…`, 'busy');
@@ -511,10 +514,27 @@ async function handleMergeFiles(fileList) {
         counts.push(out.getPageCount() - before);
         continue;
       }
-      const src = await PDFLib.PDFDocument.load(await f.arrayBuffer(), { ignoreEncryption: true });
+      const buf = await f.arrayBuffer();
+      try {
+        const pj = await pdfjsLib.getDocument({ data: new Uint8Array(buf.slice(0)) }).promise;
+        const { log } = await readLogFromPdfJs(pj);
+        if (log) srcLogs.push(log);
+        await pj.destroy?.();
+      } catch (err) {
+        console.warn('Änderungsprotokoll nicht lesbar', f.name, err);
+      }
+      const src = await PDFLib.PDFDocument.load(buf, { ignoreEncryption: true });
       const pages = await out.copyPages(src, src.getPageIndices());
       pages.forEach((p) => out.addPage(p));
       counts.push(pages.length);
+    }
+    if (srcLogs.length) {
+      await attachLogToPdfLib(out, derivedLog(srcLogs, {
+        kind: 'merge',
+        action: 'merged',
+        fileName: plan.outName,
+        details: { inputs: plan.ordered.map((f) => f.name) },
+      }), PDFLib);
     }
     const bytes = await out.save();
     const blob = new Blob([bytes], { type: 'application/pdf' });

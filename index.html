@@ -118,14 +118,14 @@
 
       <div class="home-footer-row">
         <p class="home-footer">
-          Version 1.52<br />
+          Version 1.53<br />
           © BEAK electronic engineering GmbH &amp; Co. KG
         </p>
         <button type="button" class="footer-settings-btn" id="btn-open-names" aria-label="Liste" title="Liste">
-          <img class="pill-icon" src="icons/list_btn.png?v=1.52" alt="" width="40" height="40" draggable="false" />
+          <img class="pill-icon" src="icons/list_btn.png?v=1.53" alt="" width="40" height="40" draggable="false" />
         </button>
         <button type="button" class="footer-settings-btn" id="btn-home-settings" aria-label="Einstellungen" title="Einstellungen">
-          <img class="pill-icon" src="icons/settings_btn.png?v=1.52" alt="" width="40" height="40" draggable="false" />
+          <img class="pill-icon" src="icons/settings_btn.png?v=1.53" alt="" width="40" height="40" draggable="false" />
         </button>
       </div>
     </div>
@@ -353,7 +353,7 @@
         </section>
         <section class="settings-section cardish">
           <h3>Info</h3>
-          <p class="hint">Geräte Laufzettel 1.52<br />© BEAK electronic engineering GmbH &amp; Co. KG</p>
+          <p class="hint">Geräte Laufzettel 1.53<br />© BEAK electronic engineering GmbH &amp; Co. KG</p>
         </section>
       </div>
     </form>
@@ -411,6 +411,14 @@
         <h3>Sachbearbeiter Lager</h3>
         <input type="text" id="fill-settings-lager-clerk" maxlength="40" autocomplete="off" autocorrect="on" autocapitalize="words" spellcheck="false" placeholder="Name" />
         <p class="hint">Tippen auf die PDF-Zelle schreibt diesen Namen sofort ein (kein Dialog). Nochmal tippen löscht.</p>
+      </section>
+
+      <section class="settings-section">
+        <h3>Änderungsprotokoll</h3>
+        <label for="fill-settings-device-name" class="hint">Gerätename (optional, z. B. „iPad Montage 2“)</label>
+        <input type="text" id="fill-settings-device-name" maxlength="60" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Gerätename" />
+        <p class="hint">Beim Sichern wird unsichtbar ein Protokoll (aenderungsprotokoll.json) an das PDF angehängt: wer, wann, welches Gerät, welches Feld/welche Stelle, wie. Kein Standort.</p>
+        <button type="button" class="btn btn-secondary" id="btn-fill-show-log">Protokoll anzeigen</button>
       </section>
 
       <section class="settings-section">
@@ -498,12 +506,12 @@
     </div>
   </div>
 
-  <script src="vendor/pdf-lib.min.js?v=1.52"></script>
-  <script src="vendor/fontkit.umd.min.js?v=1.52"></script>
-  <script src="vendor/zxing-library.min.js?v=1.52"></script>
-  <script src="vendor/jszip.min.js?v=1.52"></script>
-  <script src="vendor/FileSaver.min.js?v=1.52"></script>
-  <script type="module" src="js/app.js?v=1.52"></script>
-  <script type="module" src="js/manipulator.js?v=1.52"></script>
+  <script src="vendor/pdf-lib.min.js?v=1.53"></script>
+  <script src="vendor/fontkit.umd.min.js?v=1.53"></script>
+  <script src="vendor/zxing-library.min.js?v=1.53"></script>
+  <script src="vendor/jszip.min.js?v=1.53"></script>
+  <script src="vendor/FileSaver.min.js?v=1.53"></script>
+  <script type="module" src="js/app.js?v=1.53"></script>
+  <script type="module" src="js/manipulator.js?v=1.53"></script>
 </body>
 </html>
