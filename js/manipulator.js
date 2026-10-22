@@ -3,12 +3,13 @@
  * Eigene Ansicht, eigener Datei-Input: läuft NICHT über die Feldvorlagen-Prüfung
  * des Laufzettel-Öffnens (PDFs ohne Feldvorlage werden hier normal geteilt).
  */
-import * as pdfjsLib from '../vendor/pdf.min.mjs?v=1.51';
-import { buildSplitZip, sanitizeFilename } from './split.js?v=1.51';
-import { xpsToPdf, isXpsFile } from './xps2pdf.js?v=1.51';
+import * as pdfjsLib from '../vendor/pdf.min.mjs?v=1.52';
+import { buildSplitZip, sanitizeFilename } from './split.js?v=1.52';
+import { xpsToPdf, isXpsFile } from './xps2pdf.js?v=1.52';
+import { callPickerInPdfFolder } from './catalog.js?v=1.52';
 
 if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs?v=1.51', import.meta.url).href;
+  pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs?v=1.52', import.meta.url).href;
 }
 
 const $ = (sel) => document.querySelector(sel);
@@ -76,7 +77,7 @@ const SAVE_TYPES = {
 async function saveAsWithPicker(blob, name, type) {
   let handle;
   try {
-    handle = await window.showSaveFilePicker({
+    handle = await callPickerInPdfFolder((o) => window.showSaveFilePicker(o), {
       suggestedName: name,
       types: [SAVE_TYPES[type] || SAVE_TYPES['application/zip']],
     });
@@ -113,7 +114,8 @@ function requestSaveHandle(name, type) {
   if (!hasSaveAsPicker()) return null;
   let p;
   try {
-    p = window.showSaveFilePicker({
+    // Synchronous call kept (user activation); startIn = linked PDF folder if any.
+    p = callPickerInPdfFolder((o) => window.showSaveFilePicker(o), {
       suggestedName: name,
       types: [SAVE_TYPES[type] || SAVE_TYPES['application/zip']],
     });

@@ -131,20 +131,61 @@ function isPdfFilename(name) {
   return /\.pdf$/i.test(String(name || ""));
 }
 
+/**
+ * Synchronous copy of the linked PDF folder handle, so file pickers can get it as
+ * `startIn` without an await before the picker call (keeps the user activation).
+ * undefined = not loaded yet, null = no folder linked.
+ * @type {FileSystemDirectoryHandle|null|undefined}
+ */
+let cachedPdfFolderHandle;
+
 export async function savePdfFolderHandle(handle) {
   if (!handle) return;
   await idbSet(IDB_STORE_HANDLES, DIR_KEY, handle);
+  cachedPdfFolderHandle = handle;
 }
 
 export async function getPdfFolderHandle() {
   try {
-    return await idbGet(IDB_STORE_HANDLES, DIR_KEY);
+    const h = (await idbGet(IDB_STORE_HANDLES, DIR_KEY)) || null;
+    cachedPdfFolderHandle = h;
+    return h;
   } catch (_) {
     return null;
   }
 }
 
+/** Last known linked folder handle (sync); undefined until the first IndexedDB read finished. */
+export function getCachedPdfFolderHandle() {
+  return cachedPdfFolderHandle;
+}
+
+/**
+ * Call a File System Access picker (Chrome/Edge) starting in the linked PDF folder.
+ * The picker is invoked synchronously (no await before it). If it fails with anything
+ * other than AbortError (e.g. stale/removed folder), retry once without startIn.
+ * Without a linked folder: plain picker call, exactly as before.
+ * @param {(opts:object)=>Promise<any>} picker  e.g. (o) => window.showOpenFilePicker(o)
+ * @param {object} opts
+ * @param {FileSystemDirectoryHandle|null} [dir]
+ */
+export function callPickerInPdfFolder(picker, opts, dir = cachedPdfFolderHandle) {
+  if (!dir || typeof dir !== 'object' || dir.kind !== 'directory') return picker(opts);
+  let p;
+  try {
+    p = picker({ ...opts, startIn: dir });
+  } catch (err) {
+    p = Promise.reject(err);
+  }
+  return Promise.resolve(p).catch((err) => {
+    if (err && err.name === 'AbortError') throw err;
+    console.warn('File picker with startIn failed, retrying without', err);
+    return picker(opts);
+  });
+}
+
 export async function clearPdfFolderHandle() {
+  cachedPdfFolderHandle = null;
   try {
     await idbSet(IDB_STORE_HANDLES, DIR_KEY, null);
   } catch (_) {}
@@ -235,7 +276,8 @@ export async function pickPdfFolder() {
   if (!supportsDirectoryPicker()) {
     throw new Error("Ordnerauswahl wird von diesem Browser nicht unterstützt.");
   }
-  const handle = await window.showDirectoryPicker({ mode: "read" });
+  // „Ordner ändern“: start in the currently linked folder (sync cache, no await first).
+  const handle = await callPickerInPdfFolder((o) => window.showDirectoryPicker(o), { mode: "read" });
   await savePdfFolderHandle(handle);
   await reindexPdfFolder();
   return handle;
@@ -605,4 +647,9 @@ export function formatCatalogUpdated(ts) {
   } catch (_) {
     return new Date(ts).toLocaleString("de-DE");
   }
+}
+
+// Prime the sync folder-handle cache early (Chrome/Edge only; harmless elsewhere).
+if (typeof indexedDB !== "undefined" && typeof window !== "undefined" && typeof window.showOpenFilePicker === "function") {
+  getPdfFolderHandle().catch(() => {});
 }

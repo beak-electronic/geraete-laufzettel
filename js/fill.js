@@ -1,4 +1,5 @@
-import * as pdfjsLib from '../vendor/pdf.min.mjs?v=1.51';
+import * as pdfjsLib from '../vendor/pdf.min.mjs?v=1.52';
+import { callPickerInPdfFolder, getCachedPdfFolderHandle, getPdfFolderHandle } from './catalog.js?v=1.52';
 import {
   emptyCells,
   headerCells,
@@ -11,7 +12,7 @@ import {
   PAGE_HEIGHT,
   INSET,
   FILL_WHITE,
-} from './grid.js?v=1.51';
+} from './grid.js?v=1.52';
 import {
   loadSettings,
   saveInitials,
@@ -31,7 +32,7 @@ import {
   colorRgb01,
   DARK_COLORS,
   LAST_COLUMN_INDEX,
-} from './settings.js?v=1.51';
+} from './settings.js?v=1.52';
 import {
   KNOWN_TEMPLATES,
   resolveTemplateId,
@@ -40,7 +41,7 @@ import {
   extractArticleFromFilename,
   fieldKey,
   stampDateForSettings,
-} from './fields.js?v=1.51';
+} from './fields.js?v=1.52';
 import {
   drawGeraetePage,
   embedFieldValuesInPdf,
@@ -49,7 +50,7 @@ import {
   applyParsedFieldValues,
   closeInlineEditor,
   isInlineEditing,
-} from './field-fill.js?v=1.51';
+} from './field-fill.js?v=1.52';
 import {
   decodeBarcodeFromBlob,
   decodeBarcodeFromElement,
@@ -58,9 +59,9 @@ import {
   stopCamera,
   releaseAllCameras,
   releaseAllCamerasAsync,
-} from './scan.js?v=1.51';
+} from './scan.js?v=1.52';
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs?v=1.51', import.meta.url).href;
+pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs?v=1.52', import.meta.url).href;
 
 const { PDFDocument, rgb, StandardFonts, LineCapStyle } = PDFLib;
 
@@ -269,7 +270,7 @@ function clearDocument() {
     releaseAllCameras();
   } catch (_) {}
   // Release home + field cameras so the next home scan can start (iOS).
-  import('./app.js?v=1.51')
+  import('./app.js?v=1.52')
     .then((mod) => {
       if (typeof mod.ensureCamerasReleased === 'function') return mod.ensureCamerasReleased();
     })
@@ -374,7 +375,7 @@ function parseFilledFromKeywords(keywords) {
  */
 export async function openFile(file, fileHandle = null) {
   try {
-    const mod = await import('./app.js?v=1.51');
+    const mod = await import('./app.js?v=1.52');
     if (typeof mod.ensureCamerasReleased === 'function') await mod.ensureCamerasReleased();
   } catch (_) {}
 
@@ -441,7 +442,11 @@ export async function openFile(file, fileHandle = null) {
 export async function pickAndOpen() {
   if (typeof window.showOpenFilePicker === 'function') {
     try {
-      const [handle] = await window.showOpenFilePicker({
+      // Start in the PDF folder linked in Einstellungen (Chrome/Edge). The cache is primed
+      // at startup; only read IndexedDB here if that has not finished yet.
+      let dir = getCachedPdfFolderHandle();
+      if (dir === undefined) dir = await getPdfFolderHandle();
+      const [handle] = await callPickerInPdfFolder((o) => window.showOpenFilePicker(o), {
         multiple: false,
         types: [
           {
@@ -449,7 +454,7 @@ export async function pickAndOpen() {
             accept: { 'application/pdf': ['.pdf'] },
           },
         ],
-      });
+      }, dir);
       // Prefer readwrite so Speichern can overwrite the same file.
       try {
         if (handle.requestPermission) {
@@ -818,7 +823,7 @@ async function renderAllPages() {
 }
 
 
-/* ---------- Apple Pencil freehand ink ---------- */
+/* ---------- Freehand ink: Apple Pencil + Maus (gedrückt ziehen) ---------- */
 
 const INK_BASE_CSS_PX = 2.0;
 const INK_MIN_CSS_PX = 1.4;
@@ -1029,11 +1034,107 @@ function setPenScrollLock(on) {
   }
 }
 
+/* Maus (Windows Chrome/Edge): linke Taste gedrückt halten und ziehen = zeichnen.
+ * Ein einfacher Klick (Bewegung < MOUSE_INK_START_PX) bleibt ein normaler Feld-Klick. */
+const MOUSE_INK_START_PX = 5;
+/** @type {{pointerId:number,pageIndex:number,x:number,y:number,startPt:{x:number,y:number}}|null} */
+let mouseInkPending = null;
+
+function isMouseInkStartTarget(e) {
+  const t = e.target;
+  if (!t || typeof t.closest !== 'function') return true;
+  // Inline-Texteditor / Formularelemente: Maus markiert Text, zeichnet nicht.
+  return !t.closest('input, textarea, select, [contenteditable], .inline-edit-layer, .logo-badge');
+}
+
+/**
+ * Maus-Druck auf einem (hellblauen) Feld: nie zeichnen. Beim Loslassen wie ein normaler
+ * Klick füllen — auch wenn die Maus dabei leicht aus dem Feld gerutscht ist
+ * (dann feuert der Browser keinen Klick auf den Button, also selbst auslösen).
+ */
+function armMouseFieldPress(e, btn) {
+  const pointerId = e.pointerId;
+  const fieldKey = btn.dataset.fieldKey || '';
+  const done = () => {
+    document.removeEventListener('pointerup', onUpDoc, true);
+    document.removeEventListener('pointercancel', onCancelDoc, true);
+  };
+  const onUpDoc = (ev) => {
+    if (ev.pointerId !== pointerId) return;
+    done();
+    const t = ev.target;
+    // Released on the same button: the native click fills the field.
+    if (t && typeof t.closest === 'function' && t.closest('.hit-cell') === btn) return;
+    setTimeout(() => {
+      let target = btn;
+      if (!target.isConnected && fieldKey) {
+        // Field buttons can be re-created by a redraw: find the same field again.
+        target = [...document.querySelectorAll('.hit-field')].find((b) => b.dataset.fieldKey === fieldKey) || null;
+      }
+      if (target && target.isConnected) target.click();
+    }, 0);
+  };
+  const onCancelDoc = (ev) => {
+    if (ev.pointerId === pointerId) done();
+  };
+  document.addEventListener('pointerup', onUpDoc, true);
+  document.addEventListener('pointercancel', onCancelDoc, true);
+}
+
 function attachInkHandlers(wrap) {
   if (wrap.dataset.inkBound === '1') return;
   wrap.dataset.inkBound = '1';
 
+  const startMouseStroke = (e) => {
+    const p = mouseInkPending;
+    mouseInkPending = null;
+    const pageIndex = p.pageIndex;
+    const pt = clientToPdfPoint(wrap, e.clientX, e.clientY);
+    state.activeInk = {
+      pageIndex,
+      pointerId: p.pointerId,
+      pointerType: 'mouse',
+      stroke: {
+        color: currentInkColorCss(),
+        width: pressureWidthPdf(wrap, undefined),
+        points: [p.startPt, pt],
+      },
+    };
+    wrap.classList.add('inking');
+    // No setPenScrollLock for mouse: dragging never scrolls on desktop, and hiding
+    // the scrollbar would resize the page under the cursor.
+    try {
+      wrap.setPointerCapture(p.pointerId);
+    } catch (_) {
+      /* ignore */
+    }
+    try {
+      window.getSelection()?.removeAllRanges();
+    } catch (_) {}
+    redrawInkPage(pageIndex);
+  };
+
   const onDown = (e) => {
+    if (e.pointerType === 'mouse') {
+      mouseInkPending = null;
+      if (e.button !== 0 || e.ctrlKey || e.altKey || e.metaKey || e.shiftKey) return;
+      if (state.activeInk || !isMouseInkStartTarget(e)) return;
+      const fieldBtn = e.target && typeof e.target.closest === 'function' ? e.target.closest('.hit-cell') : null;
+      if (fieldBtn) {
+        // Press inside a fillable field (filled or empty): click semantics only, no ink.
+        armMouseFieldPress(e, fieldBtn);
+        return;
+      }
+      // Do not preventDefault: a plain click must still reach the field button.
+      mouseInkPending = {
+        pointerId: e.pointerId,
+        pageIndex: Number(wrap.dataset.pageIndex),
+        x: e.clientX,
+        y: e.clientY,
+        startPt: clientToPdfPoint(wrap, e.clientX, e.clientY),
+      };
+      return;
+    }
     if (!isPenPointer(e)) return;
     // Pen must not stamp / header-hit.
     markPenStampSuppress();
@@ -1064,10 +1165,35 @@ function attachInkHandlers(wrap) {
   };
 
   const onMove = (e) => {
+    if (e.pointerType === 'mouse' && !state.activeInk) {
+      const p = mouseInkPending;
+      if (!p || p.pointerId !== e.pointerId || p.pageIndex !== Number(wrap.dataset.pageIndex)) return;
+      if (!(e.buttons & 1)) {
+        mouseInkPending = null;
+        return;
+      }
+      if (Math.hypot(e.clientX - p.x, e.clientY - p.y) < MOUSE_INK_START_PX) return;
+      e.preventDefault();
+      e.stopPropagation();
+      startMouseStroke(e);
+      return;
+    }
     const active = state.activeInk;
     if (!active || active.pageIndex !== Number(wrap.dataset.pageIndex)) return;
     if (active.pointerId != null && e.pointerId != null && e.pointerId !== active.pointerId) return;
-    if (!isPenPointer(e) && e.pointerType && e.pointerType !== 'pen') return;
+    const isMouseStroke = active.pointerType === 'mouse';
+    if (isMouseStroke) {
+      if (e.pointerType !== 'mouse') return;
+      if (!(e.buttons & 1)) {
+        // Button released outside the window: finish the stroke.
+        try {
+          wrap.releasePointerCapture(e.pointerId);
+        } catch (_) {}
+        markPenStampSuppress(300);
+        finishActiveInk(true);
+        return;
+      }
+    } else if (!isPenPointer(e) && e.pointerType && e.pointerType !== 'pen') return;
     e.preventDefault();
     e.stopPropagation();
     const pt = clientToPdfPoint(wrap, e.clientX, e.clientY);
@@ -1076,7 +1202,7 @@ function attachInkHandlers(wrap) {
     // Skip tiny jitter
     if (last && Math.hypot(pt.x - last.x, pt.y - last.y) < 0.35) return;
     // Optional: update width subtly from pressure (keep first width as base; blend)
-    if (typeof e.pressure === 'number' && e.pressure > 0 && e.pressure < 1) {
+    if (!isMouseStroke && typeof e.pressure === 'number' && e.pressure > 0 && e.pressure < 1) {
       const w = pressureWidthPdf(wrap, e.pressure);
       active.stroke.width = active.stroke.width * 0.85 + w * 0.15;
     }
@@ -1085,10 +1211,16 @@ function attachInkHandlers(wrap) {
   };
 
   const onUp = (e) => {
+    if (e.pointerType === 'mouse' && mouseInkPending && mouseInkPending.pointerId === e.pointerId) {
+      // Plain click (no drag): let it reach the field / cell button.
+      mouseInkPending = null;
+      return;
+    }
     const active = state.activeInk;
     if (!active || active.pageIndex !== Number(wrap.dataset.pageIndex)) return;
     if (active.pointerId != null && e.pointerId != null && e.pointerId !== active.pointerId) return;
-    markPenStampSuppress();
+    // Mouse: only swallow the click that follows this pointerup (short window).
+    markPenStampSuppress(active.pointerType === 'mouse' ? 300 : 900);
     e.preventDefault();
     e.stopPropagation();
     try {
@@ -1100,6 +1232,7 @@ function attachInkHandlers(wrap) {
   };
 
   const onCancel = (e) => {
+    if (mouseInkPending && mouseInkPending.pointerId === e.pointerId) mouseInkPending = null;
     const active = state.activeInk;
     if (!active || active.pageIndex !== Number(wrap.dataset.pageIndex)) return;
     finishActiveInk(false);
@@ -1844,11 +1977,11 @@ function preferDownloadSave() {
 
 async function syncCatalogAfterSave(blob, name) {
   try {
-    const cat = await import('./catalog.js?v=1.51');
+    const cat = await import('./catalog.js?v=1.52');
     if (typeof cat.upsertSavedPdf === 'function') {
       await cat.upsertSavedPdf(blob, name);
     }
-    const mod = await import('./app.js?v=1.51');
+    const mod = await import('./app.js?v=1.52');
     if (typeof mod.onPdfCatalogUpdated === 'function') {
       await mod.onPdfCatalogUpdated();
     }
@@ -1862,7 +1995,7 @@ async function notifyStampSaved() {
   state.pendingQty = 0;
   if (!qty) return;
   try {
-    const mod = await import('./app.js?v=1.51');
+    const mod = await import('./app.js?v=1.52');
     if (typeof mod.onStampSaved === 'function') mod.onStampSaved(qty);
   } catch (err) {
     console.warn('onStampSaved failed', err);
@@ -2128,7 +2261,7 @@ async function finishSaveBlob(blob, name) {
     if (preferDownloadSave()) {
       if (window.showSaveFilePicker) {
         try {
-          const handle = await window.showSaveFilePicker({
+          const handle = await callPickerInPdfFolder((o) => window.showSaveFilePicker(o), {
             suggestedName: name,
             types: [{ description: 'PDF', accept: { 'application/pdf': ['.pdf'] } }],
           });
