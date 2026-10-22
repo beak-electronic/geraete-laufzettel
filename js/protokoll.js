@@ -7,8 +7,10 @@
 
 export const LOG_FILENAME = 'aenderungsprotokoll.json';
 /** Human-readable copy, regenerated from the JSON on every save (JSON stays the source of truth). */
-export const LOG_HTML_FILENAME = 'aenderungsprotokoll.html';
-const LOG_ATTACHMENT_NAMES = [LOG_FILENAME, LOG_HTML_FILENAME];
+export const LOG_PDF_FILENAME = 'aenderungsprotokoll.pdf';
+/** Readable copy of v1.54 (blocked by Acrobat Reader); only removed on save, never written again. */
+const LEGACY_LOG_HTML_FILENAME = 'aenderungsprotokoll.html';
+const LOG_ATTACHMENT_NAMES = [LOG_FILENAME, LOG_PDF_FILENAME, LEGACY_LOG_HTML_FILENAME];
 export const LOG_FORMAT = 'geraete-laufzettel-aenderungsprotokoll';
 export const LOG_FORMAT_VERSION = 1;
 
@@ -239,7 +241,7 @@ export function newSession({ fileName = '', templateId = '', who = {}, kind = 'e
   };
 }
 
-/** Remove every embedded log file (JSON + HTML) from the name tree (incl. Kids) and catalog /AF. */
+/** Remove every embedded log file (JSON, PDF, legacy HTML) from the name tree (incl. Kids) and catalog /AF. */
 function removeExistingLog(pdfDoc, PDFLib) {
   const { PDFName, PDFArray, PDFDict } = PDFLib;
   const removed = [];
@@ -303,17 +305,17 @@ export async function attachLogToPdfLib(pdfDoc, log, PDFLib = window.PDFLib) {
     console.warn('Änderungsprotokoll konnte nicht angehängt werden — PDF wird ohne Protokoll gespeichert', err);
     return false;
   }
-  // Readable HTML copy; a failure here never blocks the JSON or the save.
+  // Readable PDF copy; a failure here never blocks the JSON or the save.
   try {
-    const html = new TextEncoder().encode(renderLogHtml(log));
-    await pdfDoc.attach(html, LOG_HTML_FILENAME, {
-      mimeType: 'text/html',
-      description: 'Änderungsprotokoll (lesbar, im Browser öffnen)',
+    const pdfBytes = await renderLogPdf(log, PDFLib);
+    await pdfDoc.attach(pdfBytes, LOG_PDF_FILENAME, {
+      mimeType: 'application/pdf',
+      description: 'Änderungsprotokoll (lesbar)',
       creationDate: now,
       modificationDate: now,
     });
   } catch (err) {
-    console.warn('Änderungsprotokoll (HTML) konnte nicht angehängt werden', err);
+    console.warn('Änderungsprotokoll (PDF) konnte nicht angehängt werden', err);
   }
   return ok;
 }
@@ -580,10 +582,7 @@ export function derivedLog(logs, { kind, action, fileName, details = {} }) {
   return log;
 }
 
-/* ---------- Readable HTML attachment ---------- */
-
-const esc = (v) =>
-  String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+/* ---------- Readable PDF attachment ---------- */
 
 /** „Feld/Stelle“ column: field, stroke location, undo/merge/split details. */
 function entryPlace(e) {
@@ -612,22 +611,129 @@ function entryPlace(e) {
   return '';
 }
 
-/** Self-contained HTML (inline CSS, no scripts/external resources), sessions newest first. */
-export function renderLogHtml(log) {
+/**
+ * Readable protocol as its own small PDF (A4 landscape, Helvetica/WinAnsi, no external resources).
+ * Sessions newest first, header + table per session; long tables continue on new pages with the
+ * table header repeated. The JSON stays the source of truth.
+ * @returns {Promise<Uint8Array>}
+ */
+export async function renderLogPdf(log, PDFLib = window.PDFLib) {
+  const { PDFDocument, StandardFonts, rgb } = PDFLib;
+  const doc = await PDFDocument.create();
+  doc.setTitle('Änderungsprotokoll');
+  doc.setCreator(`Geräte Laufzettel ${APP_VERSION}`);
+  doc.setProducer('Geräte Laufzettel');
+  doc.setLanguage('de-DE');
+  const F = {
+    reg: await doc.embedFont(StandardFonts.Helvetica),
+    bold: await doc.embedFont(StandardFonts.HelveticaBold),
+    ital: await doc.embedFont(StandardFonts.HelveticaOblique),
+  };
+  // WinAnsi covers äöüß · › „ “ ” – … ; anything else is replaced safely.
+  const charset = new Set(F.reg.getCharacterSet());
+  const SUBST = { '→': '->', '←': '<-', '‚': ',', '‘': "'", '’': "'", '\u00a0': ' ', '\u2009': ' ', '\u202f': ' ' };
+  const clean = (v) => {
+    let out = '';
+    for (const ch of String(v ?? '').replace(/[\r\n\t]+/g, ' ')) {
+      const cp = ch.codePointAt(0);
+      if (charset.has(cp)) out += ch;
+      else if (SUBST[ch]) out += SUBST[ch];
+      else if (cp < 32) continue;
+      else {
+        const base = ch.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        out += base && [...base].every((c) => charset.has(c.codePointAt(0))) ? base : '?';
+      }
+    }
+    return out;
+  };
+  const C = {
+    pink: rgb(221 / 255, 0, 122 / 255),
+    ink: rgb(29 / 255, 29 / 255, 31 / 255),
+    muted: rgb(110 / 255, 110 / 255, 115 / 255),
+    line: rgb(227 / 255, 227 / 255, 232 / 255),
+    soft: rgb(253 / 255, 240 / 255, 247 / 255),
+  };
+  const PW = 841.89, PH = 595.28, M = 34; // A4 landscape, 12 mm margin
+  const W = PW - 2 * M;
+  const COLS = [
+    ['Zeit', 46], ['Seite', 32], ['Aktion', 88], ['Feld/Stelle', 262],
+    ['Alt', 96], ['Neu', 96], ['Wie', 86], ['Eingabegerät', W - 706],
+  ];
+  const FS = 8.5, LH = 10.6, PAD = 4;
+
+  /** Word wrap with hard breaks for over-long words. */
+  const wrap = (text, font, size, width) => {
+    const t = clean(text);
+    if (!t) return [''];
+    const lines = [];
+    let cur = '';
+    const fits = (s) => font.widthOfTextAtSize(s, size) <= width;
+    for (const word of t.split(/ +/)) {
+      const cand = cur ? `${cur} ${word}` : word;
+      if (fits(cand)) { cur = cand; continue; }
+      if (cur) lines.push(cur);
+      cur = '';
+      let w = word;
+      while (w && !fits(w)) {
+        let n = w.length - 1;
+        while (n > 1 && !fits(w.slice(0, n))) n--;
+        lines.push(w.slice(0, n));
+        w = w.slice(n);
+      }
+      cur = w;
+    }
+    if (cur || !lines.length) lines.push(cur);
+    return lines;
+  };
+  const text = (pg, s, x, y, font, size, color) => {
+    const t = clean(s);
+    if (t) pg.drawText(t, { x, y, font, size, color });
+  };
+
+  let page = null, y = 0;
+  const newPage = () => {
+    page = doc.addPage([PW, PH]);
+    y = PH - M;
+    if (doc.getPageCount() > 1) {
+      text(page, 'Änderungsprotokoll (Fortsetzung)', M, y - 9, F.bold, 9, C.muted);
+      y -= 18;
+    }
+  };
+  const ensure = (h) => {
+    if (y - h < M + 16) { newPage(); return true; }
+    return false;
+  };
+
   const sessions = [...(log?.sessions || [])].reverse();
-  const parts = [];
+  newPage();
+  // Title
+  text(page, 'Änderungsprotokoll', M, y - 18, F.bold, 18, C.ink);
+  y -= 32;
+  const updated = log?.updated ? fmtTime(log.updated) : '';
+  const sub = `Geräte Laufzettel · ${sessions.length} Sitzung(en)${updated ? ` · Stand ${updated}` : ''} · Lesbare Kopie, maßgeblich ist ${LOG_FILENAME}`;
+  text(page, sub, M, y, F.reg, 8.5, C.muted);
+  y -= 8;
+  page.drawRectangle({ x: M, y: y - 2.5, width: W, height: 2.5, color: C.pink });
+  y -= 18;
+
+  const tableHeader = () => {
+    const h = LH + 2 * PAD;
+    page.drawRectangle({ x: M, y: y - h, width: W, height: h, color: C.soft });
+    let x = M;
+    for (const [label, w] of COLS) {
+      text(page, label, x + PAD, y - PAD - FS + 1, F.bold, FS, C.ink);
+      x += w;
+    }
+    page.drawRectangle({ x: M, y: y - h - 1.5, width: W, height: 1.5, color: C.pink });
+    y -= h + 1.5;
+  };
+
   for (const s of sessions) {
     const dev = s.device || {};
     const who = s.who || {}; // sachbearbeiter_lager (older logs) intentionally not shown
-    const rows = (s.entries || [])
-      .map((e) => {
-        const hasVals = 'old' in e || 'new' in e;
-        return `<tr class="a-${esc(e.action)}"><td class="t">${esc(fmtTime(e.t).slice(9))}</td><td class="c">${esc(e.page ?? '')}</td>` +
-          `<td>${esc(actionDe(e.action))}</td><td>${esc(entryPlace(e))}</td>` +
-          `<td>${hasVals ? esc(e.old ?? '') : ''}</td><td>${hasVals ? esc(e.new ?? '') : ''}</td>` +
-          `<td>${esc(methodDe(e.method))}</td><td>${esc(inputDe(e.input))}</td></tr>`;
-      })
-      .join('\n');
+    const kind = { merge: ' · Verbinden', split: ' · Teilen' }[s.kind] || '';
+    const title = `${fmtTime(s.started)}${kind}`;
+    const savedTxt = s.saved ? `gesichert ${fmtTime(s.saved)}` : 'nicht gesichert';
     const meta = [
       ['Kürzel', who.kuerzel || '—'],
       ['Gerät', [dev.device_name, dev.type].filter(Boolean).join(' · ') || '—'],
@@ -636,52 +742,88 @@ export function renderLogHtml(log) {
       ['Datei', s.file_name || '—'],
       ['Vorlage', s.template || '—'],
       ['App', s.app_version || '—'],
-    ]
-      .map(([k, v]) => `<span><b>${esc(k)}:</b> ${esc(v)}</span>`)
-      .join('');
-    const kind = { merge: ' · Verbinden', split: ' · Teilen' }[s.kind] || '';
-    parts.push(`<section class="session"><h2>${esc(fmtTime(s.started))}${esc(kind)}` +
-      `${s.saved ? ` <small>gesichert ${esc(fmtTime(s.saved))}</small>` : ' <small>nicht gesichert</small>'}</h2>` +
-      `<div class="meta">${meta}</div>` +
-      `<table><thead><tr><th>Zeit</th><th>Seite</th><th>Aktion</th><th>Feld/Stelle</th><th>Alt</th><th>Neu</th><th>Wie</th><th>Eingabegerät</th></tr></thead>` +
-      `<tbody>${rows || '<tr><td colspan="8" class="empty">Keine Einträge</td></tr>'}</tbody></table></section>`);
+    ];
+    // Meta items laid out inline, wrapping to further lines.
+    const metaLines = [[]];
+    let mx = 0;
+    for (const [k, v] of meta) {
+      const kw = F.bold.widthOfTextAtSize(clean(`${k}: `), 8);
+      const vw = F.reg.widthOfTextAtSize(clean(v), 8);
+      const iw = kw + vw + 14;
+      if (mx + iw > W - 12 && metaLines[metaLines.length - 1].length) { metaLines.push([]); mx = 0; }
+      metaLines[metaLines.length - 1].push({ k, v, x: mx, kw });
+      mx += iw;
+    }
+    const rows = (s.entries || []).map((e) => {
+      const hasVals = 'old' in e || 'new' in e;
+      const covered = e.action === 'field_covered';
+      const undo = e.action === 'undo';
+      const font = covered ? F.bold : undo ? F.ital : F.reg;
+      const color = undo || e.action === 'saved' ? C.muted : C.ink;
+      const cells = [
+        fmtTime(e.t).slice(9), e.page ?? '', actionDe(e.action), entryPlace(e),
+        hasVals ? e.old ?? '' : '', hasVals ? e.new ?? '' : '', methodDe(e.method), inputDe(e.input),
+      ].map((v, i) => wrap(v, font, FS, COLS[i][1] - 2 * PAD));
+      const h = Math.max(...cells.map((c) => c.length)) * LH + 2 * PAD;
+      return { cells, h, font, color, covered, timeColor: covered ? C.ink : C.muted };
+    });
+    const headH = 16 + metaLines.length * 11 + 4;
+    const thH = LH + 2 * PAD + 1.5;
+    // Keep session header, table header and the first row together.
+    ensure(headH + thH + (rows[0]?.h || LH + 2 * PAD));
+    const sessionHead = (cont) => {
+      page.drawRectangle({ x: M, y: y - 13, width: 3.5, height: 13, color: C.pink });
+      const t = clean(title + (cont ? ' (Fortsetzung)' : ''));
+      text(page, t, M + 9, y - 10.5, F.bold, 11, C.ink);
+      text(page, savedTxt, M + 9 + F.bold.widthOfTextAtSize(t, 11) + 8, y - 10.5, F.reg, 8.5, C.muted);
+      y -= 16;
+      if (!cont) {
+        for (const line of metaLines) {
+          for (const it of line) {
+            text(page, `${it.k}:`, M + 12 + it.x, y - 8, F.bold, 8, C.ink);
+            text(page, it.v, M + 12 + it.x + it.kw, y - 8, F.reg, 8, C.muted);
+          }
+          y -= 11;
+        }
+      }
+      y -= 4;
+      tableHeader();
+    };
+    sessionHead(false);
+    if (!rows.length) {
+      const h = LH + 2 * PAD;
+      text(page, 'Keine Einträge', M + W / 2 - 25, y - PAD - FS + 1, F.reg, FS, C.muted);
+      page.drawLine({ start: { x: M, y: y - h }, end: { x: M + W, y: y - h }, thickness: 0.6, color: C.line });
+      y -= h;
+    }
+    for (const r of rows) {
+      if (ensure(r.h)) sessionHead(true);
+      if (r.covered) {
+        page.drawRectangle({ x: M, y: y - r.h, width: W, height: r.h, color: C.soft });
+        page.drawRectangle({ x: M, y: y - r.h, width: 2.5, height: r.h, color: C.pink });
+      }
+      let x = M;
+      r.cells.forEach((lines, i) => {
+        const w = COLS[i][1];
+        lines.forEach((ln, li) => {
+          const ty = y - PAD - FS + 1 - li * LH;
+          const tx = i === 1 ? x + (w - r.font.widthOfTextAtSize(ln, FS)) / 2 : x + PAD;
+          text(page, ln, tx, ty, r.font, FS, i === 0 ? r.timeColor : r.color);
+        });
+        x += w;
+      });
+      page.drawLine({ start: { x: M, y: y - r.h }, end: { x: M + W, y: y - r.h }, thickness: 0.6, color: C.line });
+      y -= r.h;
+    }
+    y -= 18;
   }
-  const updated = log?.updated ? fmtTime(log.updated) : '';
-  return `<!DOCTYPE html>
-<html lang="de"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Änderungsprotokoll</title>
-<style>
-:root{--pink:#dd007a;--ink:#1d1d1f;--muted:#6e6e73;--line:#e3e3e8;--soft:#fdf0f7}
-*{box-sizing:border-box}
-body{margin:0;padding:24px;font:14px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:#fff}
-header{border-bottom:3px solid var(--pink);padding-bottom:8px;margin-bottom:18px}
-h1{margin:0;font-size:22px;font-weight:700}
-.sub{color:var(--muted);font-size:12px;margin-top:4px}
-.session{margin:0 0 22px;break-inside:avoid-page}
-h2{font-size:15px;font-weight:700;margin:0 0 4px;padding-left:8px;border-left:4px solid var(--pink)}
-h2 small{font-weight:400;color:var(--muted);font-size:12px;margin-left:6px}
-.meta{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:12px;color:var(--muted);margin:0 0 8px 12px}
-.meta b{color:var(--ink);font-weight:600}
-table{width:100%;border-collapse:collapse;font-size:12.5px}
-th{background:var(--soft);color:var(--ink);text-align:left;font-weight:600;border-bottom:2px solid var(--pink);padding:5px 6px;white-space:nowrap}
-td{border-bottom:1px solid var(--line);padding:4px 6px;vertical-align:top;word-break:break-word}
-td.t{white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--muted)}
-td.c{text-align:center}
-tr.a-undo td{color:var(--muted);font-style:italic}
-tr.a-field_covered td{background:var(--soft);font-weight:600}
-tr.a-field_covered td:first-child{box-shadow:inset 3px 0 0 var(--pink)}
-@media print{tr.a-field_covered td{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
-tr.a-saved td{color:var(--muted)}
-td.empty{color:var(--muted);text-align:center}
-footer{margin-top:18px;color:var(--muted);font-size:11px}
-@media print{body{padding:0;font-size:11px}table{font-size:10px}thead{display:table-header-group}tr{break-inside:avoid}
-th{-webkit-print-color-adjust:exact;print-color-adjust:exact}@page{size:A4 landscape;margin:12mm}}
-</style></head><body>
-<header><h1>Änderungsprotokoll</h1>
-<div class="sub">Geräte Laufzettel · ${esc(sessions.length)} Sitzung(en)${updated ? ` · Stand ${esc(updated)}` : ''} · Lesbare Kopie, maßgeblich ist ${esc(LOG_FILENAME)}</div></header>
-${parts.join('\n') || '<p class="sub">Noch keine Einträge.</p>'}
-<footer>Erzeugt von Geräte Laufzettel ${esc(APP_VERSION)}. Kein Standort gespeichert.</footer>
-</body></html>
-`;
+  if (!sessions.length) text(page, 'Noch keine Einträge.', M, y - 10, F.reg, 9, C.muted);
+
+  const pages = doc.getPages();
+  pages.forEach((pg, i) => {
+    text(pg, `Erzeugt von Geräte Laufzettel ${APP_VERSION}. Kein Standort gespeichert.`, M, M - 14, F.reg, 7.5, C.muted);
+    const pn = clean(`Seite ${i + 1} von ${pages.length}`);
+    text(pg, pn, PW - M - F.reg.widthOfTextAtSize(pn, 7.5), M - 14, F.reg, 7.5, C.muted);
+  });
+  return doc.save({ useObjectStreams: false });
 }
