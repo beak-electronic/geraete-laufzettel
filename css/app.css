@@ -1824,6 +1824,7 @@ body.scan-open, body.scan-open #scan-view, body.scan-open #scan-view * { touch-a
 }
 textarea.inline-field-editor {
   white-space: pre-wrap;
+  overflow-wrap: anywhere; /* long words wrap at the cell edge like the PDF output */
   overflow-y: auto;
   resize: none;
 }

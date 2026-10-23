@@ -170,19 +170,37 @@ export function drawCenteredFieldText(ctx, text, rect, colorCss, scaleX, scaleY,
  */
 export function wrapTextLines(text, maxW, measure) {
   const lines = [];
+  // A word wider than the cell is split into pieces that fit (at least one character each).
+  const splitLong = (w) => {
+    const parts = [];
+    let rest = w;
+    while (rest && measure(rest) > maxW) {
+      let n = rest.length - 1;
+      while (n > 1 && measure(rest.slice(0, n)) > maxW) n--;
+      parts.push(rest.slice(0, n));
+      rest = rest.slice(n);
+    }
+    if (rest) parts.push(rest);
+    return parts;
+  };
   for (const para of String(text).split(/\r?\n/)) {
-    const words = para.split(/\s+/).filter(Boolean);
+    const words = para.split(/[ \t]+/).filter(Boolean);
     let cur = '';
-    for (const w of words) {
-      const next = cur ? `${cur} ${w}` : w;
-      if (!cur || measure(next) <= maxW) { cur = next; continue; }
-      lines.push(cur);
-      cur = w;
+    for (const word of words) {
+      for (const w of measure(word) > maxW ? splitLong(word) : [word]) {
+        const next = cur ? `${cur} ${w}` : w;
+        if (!cur || measure(next) <= maxW) { cur = next; continue; }
+        lines.push(cur);
+        cur = w;
+      }
     }
     lines.push(cur);
   }
   return lines;
 }
+
+/** Smallest font size for multi-line free text before lines are clipped. */
+export const MULTILINE_MIN_PT = 5;
 
 /**
  * Multiline free text (field.multiline): left/top aligned, word wrap,
@@ -201,12 +219,24 @@ export function fitMultilineText(text, rect, fontSizePt, measureAt, singleLine =
     while (size > 4 && measureAt(one, size) > maxW) size -= 0.25;
     return { size, lines: [one], lineH: y1 - y0, pad, padY: 0 };
   }
+  // Shrink from font_size_pt down to MULTILINE_MIN_PT; if it still does not fit, clip the
+  // lines below the cell and mark the last visible line with „…“.
   while (true) {
     lines = wrapTextLines(text, maxW, (s) => measureAt(s, size));
-    if (lines.length * size * 1.2 <= maxH || size <= 5) break;
-    size -= 0.25;
+    if (lines.length * size * 1.2 <= maxH || size <= MULTILINE_MIN_PT) break;
+    size = Math.max(MULTILINE_MIN_PT, size - 0.25);
   }
-  return { size, lines, lineH: size * 1.2, pad, padY: pad };
+  const lineH = size * 1.2;
+  let clipped = false;
+  const maxLines = Math.max(1, Math.floor((maxH + 0.01) / lineH));
+  if (lines.length > maxLines) {
+    clipped = true;
+    lines = lines.slice(0, maxLines);
+    let last = `${lines[maxLines - 1]}…`;
+    while (last.length > 1 && measureAt(last, size) > maxW) last = `${last.slice(0, -2)}…`;
+    lines[maxLines - 1] = last;
+  }
+  return { size, lines, lineH, pad, padY: pad, clipped };
 }
 
 export function drawMultilineFieldText(ctx, text, rect, colorCss, scaleX, scaleY, fontSizePt, singleLine = false) {

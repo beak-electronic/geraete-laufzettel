@@ -3,7 +3,8 @@
  * Pure-ish helpers; pdf.js / pdf-lib / JSZip come from the caller (browser or node test).
  */
 
-import { readLogFromPdfJs, attachLogToPdfLib, derivedLog } from './protokoll.js?v=1.56';
+import { readLogFromPdfJs, attachLogToPdfLib, derivedLog } from './protokoll.js?v=1.57';
+import { readFeldwerteFromPdfJs, attachFeldwerteToPdfLib, feldwerteForPageRange } from './feldwerte.js?v=1.57';
 
 /** @typedef {{ start: number, end: number }} PageRange  1-based inclusive */
 
@@ -574,6 +575,9 @@ export async function splitPdfBytes(srcBytes, ranges, PDFLib, onProgress, logOpt
         details: { source_file: logOpts.originalName || '', source_pages: `${start}-${end}` },
       }), PDFLib);
     }
+    // Gespeicherte Feldwerte der Quelle: nur die Seiten dieses Teils, neu nummeriert ab 1.
+    const fw = feldwerteForPageRange(logOpts?.feldwerte, start, end);
+    if (fw) await attachFeldwerteToPdfLib(doc, fw, PDFLib);
     const bytes = await doc.save();
     out.push(bytes);
   }
@@ -643,6 +647,7 @@ export async function buildSplitZip(opts) {
     }
   }
   const { log: srcLog } = await readLogFromPdfJs(pdf);
+  const srcFeldwerte = await readFeldwerteFromPdfJs(pdf);
   try {
     await pdf.destroy?.();
   } catch (_) {}
@@ -650,7 +655,7 @@ export async function buildSplitZip(opts) {
   const filenames = uniqueFilenames(ids);
   const parts = await splitPdfBytes(pdfBytes, ranges, PDFLib, (m) =>
     onStatus?.(m, 'busy'),
-    srcLog ? { log: srcLog, filenames, originalName } : null
+    srcLog || srcFeldwerte ? { log: srcLog, feldwerte: srcFeldwerte, filenames, originalName } : null
   );
 
   onStatus?.('ZIP wird erzeugt…', 'busy');

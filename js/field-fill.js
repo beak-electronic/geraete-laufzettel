@@ -15,8 +15,8 @@ import {
   stampInitialsForSettings,
   stampLagerClerkForSettings,
   normalizeStampDateYY,
-} from './fields.js?v=1.56';
-import { colorCss, colorRgb01 } from './settings.js?v=1.56';
+} from './fields.js?v=1.57';
+import { colorCss, colorRgb01 } from './settings.js?v=1.57';
 
 const { rgb, StandardFonts } = PDFLib;
 
@@ -95,13 +95,15 @@ export function drawGeraetePage(wrap, pageWidth, pageHeight, api) {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.translate(-crop.left * scaleX, -crop.top * scaleY);
 
-    // „Zellen löschen“: white covers (only on demand), below any new value.
+    // White covers below any new value: „Zellen löschen“ (on demand) and saved values
+    // (feldwerte.json) that were changed or cleared in this session.
     for (const f of fields) {
-      const cov = api.fieldCovers?.get(fieldKey(f.page, f.number));
-      if (!cov) continue;
-      drawWhiteBoxCanvas(ctx, cov.rect_pt, scaleX, scaleY);
+      const key = fieldKey(f.page, f.number);
+      const rect = api.fieldCovers?.get(key)?.rect_pt || storedDirtyCoverRect(api.storedValues, api.fieldValues, key);
+      if (!rect) continue;
+      drawWhiteBoxCanvas(ctx, rect, scaleX, scaleY);
       // Keep the light-blue field hint visible on the cover (clipped to the cover rect).
-      const [cx0, cy0, cx1, cy1] = cov.rect_pt;
+      const [cx0, cy0, cx1, cy1] = rect;
       ctx.save();
       ctx.beginPath();
       ctx.rect(cx0 * scaleX, cy0 * scaleY, (cx1 - cx0) * scaleX, (cy1 - cy0) * scaleY);
@@ -114,6 +116,8 @@ export function drawGeraetePage(wrap, pageWidth, pageHeight, api) {
       const val = api.fieldValues.get(key);
       if (!val?.text) continue;
       if (inlineState && inlineState.key === key) continue; // inline editor covers this cell
+      // Saved value unchanged: already printed in the page — never draw it twice.
+      if (isStoredUnchanged(api.storedValues, key, val) && !api.fieldCovers?.has(key)) continue;
       // No automatic white box under values: only „Zellen löschen“ covers (drawn above).
       const color = colorCss(val.colorIndex ?? api.settings.colorIndex);
       const typ = val.type || f.type;
@@ -190,6 +194,74 @@ function drawWhiteBoxCanvas(ctx, rect, scaleX, scaleY) {
 /** Cover rect of a field for „Zellen löschen“: white_rect_pt where defined (keeps printed form values), else rect_pt. */
 export function coverRectForField(field) {
   return (field.white_rect_pt || field.rect_pt).slice();
+}
+
+/* ---------- Saved values (feldwerte.json) ---------- */
+
+/** True when the value equals the one already saved (and printed) in the PDF. */
+export function isStoredUnchanged(storedValues, key, val) {
+  const base = storedValues?.get(key);
+  return !!base && !!val?.text && String(val.text) === base.text;
+}
+
+/** Cover rect for a saved value that was changed or cleared in this session, else null. */
+export function storedDirtyCoverRect(storedValues, fieldValues, key) {
+  const base = storedValues?.get(key);
+  if (!base) return null;
+  const now = fieldValues.get(key)?.text || '';
+  return now === base.text ? null : base.cover_rect_pt;
+}
+
+/**
+ * Put saved values (feldwerte.json) back into fieldValues and remember them as the printed baseline.
+ * Rows without a matching template field are returned as „extra“ and written back unchanged.
+ * @returns {{applied:number, extra:object[]}}
+ */
+export function restoreStoredFieldValues(fieldValues, storedValues, data, template, templateId = '') {
+  storedValues.clear();
+  const extra = [];
+  let applied = 0;
+  if (!data?.fields?.length) return { applied, extra };
+  // Saved with another field template: numbering may differ — keep the rows, apply none.
+  if (data.template && templateId && data.template !== templateId) return { applied, extra: data.fields.slice() };
+  const byKey = new Map();
+  for (const blk of Object.values(template?.pages || {})) {
+    for (const f of blk.fields || []) byKey.set(fieldKey(f.page, f.number), f);
+  }
+  for (const r of data.fields) {
+    const key = fieldKey(r.page, r.number);
+    const f = byKey.get(key);
+    // Other template (Verbinden of different files) or unknown field: keep, do not apply.
+    if (!f || (r.template && templateId && r.template !== templateId)) {
+      extra.push(r);
+      continue;
+    }
+    fieldValues.set(key, {
+      page: f.page,
+      number: f.number,
+      id: f.id,
+      type: f.type,
+      text: r.text,
+      colorIndex: Number.isInteger(r.color_index) ? r.color_index : 0,
+      rect_pt: f.rect_pt,
+      multiline: !!f.multiline,
+      single_line: !!f.single_line,
+      font_size_pt: f.font_size_pt,
+    });
+    storedValues.set(key, { text: r.text, cover_rect_pt: coverRectForField(f) });
+    applied++;
+  }
+  return { applied, extra };
+}
+
+/** Rows for feldwerte.json: every current value (saved + new) plus unmatched extra rows. */
+export function feldwerteRows(fieldValues, extra = []) {
+  const rows = [];
+  for (const [, v] of fieldValues) {
+    if (!v?.text) continue;
+    rows.push({ page: v.page, number: v.number, id: v.id, type: v.type, text: String(v.text), color_index: v.colorIndex ?? 0 });
+  }
+  return rows.concat(extra || []);
 }
 
 /** manual_text fields are edited inline in the cell unless the template sets "inline": false. */
@@ -477,21 +549,30 @@ async function onFieldTap(field, pageIndex, api, wrap) {
 /**
  * Write field values into pdf-lib document (no blue overlays).
  */
-export async function embedFieldValuesInPdf(pdfDoc, pages, fieldValues, settings, fieldCovers = null) {
+export async function embedFieldValuesInPdf(pdfDoc, pages, fieldValues, settings, fieldCovers = null, storedValues = null) {
   const helvetica = await pdfDoc.embedFont(StandardFonts.Helvetica);
   const helveticaBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
-  // „Zellen löschen“ covers first, so new values are drawn on top of them.
-  for (const [, cov] of fieldCovers || []) {
-    const page = pages[(cov.page || 1) - 1];
-    if (!page || !cov.rect_pt) continue;
+  const whiteRect = (pageNo, rect) => {
+    const page = pages[(pageNo || 1) - 1];
+    if (!page || !rect) return;
     const { height: pageHeight } = page.getSize();
-    const [wx0, wy0, wx1, wy1] = cov.rect_pt;
+    const [wx0, wy0, wx1, wy1] = rect;
     page.drawRectangle({ x: wx0, y: pageHeight - wy1, width: wx1 - wx0, height: wy1 - wy0, color: rgb(1, 1, 1), borderWidth: 0, opacity: 1 });
+  };
+  // Covers first, so new values are drawn on top of them: „Zellen löschen“ …
+  for (const [, cov] of fieldCovers || []) whiteRect(cov.page, cov.rect_pt);
+  // … and saved values (feldwerte.json) that were changed or cleared: cover, then the full new text.
+  for (const [key] of storedValues || []) {
+    if (fieldCovers?.has(key)) continue;
+    const rect = storedDirtyCoverRect(storedValues, fieldValues, key);
+    if (rect) whiteRect(Number(String(key).split(':')[0]), rect);
   }
 
-  for (const [, val] of fieldValues) {
+  for (const [key, val] of fieldValues) {
     if (!val?.text || !val.rect_pt) continue;
+    // Unchanged saved value: already printed — do not render twice.
+    if (isStoredUnchanged(storedValues, key, val) && !fieldCovers?.has(key)) continue;
     const pageIndex = (val.page || 1) - 1;
     const page = pages[pageIndex];
     if (!page) continue;
@@ -509,6 +590,7 @@ export async function embedFieldValuesInPdf(pdfDoc, pages, fieldValues, settings
     if (val.multiline || val.single_line) {
       const fit = fitMultilineText(text, val.rect_pt, val.font_size_pt, (s, pt) => helvetica.widthOfTextAtSize(s, pt), !!val.single_line);
       fit.lines.forEach((ln, i) => {
+        if (!ln) return; // empty line from Enter: keep spacing, nothing to draw
         page.drawText(ln, {
           x: x0 + fit.pad,
           y: pageHeight - (y0 + fit.padY + i * fit.lineH + fit.lineH * 0.5 + fit.size * 0.35),

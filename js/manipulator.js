@@ -3,14 +3,15 @@
  * Eigene Ansicht, eigener Datei-Input: läuft NICHT über die Feldvorlagen-Prüfung
  * des Laufzettel-Öffnens (PDFs ohne Feldvorlage werden hier normal geteilt).
  */
-import * as pdfjsLib from '../vendor/pdf.min.mjs?v=1.56';
-import { buildSplitZip, sanitizeFilename } from './split.js?v=1.56';
-import { xpsToPdf, isXpsFile } from './xps2pdf.js?v=1.56';
-import { callPickerInPdfFolder } from './catalog.js?v=1.56';
-import { readLogFromPdfJs, attachLogToPdfLib, derivedLog } from './protokoll.js?v=1.56';
+import * as pdfjsLib from '../vendor/pdf.min.mjs?v=1.57';
+import { buildSplitZip, sanitizeFilename } from './split.js?v=1.57';
+import { xpsToPdf, isXpsFile } from './xps2pdf.js?v=1.57';
+import { callPickerInPdfFolder } from './catalog.js?v=1.57';
+import { readLogFromPdfJs, attachLogToPdfLib, derivedLog } from './protokoll.js?v=1.57';
+import { readFeldwerteFromPdfJs, attachFeldwerteToPdfLib, mergeFeldwerte } from './feldwerte.js?v=1.57';
 
 if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs?v=1.56', import.meta.url).href;
+  pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs?v=1.57', import.meta.url).href;
 }
 
 const $ = (sel) => document.querySelector(sel);
@@ -501,6 +502,8 @@ async function handleMergeFiles(fileList) {
     const counts = [];
     /** Änderungsprotokolle der Eingabe-PDFs (normalerweise nur der Laufzettel). */
     const srcLogs = [];
+    /** Gespeicherte Feldwerte je Eingabe-PDF mit Seitenversatz im Ergebnis. */
+    const srcFeldwerte = [];
     for (const f of plan.ordered) {
       if (isXpsFile(f)) {
         setMergeStatus(`XPS wird umgewandelt: ${f.name}…`, 'busy');
@@ -519,6 +522,8 @@ async function handleMergeFiles(fileList) {
         const pj = await pdfjsLib.getDocument({ data: new Uint8Array(buf.slice(0)) }).promise;
         const { log } = await readLogFromPdfJs(pj);
         if (log) srcLogs.push(log);
+        const fw = await readFeldwerteFromPdfJs(pj);
+        if (fw) srcFeldwerte.push({ data: fw, offset: out.getPageCount() });
         await pj.destroy?.();
       } catch (err) {
         console.warn('Änderungsprotokoll nicht lesbar', f.name, err);
@@ -536,6 +541,8 @@ async function handleMergeFiles(fileList) {
         details: { inputs: plan.ordered.map((f) => f.name) },
       }), PDFLib);
     }
+    const fwMerged = mergeFeldwerte(srcFeldwerte);
+    if (fwMerged) await attachFeldwerteToPdfLib(out, fwMerged, PDFLib);
     const bytes = await out.save();
     const blob = new Blob([bytes], { type: 'application/pdf' });
     lastMerge = { blob, name: plan.outName };

@@ -1,5 +1,5 @@
-import * as pdfjsLib from '../vendor/pdf.min.mjs?v=1.56';
-import { callPickerInPdfFolder, getCachedPdfFolderHandle, getPdfFolderHandle } from './catalog.js?v=1.56';
+import * as pdfjsLib from '../vendor/pdf.min.mjs?v=1.57';
+import { callPickerInPdfFolder, getCachedPdfFolderHandle, getPdfFolderHandle } from './catalog.js?v=1.57';
 import {
   emptyCells,
   headerCells,
@@ -12,7 +12,7 @@ import {
   PAGE_HEIGHT,
   INSET,
   FILL_WHITE,
-} from './grid.js?v=1.56';
+} from './grid.js?v=1.57';
 import {
   loadSettings,
   saveInitials,
@@ -32,7 +32,7 @@ import {
   colorRgb01,
   DARK_COLORS,
   LAST_COLUMN_INDEX,
-} from './settings.js?v=1.56';
+} from './settings.js?v=1.57';
 import {
   KNOWN_TEMPLATES,
   resolveTemplateId,
@@ -41,7 +41,7 @@ import {
   extractArticleFromFilename,
   fieldKey,
   stampDateForSettings,
-} from './fields.js?v=1.56';
+} from './fields.js?v=1.57';
 import {
   drawGeraetePage,
   embedFieldValuesInPdf,
@@ -51,7 +51,10 @@ import {
   closeInlineEditor,
   isInlineEditing,
   isInlineField,
-} from './field-fill.js?v=1.56';
+  restoreStoredFieldValues,
+  feldwerteRows,
+} from './field-fill.js?v=1.57';
+import { readFeldwerteFromPdfJs, attachFeldwerteToPdfLib, makeFeldwerte } from './feldwerte.js?v=1.57';
 import {
   isoLocal,
   newSession,
@@ -66,7 +69,7 @@ import {
   showLogDialog,
   getDeviceName,
   setDeviceName,
-} from './protokoll.js?v=1.56';
+} from './protokoll.js?v=1.57';
 import {
   decodeBarcodeFromBlob,
   decodeBarcodeFromElement,
@@ -75,9 +78,9 @@ import {
   stopCamera,
   releaseAllCameras,
   releaseAllCamerasAsync,
-} from './scan.js?v=1.56';
+} from './scan.js?v=1.57';
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs?v=1.56', import.meta.url).href;
+pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs?v=1.57', import.meta.url).href;
 
 const { PDFDocument, rgb, StandardFonts, LineCapStyle } = PDFLib;
 
@@ -115,6 +118,10 @@ const state = {
   fieldValues: new Map(),
   /** „Zellen löschen“ white covers of this session: key → {page, number, id, rect_pt}. */
   fieldCovers: new Map(),
+  /** Values saved earlier (feldwerte.json), already printed in the page: key → {text, cover_rect_pt}. */
+  storedValues: new Map(),
+  /** feldwerte.json rows that do not belong to the current template (written back unchanged). */
+  storedExtra: [],
   pdfHeaderText: '',
   /**
    * Änderungsprotokoll of the open document.
@@ -358,15 +365,21 @@ function logUndoableChange(entry) {
       const action = !oldText ? 'field_filled' : !newText ? 'field_cleared' : 'field_changed';
       const f = templateFieldByKey(b.key);
       const page = f?.page || Number(String(b.key).split(':')[0]) || entry.pageIndex + 1;
+      // Value from an earlier save (feldwerte.json): it is white-covered and redrawn on Sichern.
+      const base = state.storedValues.get(b.key);
+      const prevSaved = !!base && !!oldText && oldText === base.text;
+      const where = f?.rect_pt ? { rect_pt: f.rect_pt } : undefined;
+      if (prevSaved && where) where.cover_rect_pt = base.cover_rect_pt;
       const e = logEntry({
         action,
         page,
         field: fieldRef(f, b.key),
         old: oldText,
         new: newText,
+        ...(prevSaved ? { prev_saved: true } : {}),
         method: fieldMethod(f, action),
         input: inputDevice(lastPointerType),
-        where: f?.rect_pt ? { rect_pt: f.rect_pt } : undefined,
+        where,
         stamp_color: nv ? nv.colorIndex : undefined,
       });
       if (e) seqs.push(e.seq);
@@ -529,6 +542,8 @@ function clearDocument() {
   state.templateId = '';
   state.fieldValues.clear();
   state.fieldCovers.clear();
+  state.storedValues.clear();
+  state.storedExtra = [];
   state.pdfHeaderText = '';
   state.changeLog = null;
   textLinesCache.clear();
@@ -539,7 +554,7 @@ function clearDocument() {
     releaseAllCameras();
   } catch (_) {}
   // Release home + field cameras so the next home scan can start (iOS).
-  import('./app.js?v=1.56')
+  import('./app.js?v=1.57')
     .then((mod) => {
       if (typeof mod.ensureCamerasReleased === 'function') return mod.ensureCamerasReleased();
     })
@@ -600,6 +615,7 @@ function getFieldApi() {
     template: state.template,
     fieldValues: state.fieldValues,
     fieldCovers: state.fieldCovers,
+    storedValues: state.storedValues,
     settings: state.settings,
     showToast,
     openSettings,
@@ -645,7 +661,7 @@ function parseFilledFromKeywords(keywords) {
  */
 export async function openFile(file, fileHandle = null) {
   try {
-    const mod = await import('./app.js?v=1.56');
+    const mod = await import('./app.js?v=1.57');
     if (typeof mod.ensureCamerasReleased === 'function') await mod.ensureCamerasReleased();
   } catch (_) {}
 
@@ -673,6 +689,8 @@ export async function openFile(file, fileHandle = null) {
     state.settings.dateOverride = null;
     state.fieldValues.clear();
     state.fieldCovers.clear();
+    state.storedValues.clear();
+    state.storedExtra = [];
     state.template = null;
     state.templateId = '';
 
@@ -704,6 +722,17 @@ export async function openFile(file, fileHandle = null) {
     // file as untouched: only blue hit targets + new stamps from this session.
     state.fieldValues.clear();
     state.stamps.clear();
+
+    // feldwerte.json (saved by this app since v1.57): the printed values are known, so the
+    // fields count as filled and the inline editor opens with the old text. Without the
+    // attachment (older PDFs) nothing changes.
+    if (usesGeraeteFields()) {
+      const fw = await readFeldwerteFromPdfJs(pdf);
+      if (fw) {
+        const { extra } = restoreStoredFieldValues(state.fieldValues, state.storedValues, fw, state.template, state.templateId);
+        state.storedExtra = extra;
+      }
+    }
 
     setDocumentUI(true);
     // Wait for fill-mode layout so viewer width (and Pencil mapping) is correct.
@@ -2267,11 +2296,11 @@ function preferDownloadSave() {
 
 async function syncCatalogAfterSave(blob, name) {
   try {
-    const cat = await import('./catalog.js?v=1.56');
+    const cat = await import('./catalog.js?v=1.57');
     if (typeof cat.upsertSavedPdf === 'function') {
       await cat.upsertSavedPdf(blob, name);
     }
-    const mod = await import('./app.js?v=1.56');
+    const mod = await import('./app.js?v=1.57');
     if (typeof mod.onPdfCatalogUpdated === 'function') {
       await mod.onPdfCatalogUpdated();
     }
@@ -2285,7 +2314,7 @@ async function notifyStampSaved() {
   state.pendingQty = 0;
   if (!qty) return;
   try {
-    const mod = await import('./app.js?v=1.56');
+    const mod = await import('./app.js?v=1.57');
     if (typeof mod.onStampSaved === 'function') mod.onStampSaved(qty);
   } catch (err) {
     console.warn('onStampSaved failed', err);
@@ -2616,7 +2645,7 @@ async function saveDocument() {
     const pages = pdfDoc.getPages();
 
     if (usesGeraeteFields()) {
-      await embedFieldValuesInPdf(pdfDoc, pages, state.fieldValues, state.settings, state.fieldCovers);
+      await embedFieldValuesInPdf(pdfDoc, pages, state.fieldValues, state.settings, state.fieldCovers, state.storedValues);
       for (const [pageIndex, strokes] of state.ink.entries()) {
         const page = pages[pageIndex];
         if (!page || !strokes?.length) continue;
@@ -2637,6 +2666,8 @@ async function saveDocument() {
       pdfDoc.setKeywords(kept);
 
       let name = state.fileName || 'Laufzettel.pdf'; // keep opened PDF name exactly (no date suffix)
+      // Full current state (saved values + this session), replaced on every save.
+      await attachFeldwerteToPdfLib(pdfDoc, makeFeldwerte(feldwerteRows(state.fieldValues, state.storedExtra), { template: state.templateId }), PDFLib);
       await embedChangeLog(pdfDoc, name);
       const out = await pdfDoc.save();
       const blob = new Blob([out], { type: 'application/pdf' });

@@ -268,6 +268,11 @@ export function newSession({ fileName = '', templateId = '', who = {}, kind = 'e
 
 /** Remove every embedded log file (JSON, PDF, legacy HTML) from the name tree (incl. Kids) and catalog /AF. */
 function removeExistingLog(pdfDoc, PDFLib) {
+  return removeEmbeddedFiles(pdfDoc, LOG_ATTACHMENT_NAMES, PDFLib);
+}
+
+/** Remove embedded files with the given names from the EmbeddedFiles name tree (incl. Kids) and catalog /AF. */
+export function removeEmbeddedFiles(pdfDoc, fileNames, PDFLib = window.PDFLib) {
   const { PDFName, PDFArray, PDFDict } = PDFLib;
   const removed = [];
   const nameOf = (o) => {
@@ -282,7 +287,7 @@ function removeExistingLog(pdfDoc, PDFLib) {
     const arr = node.lookupMaybe(PDFName.of('Names'), PDFArray);
     if (arr) {
       for (let i = arr.size() - 2; i >= 0; i -= 2) {
-        if (LOG_ATTACHMENT_NAMES.includes(nameOf(arr.lookup(i)))) {
+        if (fileNames.includes(nameOf(arr.lookup(i)))) {
           removed.push(arr.get(i + 1));
           arr.remove(i + 1);
           arr.remove(i);
@@ -498,6 +503,14 @@ const INPUT_DE = {
 const methodDe = (c) => (c ? METHOD_DE[c] || 'Sonstige Eingabe' : '');
 const inputDe = (c) => (c ? INPUT_DE[c] || 'Sonstiges Eingabegerät' : '');
 const actionDe = (c) => ACTION_DE[c] || 'Änderung';
+/** Action label of one entry; values that existed in an earlier save are marked (feldwerte.json). */
+const entryActionDe = (e) => {
+  const base = actionDe(e.action);
+  if (!e.prev_saved) return base;
+  return e.action === 'field_cleared' ? `${base} (vorher gespeichert, weiß überdeckt)` : `${base} (vorher gespeichert)`;
+};
+/** Entries shown highlighted: explicit covers and cleared saved values (also white-covered). */
+const isCoverEntry = (e) => e.action === 'field_covered' || (e.action === 'field_cleared' && e.prev_saved);
 
 function fmtTime(iso) {
   const m = String(iso || '').match(/^(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)/);
@@ -570,12 +583,12 @@ export function showLogDialog(log, { title = 'Änderungsprotokoll' } = {}) {
     ol.className = 'protokoll-list';
     for (const e of s.entries || []) {
       const li = document.createElement('li');
-      if (e.action === 'field_covered') li.className = 'protokoll-covered';
+      if (isCoverEntry(e)) li.className = 'protokoll-covered';
       const t = document.createElement('span');
       t.className = 'protokoll-time';
       t.textContent = fmtTime(e.t).slice(9);
       const a = document.createElement('strong');
-      a.textContent = ` ${actionDe(e.action)}`;
+      a.textContent = ` ${entryActionDe(e)}`;
       const how = document.createElement('span');
       how.className = 'protokoll-how';
       how.textContent = [methodDe(e.method), inputDe(e.input)].filter(Boolean).join(' · ');
@@ -615,7 +628,7 @@ export function derivedLog(logs, { kind, action, fileName, details = {} }) {
 function entryPlace(e) {
   if (e.field) {
     const f = `Nr. ${e.field.number ?? ''} ${e.field.label || e.field.id || ''}`.trim();
-    return e.action === 'field_covered' && e.where?.cover_rect_pt ? `${f} (weiß: ${e.where.cover_rect_pt.join(', ')} pt)` : f;
+    return isCoverEntry(e) && e.where?.cover_rect_pt ? `${f} (weiß: ${e.where.cover_rect_pt.join(', ')} pt)` : f;
   }
   if (e.action === 'field_covered' && e.where?.cover_rect_pt) {
     // (field handled above) — kept for entries without field info
@@ -784,12 +797,12 @@ export async function renderLogPdf(log, PDFLib = window.PDFLib) {
     }
     const rows = (s.entries || []).map((e) => {
       const hasVals = 'old' in e || 'new' in e;
-      const covered = e.action === 'field_covered';
+      const covered = isCoverEntry(e);
       const undo = e.action === 'undo';
       const font = covered ? F.bold : undo ? F.ital : F.reg;
       const color = undo || e.action === 'saved' ? C.muted : C.ink;
       const cells = [
-        fmtTime(e.t).slice(9), e.page ?? '', actionDe(e.action), entryPlace(e),
+        fmtTime(e.t).slice(9), e.page ?? '', entryActionDe(e), entryPlace(e),
         hasVals ? e.old ?? '' : '', hasVals ? e.new ?? '' : '', methodDe(e.method), inputDe(e.input),
       ].map((v, i) => wrap(v, font, FS, COLS[i][1] - 2 * PAD));
       const h = Math.max(...cells.map((c) => c.length)) * LH + 2 * PAD;
