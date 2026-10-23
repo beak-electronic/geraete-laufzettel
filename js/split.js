@@ -3,8 +3,8 @@
  * Pure-ish helpers; pdf.js / pdf-lib / JSZip come from the caller (browser or node test).
  */
 
-import { readLogFromPdfJs, attachLogToPdfLib, derivedLog } from './protokoll.js?v=1.57';
-import { readFeldwerteFromPdfJs, attachFeldwerteToPdfLib, feldwerteForPageRange } from './feldwerte.js?v=1.57';
+import { readLogFromPdfJs, attachLogToPdfLib, derivedLog } from './protokoll.js?v=1.58';
+import { readFeldwerteFromPdfJs, attachFeldwerteToPdfLib, feldwerteForPageRange } from './feldwerte.js?v=1.58';
 
 /** @typedef {{ start: number, end: number }} PageRange  1-based inclusive */
 

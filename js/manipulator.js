@@ -3,15 +3,15 @@
  * Eigene Ansicht, eigener Datei-Input: läuft NICHT über die Feldvorlagen-Prüfung
  * des Laufzettel-Öffnens (PDFs ohne Feldvorlage werden hier normal geteilt).
  */
-import * as pdfjsLib from '../vendor/pdf.min.mjs?v=1.57';
-import { buildSplitZip, sanitizeFilename } from './split.js?v=1.57';
-import { xpsToPdf, isXpsFile } from './xps2pdf.js?v=1.57';
-import { callPickerInPdfFolder } from './catalog.js?v=1.57';
-import { readLogFromPdfJs, attachLogToPdfLib, derivedLog } from './protokoll.js?v=1.57';
-import { readFeldwerteFromPdfJs, attachFeldwerteToPdfLib, mergeFeldwerte } from './feldwerte.js?v=1.57';
+import * as pdfjsLib from '../vendor/pdf.min.mjs?v=1.58';
+import { buildSplitZip, sanitizeFilename } from './split.js?v=1.58';
+import { xpsToPdf, isXpsFile } from './xps2pdf.js?v=1.58';
+import { callPickerInPdfFolder } from './catalog.js?v=1.58';
+import { readLogFromPdfJs, attachLogToPdfLib, derivedLog } from './protokoll.js?v=1.58';
+import { readFeldwerteFromPdfJs, attachFeldwerteToPdfLib, mergeFeldwerte } from './feldwerte.js?v=1.58';
 
 if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs?v=1.57', import.meta.url).href;
+  pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs?v=1.58', import.meta.url).href;
 }
 
 const $ = (sel) => document.querySelector(sel);
@@ -385,6 +385,7 @@ async function handlePdfFile(file, dirP = null) {
   const dir = dirState.handle ? (dirP ? await dirP : await dirWithPermission(false)) : null;
   const pre = dir ? null : requestSaveHandle(preZipName, 'application/zip');
   state.busy = true;
+  document.body.classList.add('pm-busy'); // Update-Hinweis zurückhalten (index.html)
   const btn = $('#btn-pm-open');
   if (btn) btn.disabled = true;
   $('#pm-result')?.classList.add('hidden');
@@ -427,6 +428,7 @@ async function handlePdfFile(file, dirP = null) {
     showToast(msg);
   } finally {
     state.busy = false;
+    document.body.classList.remove('pm-busy');
     if (btn) btn.disabled = false;
   }
 }
@@ -493,6 +495,7 @@ async function handleMergeFiles(fileList) {
   }
   const pre = requestSaveHandle(plan.outName, 'application/pdf');
   state.busy = true;
+  document.body.classList.add('pm-busy'); // Update-Hinweis zurückhalten (index.html)
   const btn = $('#btn-pm-merge');
   if (btn) btn.disabled = true;
   $('#pm-merge-result')?.classList.add('hidden');
@@ -572,6 +575,7 @@ async function handleMergeFiles(fileList) {
     showToast(msg);
   } finally {
     state.busy = false;
+    document.body.classList.remove('pm-busy');
     if (btn) btn.disabled = false;
   }
 }

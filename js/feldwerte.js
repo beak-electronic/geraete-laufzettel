@@ -7,7 +7,7 @@
  * Written only by Sichern (and carried by Teilen/Verbinden); replaced on every save.
  * PDFs without the attachment behave as before.
  */
-import { removeEmbeddedFiles, isoLocal, APP_VERSION } from './protokoll.js?v=1.57';
+import { removeEmbeddedFiles, isoLocal, APP_VERSION } from './protokoll.js?v=1.58';
 
 export const FELDWERTE_FILENAME = 'feldwerte.json';
 export const FELDWERTE_FORMAT = 'geraete-laufzettel-feldwerte';

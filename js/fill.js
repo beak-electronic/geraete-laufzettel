@@ -1,5 +1,5 @@
-import * as pdfjsLib from '../vendor/pdf.min.mjs?v=1.57';
-import { callPickerInPdfFolder, getCachedPdfFolderHandle, getPdfFolderHandle } from './catalog.js?v=1.57';
+import * as pdfjsLib from '../vendor/pdf.min.mjs?v=1.58';
+import { callPickerInPdfFolder, getCachedPdfFolderHandle, getPdfFolderHandle } from './catalog.js?v=1.58';
 import {
   emptyCells,
   headerCells,
@@ -12,7 +12,7 @@ import {
   PAGE_HEIGHT,
   INSET,
   FILL_WHITE,
-} from './grid.js?v=1.57';
+} from './grid.js?v=1.58';
 import {
   loadSettings,
   saveInitials,
@@ -32,7 +32,7 @@ import {
   colorRgb01,
   DARK_COLORS,
   LAST_COLUMN_INDEX,
-} from './settings.js?v=1.57';
+} from './settings.js?v=1.58';
 import {
   KNOWN_TEMPLATES,
   resolveTemplateId,
@@ -41,7 +41,7 @@ import {
   extractArticleFromFilename,
   fieldKey,
   stampDateForSettings,
-} from './fields.js?v=1.57';
+} from './fields.js?v=1.58';
 import {
   drawGeraetePage,
   embedFieldValuesInPdf,
@@ -53,8 +53,8 @@ import {
   isInlineField,
   restoreStoredFieldValues,
   feldwerteRows,
-} from './field-fill.js?v=1.57';
-import { readFeldwerteFromPdfJs, attachFeldwerteToPdfLib, makeFeldwerte } from './feldwerte.js?v=1.57';
+} from './field-fill.js?v=1.58';
+import { readFeldwerteFromPdfJs, attachFeldwerteToPdfLib, makeFeldwerte } from './feldwerte.js?v=1.58';
 import {
   isoLocal,
   newSession,
@@ -69,7 +69,7 @@ import {
   showLogDialog,
   getDeviceName,
   setDeviceName,
-} from './protokoll.js?v=1.57';
+} from './protokoll.js?v=1.58';
 import {
   decodeBarcodeFromBlob,
   decodeBarcodeFromElement,
@@ -78,9 +78,9 @@ import {
   stopCamera,
   releaseAllCameras,
   releaseAllCamerasAsync,
-} from './scan.js?v=1.57';
+} from './scan.js?v=1.58';
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs?v=1.57', import.meta.url).href;
+pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs?v=1.58', import.meta.url).href;
 
 const { PDFDocument, rgb, StandardFonts, LineCapStyle } = PDFLib;
 
@@ -554,7 +554,7 @@ function clearDocument() {
     releaseAllCameras();
   } catch (_) {}
   // Release home + field cameras so the next home scan can start (iOS).
-  import('./app.js?v=1.57')
+  import('./app.js?v=1.58')
     .then((mod) => {
       if (typeof mod.ensureCamerasReleased === 'function') return mod.ensureCamerasReleased();
     })
@@ -661,7 +661,7 @@ function parseFilledFromKeywords(keywords) {
  */
 export async function openFile(file, fileHandle = null) {
   try {
-    const mod = await import('./app.js?v=1.57');
+    const mod = await import('./app.js?v=1.58');
     if (typeof mod.ensureCamerasReleased === 'function') await mod.ensureCamerasReleased();
   } catch (_) {}
 
@@ -2296,11 +2296,11 @@ function preferDownloadSave() {
 
 async function syncCatalogAfterSave(blob, name) {
   try {
-    const cat = await import('./catalog.js?v=1.57');
+    const cat = await import('./catalog.js?v=1.58');
     if (typeof cat.upsertSavedPdf === 'function') {
       await cat.upsertSavedPdf(blob, name);
     }
-    const mod = await import('./app.js?v=1.57');
+    const mod = await import('./app.js?v=1.58');
     if (typeof mod.onPdfCatalogUpdated === 'function') {
       await mod.onPdfCatalogUpdated();
     }
@@ -2314,7 +2314,7 @@ async function notifyStampSaved() {
   state.pendingQty = 0;
   if (!qty) return;
   try {
-    const mod = await import('./app.js?v=1.57');
+    const mod = await import('./app.js?v=1.58');
     if (typeof mod.onStampSaved === 'function') mod.onStampSaved(qty);
   } catch (err) {
     console.warn('onStampSaved failed', err);
