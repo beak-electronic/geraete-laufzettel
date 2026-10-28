@@ -1,4 +1,4 @@
-import { extractSerialFromPayload, isUsableSerial } from "./sn.js?v=1.59";
+import { extractSerialFromPayload, isUsableSerial } from "./sn.js?v=1.60";
 import {
   decodeDataMatrixFromBlob,
   decodeDataMatrixFromElement,
@@ -7,7 +7,7 @@ import {
   stopCamera,
   releaseAllCameras,
   releaseAllCamerasAsync,
-} from "./scan.js?v=1.59";
+} from "./scan.js?v=1.60";
 import {
   findPdfBySerial,
   pickPdfFolder,
@@ -20,9 +20,9 @@ import {
   getIdbCatalogStats,
   clearIdbCatalog,
   formatCatalogUpdated,
-} from "./catalog.js?v=1.59";
-import { initFill, openFile, pickAndOpen } from "./fill.js?v=1.59";
-import { KNOWN_TEMPLATES } from "./fields.js?v=1.59";
+} from "./catalog.js?v=1.60";
+import { initFill, openFile, pickAndOpen } from "./fill.js?v=1.60";
+import { KNOWN_TEMPLATES } from "./fields.js?v=1.60";
 
 const STORAGE_KEY = "geraete-laufzettel-settings-v1";
 const DEMO_PAYLOAD = "DE-200.433-XXXX-XX0000E00A00K0001";
@@ -83,9 +83,9 @@ function showToast(msg) {
 
 /* ---------- Zoom-Sperre im Scannen-Modus (iPad/Touch) ----------
  * Pinch/Doppeltipp zoomte die SEITE (nicht die Kamera); der Zoom blieb danach bestehen,
- * sodass der Laufzettel nicht mehr passte. Im Scan-Modus wird Seitenzoom blockiert,
- * beim Verlassen wird der Zoom auf 1 zurückgesetzt. Gesteuert über body.scan-open,
- * egal welcher Codepfad die Klasse setzt/entfernt. */
+ * sodass der Laufzettel nicht mehr passte. Im Scan-Modus wird Seitenzoom blockiert;
+ * Zwei-Finger-Pinch steuert stattdessen den Kamera-Zoom (siehe initGlobalScanPinch).
+ * Beim Verlassen: Viewport zurück, Kamera-Zoom reset. Gesteuert über body.scan-open. */
 const viewportMeta = document.querySelector('meta[name="viewport"]');
 const VIEWPORT_BASE = viewportMeta?.getAttribute("content") || "width=device-width, initial-scale=1";
 const VIEWPORT_LOCKED = `${VIEWPORT_BASE.replace(/,?\s*initial-scale=[^,]*/, "")}, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no`;
@@ -105,18 +105,7 @@ function setZoomLock(on) {
 
 function initScanZoomLock() {
   const inScan = () => document.body.classList.contains("scan-open");
-  const block = (e) => { if (inScan()) e.preventDefault(); };
-  // iOS Safari: Pinch-Gesten
-  ["gesturestart", "gesturechange", "gestureend"].forEach((t) =>
-    document.addEventListener(t, block, { passive: false })
-  );
-  // Mehrfinger-Bewegung (Pinch) in allen Browsern
-  document.addEventListener(
-    "touchmove",
-    (e) => { if (inScan() && e.touches && e.touches.length > 1) e.preventDefault(); },
-    { passive: false }
-  );
-  // Doppeltipp-Zoom (Fallback zu touch-action: manipulation)
+  // Doppeltipp-Zoom der Seite unterbinden (Ein-Finger-Taps/Buttons bleiben ok)
   let lastTouchEnd = 0;
   document.addEventListener(
     "touchend",
@@ -128,7 +117,7 @@ function initScanZoomLock() {
     },
     { passive: false }
   );
-  // Strg+Mausrad (Trackpad-Pinch am Desktop)
+  // Strg+Mausrad (Trackpad-Pinch) — Scan auf Windows ausgeblendet, schadet aber nicht
   document.addEventListener("wheel", (e) => { if (inScan() && e.ctrlKey) e.preventDefault(); }, { passive: false });
   let was = inScan();
   if (was) setZoomLock(true);
@@ -145,8 +134,11 @@ initScanZoomLock();
 
 /* ---------- Pinch → Kamera-Zoom im Scanner ----------
  * Hardware-Zoom über MediaStreamTrack (capabilities.zoom), sonst digitaler Zoom:
- * Video per CSS skalieren + Decoder-Ausschnitt verkleinern (video.dataset.dz, scan.js). */
-const DIGITAL_ZOOM_MAX = 4;
+ * Video per CSS skalieren + Decoder-Ausschnitt verkleinern (video.dataset.dz, scan.js).
+ * SCAN_ZOOM = Basis-Zoom beim Öffnen der Kamera (überall wo gescannt wird). */
+export const SCAN_ZOOM = 1.3;
+const DIGITAL_ZOOM_MAX = 3;
+const HW_ZOOM_FACTOR_MAX = 4;
 
 function videoTrack(video) {
   const s = video?.srcObject;
@@ -161,7 +153,9 @@ function zoomInfo(video) {
   if (t && z && typeof z.max === "number" && z.max > (z.min || 1)) {
     let cur = z.min || 1;
     try { cur = t.getSettings().zoom ?? cur; } catch (_) {}
-    return { hw: true, track: t, min: z.min || 1, max: z.max, step: z.step || 0.1, cur };
+    const min = z.min || 1;
+    const max = Math.min(z.max, min * HW_ZOOM_FACTOR_MAX);
+    return { hw: true, track: t, min, max, step: z.step || 0.1, cur };
   }
   return { hw: false, min: 1, max: DIGITAL_ZOOM_MAX, step: 0.05, cur: Number(video?.dataset.dz) || 1 };
 }
@@ -173,7 +167,7 @@ function showZoomBadge(frame, factor) {
     b.className = "scan-zoom-badge";
     frame.appendChild(b);
   }
-  b.textContent = `${factor.toFixed(1)}×`;
+  b.textContent = `${factor.toFixed(1).replace('.', ',')}×`;
   b.classList.toggle("hidden", factor <= 1.01);
 }
 
@@ -223,37 +217,156 @@ export function resetScanZoom(video) {
   b?.classList.add("hidden");
 }
 
-function bindPinchZoom(frame) {
+/** Basis-Zoom SCAN_ZOOM nach Kamerastart: HW wenn möglich, sonst digital + crop. */
+export function applyDefaultScanZoom(video) {
+  if (!video) return;
+  const info = zoomInfo(video);
+  let target;
+  if (info.hw) {
+    // 1.3× relativ zum Basis-/Min-Zoom der Hardware
+    target = Math.min(info.max, Math.max(info.min, info.min * SCAN_ZOOM));
+  } else {
+    target = Math.min(info.max, Math.max(1, SCAN_ZOOM));
+  }
+  setScanZoom(video, target, info);
+}
+
+function bindScanVideoLifecycle(frame) {
   const video = frame.querySelector("video");
   if (!video || frame.dataset.pinchBound === "1") return;
   frame.dataset.pinchBound = "1";
-  let start = null;
-  const dist = (e) => Math.hypot(
+  // Stream weg → Zoom-CSS säubern; neuer Stream → Basis-Zoom SCAN_ZOOM
+  video.addEventListener("emptied", () => resetScanZoom(video));
+  video.addEventListener("loadedmetadata", () => applyDefaultScanZoom(video));
+}
+
+document.querySelectorAll(".scan-frame").forEach(bindScanVideoLifecycle);
+
+/** Aktives Scan-Video (Feld-Overlay hat Vorrang vor Startbildschirm). */
+export function activeScanVideo() {
+  const ov = document.getElementById("field-scan-overlay");
+  if (ov && ov.classList.contains("open")) {
+    const v = document.getElementById("field-scan-video");
+    if (v && v.srcObject) return v;
+  }
+  if (document.body.classList.contains("scan-open")) {
+    const v = document.getElementById("scan-video");
+    if (v && v.srcObject) return v;
+  }
+  return document.getElementById("field-scan-video")?.srcObject
+    ? document.getElementById("field-scan-video")
+    : document.getElementById("scan-video")?.srcObject
+      ? document.getElementById("scan-video")
+      : null;
+}
+
+function isScanSession() {
+  if (document.body.classList.contains("scan-open")) return true;
+  const ov = document.getElementById("field-scan-overlay");
+  return !!(ov && ov.classList.contains("open"));
+}
+
+function currentZoomValue(video, info) {
+  if (!video) return SCAN_ZOOM;
+  if (info.hw) return Number(video.dataset.hwz) || info.cur || info.min * SCAN_ZOOM;
+  return Number(video.dataset.dz) || SCAN_ZOOM;
+}
+
+/* Globaler Zwei-Finger-Pinch überall in der App, solange ein Scan offen ist. */
+let globalPinch = null;
+let gestureBase = null;
+let pinchRaf = 0;
+let pinchPending = null;
+
+function flushPinchZoom() {
+  pinchRaf = 0;
+  const p = pinchPending;
+  pinchPending = null;
+  if (!p?.video) return;
+  setScanZoom(p.video, p.value, p.info);
+}
+
+function queuePinchZoom(video, value, info) {
+  pinchPending = { video, value, info };
+  if (!pinchRaf) pinchRaf = requestAnimationFrame(flushPinchZoom);
+}
+
+function pinchDist(e) {
+  return Math.hypot(
     e.touches[0].clientX - e.touches[1].clientX,
     e.touches[0].clientY - e.touches[1].clientY
   );
-  frame.addEventListener("touchstart", (e) => {
-    if (e.touches.length === 2) {
-      const info = zoomInfo(video);
-      const cur = info.hw ? Number(video.dataset.hwz) || info.cur : Number(video.dataset.dz) || 1;
-      start = { d: dist(e) || 1, z: cur, info };
-      e.preventDefault();
-    }
-  }, { passive: false });
-  frame.addEventListener("touchmove", (e) => {
-    if (!start || e.touches.length !== 2) return;
-    e.preventDefault();
-    setScanZoom(video, start.z * (dist(e) / start.d), start.info);
-  }, { passive: false });
-  const end = (e) => { if (e.touches.length < 2) start = null; };
-  frame.addEventListener("touchend", end);
-  frame.addEventListener("touchcancel", end);
-  // Neuer Stream → Zoom zurücksetzen
-  video.addEventListener("emptied", () => resetScanZoom(video));
-  video.addEventListener("loadedmetadata", () => resetScanZoom(video));
 }
 
-document.querySelectorAll(".scan-frame").forEach(bindPinchZoom);
+function initGlobalScanPinch() {
+  document.addEventListener(
+    "touchstart",
+    (e) => {
+      if (!isScanSession() || e.touches.length !== 2) return;
+      const video = activeScanVideo();
+      if (!video) return;
+      const info = zoomInfo(video);
+      globalPinch = { d: pinchDist(e) || 1, z: currentZoomValue(video, info), info, video };
+      e.preventDefault();
+    },
+    { passive: false, capture: true }
+  );
+  document.addEventListener(
+    "touchmove",
+    (e) => {
+      if (!isScanSession()) return;
+      if (globalPinch && e.touches.length === 2) {
+        e.preventDefault();
+        queuePinchZoom(
+          globalPinch.video,
+          globalPinch.z * (pinchDist(e) / globalPinch.d),
+          globalPinch.info
+        );
+        return;
+      }
+      if (e.touches && e.touches.length > 1) e.preventDefault();
+    },
+    { passive: false, capture: true }
+  );
+  const endPinch = (e) => {
+    if (!e.touches || e.touches.length < 2) globalPinch = null;
+  };
+  document.addEventListener("touchend", endPinch, { capture: true });
+  document.addEventListener("touchcancel", endPinch, { capture: true });
+
+  // iOS Safari gesture events (Pinch auch außerhalb des Video-Fensters)
+  document.addEventListener(
+    "gesturestart",
+    (e) => {
+      if (!isScanSession()) return;
+      e.preventDefault();
+      const video = activeScanVideo();
+      if (!video) return;
+      const info = zoomInfo(video);
+      gestureBase = { z: currentZoomValue(video, info), info, video };
+    },
+    { passive: false, capture: true }
+  );
+  document.addEventListener(
+    "gesturechange",
+    (e) => {
+      if (!gestureBase) return;
+      e.preventDefault();
+      const scale = typeof e.scale === "number" ? e.scale : 1;
+      queuePinchZoom(gestureBase.video, gestureBase.z * scale, gestureBase.info);
+    },
+    { passive: false, capture: true }
+  );
+  document.addEventListener(
+    "gestureend",
+    (e) => {
+      if (isScanSession()) e.preventDefault();
+      gestureBase = null;
+    },
+    { passive: false, capture: true }
+  );
+}
+initGlobalScanPinch();
 
 function showScanView() {
   const home = $("#home");
@@ -370,6 +483,7 @@ async function startScanning() {
     setStatus("Kamera wird gestartet…", "busy");
     state.cameraStream = await startCamera(video);
     video = $("#scan-video") || video;
+    applyDefaultScanZoom(video);
     state.scanning = true;
     setScanUi(true);
     applyHomeScanMode(getHomeScanMode());

@@ -5,7 +5,7 @@
  * Kein GPS. Bestehendes Protokoll wird beim Öffnen gelesen und beim Speichern ergänzt.
  */
 
-import { createPdfFontBag, sanitizeForFont } from './pdf-fonts.js?v=1.59';
+import { createPdfFontBag, sanitizeForFont } from './pdf-fonts.js?v=1.60';
 
 export const LOG_FILENAME = 'aenderungsprotokoll.json';
 /** Human-readable copy, regenerated from the JSON on every save (JSON stays the source of truth). */

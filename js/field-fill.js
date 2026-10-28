@@ -15,9 +15,9 @@ import {
   stampInitialsForSettings,
   stampLagerClerkForSettings,
   normalizeStampDateYY,
-} from './fields.js?v=1.59';
-import { colorCss, colorRgb01 } from './settings.js?v=1.59';
-import { createPdfFontBag } from './pdf-fonts.js?v=1.59';
+} from './fields.js?v=1.60';
+import { colorCss, colorRgb01 } from './settings.js?v=1.60';
+import { createPdfFontBag } from './pdf-fonts.js?v=1.60';
 
 const { rgb } = PDFLib;
 
@@ -473,13 +473,17 @@ async function onFieldTap(field, pageIndex, api, wrap) {
     return;
   }
 
-  // Toggle clear if already filled (simple types)
+  // Toggle clear if already filled — außer iOS/iPadOS Code-Felder (Scanner erneut öffnen)
+  const iosTouch =
+    typeof document !== 'undefined' && document.documentElement.classList.contains('ios-touch');
   if (api.fieldValues.has(key) && api.fieldValues.get(key)?.text) {
-    // For scan/manual/text/date — offer clear on second tap
-    api.fieldValues.delete(key);
-    api.pushUndo({ kind: 'fields', pageIndex, before });
-    api.redrawPage(pageIndex);
-    return;
+    if (!(iosTouch && field.type === 'scan_or_manual')) {
+      // For scan/manual/text/date — offer clear on second tap (Windows/Desktop unverändert)
+      api.fieldValues.delete(key);
+      api.pushUndo({ kind: 'fields', pageIndex, before });
+      api.redrawPage(pageIndex);
+      return;
+    }
   }
 
   const type = field.type;
@@ -528,15 +532,36 @@ async function onFieldTap(field, pageIndex, api, wrap) {
     text = normalizeStampDateYY(text);
     if (!text) return;
   } else if (type === 'scan_or_manual') {
-    text = await api.promptFieldInput({
-      title: fieldDialogTitle(field, 'Scan / Eingabe'),
-      kind: 'scan_or_manual',
-      initial: '',
-      placeholder: 'Wert oder scannen',
-    });
-    if (text == null) return;
-    text = String(text).trim();
-    if (!text) return;
+    const existing = api.fieldValues.get(key)?.text || '';
+    // iPad/iPhone: Tap öffnet sofort die Kamera (html.ios-touch wie Startbildschirm)
+    if (iosTouch && typeof api.scanIntoField === 'function') {
+      const scanned = await api.scanIntoField();
+      if (scanned && scanned.ok) {
+        text = String(scanned.value || '').trim();
+        if (!text) return;
+      } else {
+        // Abbrechen / Manuell eingeben → Tastatur-Dialog (auch bei bereits gefülltem Feld)
+        text = await api.promptFieldInput({
+          title: fieldDialogTitle(field, 'Scan / Eingabe'),
+          kind: 'scan_or_manual',
+          initial: existing,
+          placeholder: 'Wert oder scannen',
+        });
+        if (text == null) return;
+        text = String(text).trim();
+        if (!text) return;
+      }
+    } else {
+      text = await api.promptFieldInput({
+        title: fieldDialogTitle(field, 'Scan / Eingabe'),
+        kind: 'scan_or_manual',
+        initial: '',
+        placeholder: 'Wert oder scannen',
+      });
+      if (text == null) return;
+      text = String(text).trim();
+      if (!text) return;
+    }
   } else {
     api.showToast(`Feldtyp „${type}“ nicht unterstützt.`);
     return;

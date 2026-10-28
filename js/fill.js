@@ -1,5 +1,5 @@
-import * as pdfjsLib from '../vendor/pdf.min.mjs?v=1.59';
-import { callPickerInPdfFolder, getCachedPdfFolderHandle, getPdfFolderHandle } from './catalog.js?v=1.59';
+import * as pdfjsLib from '../vendor/pdf.min.mjs?v=1.60';
+import { callPickerInPdfFolder, getCachedPdfFolderHandle, getPdfFolderHandle } from './catalog.js?v=1.60';
 import {
   emptyCells,
   headerCells,
@@ -12,7 +12,7 @@ import {
   PAGE_HEIGHT,
   INSET,
   FILL_WHITE,
-} from './grid.js?v=1.59';
+} from './grid.js?v=1.60';
 import {
   loadSettings,
   saveInitials,
@@ -32,7 +32,7 @@ import {
   colorRgb01,
   DARK_COLORS,
   LAST_COLUMN_INDEX,
-} from './settings.js?v=1.59';
+} from './settings.js?v=1.60';
 import {
   KNOWN_TEMPLATES,
   resolveTemplateId,
@@ -41,7 +41,7 @@ import {
   extractArticleFromFilename,
   fieldKey,
   stampDateForSettings,
-} from './fields.js?v=1.59';
+} from './fields.js?v=1.60';
 import {
   drawGeraetePage,
   embedFieldValuesInPdf,
@@ -53,9 +53,9 @@ import {
   isInlineField,
   restoreStoredFieldValues,
   feldwerteRows,
-} from './field-fill.js?v=1.59';
-import { readFeldwerteFromPdfJs, attachFeldwerteToPdfLib, makeFeldwerte } from './feldwerte.js?v=1.59';
-import { createPdfFontBag } from './pdf-fonts.js?v=1.59';
+} from './field-fill.js?v=1.60';
+import { readFeldwerteFromPdfJs, attachFeldwerteToPdfLib, makeFeldwerte } from './feldwerte.js?v=1.60';
+import { createPdfFontBag } from './pdf-fonts.js?v=1.60';
 import {
   isoLocal,
   newSession,
@@ -70,7 +70,7 @@ import {
   showLogDialog,
   getDeviceName,
   setDeviceName,
-} from './protokoll.js?v=1.59';
+} from './protokoll.js?v=1.60';
 import {
   decodeBarcodeFromBlob,
   decodeBarcodeFromElement,
@@ -79,9 +79,9 @@ import {
   stopCamera,
   releaseAllCameras,
   releaseAllCamerasAsync,
-} from './scan.js?v=1.59';
+} from './scan.js?v=1.60';
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs?v=1.59', import.meta.url).href;
+pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs?v=1.60', import.meta.url).href;
 
 const { PDFDocument, rgb, LineCapStyle } = PDFLib;
 
@@ -171,6 +171,7 @@ const el = {
   fieldScanStop: document.getElementById('btn-field-scan-stop'),
   fieldScanCancel: document.getElementById('btn-field-scan-cancel'),
   fieldScanClose: document.getElementById('btn-field-scan-close'),
+  fieldScanManual: document.getElementById('btn-field-scan-manual'),
 };
 
 let toastTimer = 0;
@@ -555,7 +556,7 @@ function clearDocument() {
     releaseAllCameras();
   } catch (_) {}
   // Release home + field cameras so the next home scan can start (iOS).
-  import('./app.js?v=1.59')
+  import('./app.js?v=1.60')
     .then((mod) => {
       if (typeof mod.ensureCamerasReleased === 'function') return mod.ensureCamerasReleased();
     })
@@ -662,7 +663,7 @@ function parseFilledFromKeywords(keywords) {
  */
 export async function openFile(file, fileHandle = null) {
   try {
-    const mod = await import('./app.js?v=1.59');
+    const mod = await import('./app.js?v=1.60');
     if (typeof mod.ensureCamerasReleased === 'function') await mod.ensureCamerasReleased();
   } catch (_) {}
 
@@ -2297,11 +2298,11 @@ function preferDownloadSave() {
 
 async function syncCatalogAfterSave(blob, name) {
   try {
-    const cat = await import('./catalog.js?v=1.59');
+    const cat = await import('./catalog.js?v=1.60');
     if (typeof cat.upsertSavedPdf === 'function') {
       await cat.upsertSavedPdf(blob, name);
     }
-    const mod = await import('./app.js?v=1.59');
+    const mod = await import('./app.js?v=1.60');
     if (typeof mod.onPdfCatalogUpdated === 'function') {
       await mod.onPdfCatalogUpdated();
     }
@@ -2315,7 +2316,7 @@ async function notifyStampSaved() {
   state.pendingQty = 0;
   if (!qty) return;
   try {
-    const mod = await import('./app.js?v=1.59');
+    const mod = await import('./app.js?v=1.60');
     if (typeof mod.onStampSaved === 'function') mod.onStampSaved(qty);
   } catch (err) {
     console.warn('onStampSaved failed', err);
@@ -2339,6 +2340,7 @@ function closeOtherDialogs(exceptId) {
 
 let fieldEntryResolver = null;
 let fieldScanAbort = null;
+let fieldScanWantManual = false;
 let fieldScanStream = null;
 
 /** Serial numbers: letters before the first digit always uppercase (e.g. ep123 → EP123). */
@@ -2463,6 +2465,11 @@ function hideFieldScanOverlay() {
   ov.classList.add('hidden');
   ov.setAttribute('hidden', '');
   ov.setAttribute('aria-hidden', 'true');
+  // scan-open nur entfernen, wenn die Start-Scan-Ansicht nicht aktiv ist
+  const scanView = document.getElementById('scan-view');
+  if (!scanView || scanView.classList.contains('hidden')) {
+    document.body.classList.remove('scan-open');
+  }
 }
 
 function showFieldScanOverlay() {
@@ -2472,6 +2479,7 @@ function showFieldScanOverlay() {
   ov.removeAttribute('aria-hidden');
   ov.classList.remove('hidden');
   ov.classList.add('open');
+  document.body.classList.add('scan-open');
   applyFieldScanMode(getFieldScanMode());
 }
 
@@ -2510,7 +2518,7 @@ async function stopFieldScan() {
 
 /**
  * Camera scan for field fill (DataMatrix + 1D).
- * @returns {Promise<string|null>}
+ * @returns {Promise<{ok:true,value:string}|{manual:true}|null>}
  */
 async function scanIntoField() {
   const ov = el.fieldScanOverlay;
@@ -2519,6 +2527,7 @@ async function scanIntoField() {
     showToast('Scan-Overlay nicht verfügbar');
     return null;
   }
+  fieldScanWantManual = false;
   // Avoid nested <dialog> on iOS — close entry/settings, show fixed overlay instead.
   const entryWasOpen = !!(el.fieldEntryDialog && el.fieldEntryDialog.open);
   const entryTitle = el.fieldEntryTitle?.textContent || '';
@@ -2532,6 +2541,10 @@ async function scanIntoField() {
     showFieldScanOverlay();
     fieldScanStream = await startCamera(video);
     video = el.fieldScanVideo || document.getElementById('field-scan-video') || video;
+    try {
+      const { applyDefaultScanZoom } = await import('./app.js?v=1.60');
+      applyDefaultScanZoom?.(video);
+    } catch (_) {}
     const ac = new AbortController();
     fieldScanAbort = ac;
     const payload = await scanBarcodeFromVideo(video, {
@@ -2540,10 +2553,16 @@ async function scanIntoField() {
       getMode: () => getFieldScanMode(),
     });
     await stopFieldScan();
-    return String(payload || '').trim() || null;
+    const value = String(payload || '').trim();
+    if (!value) return null;
+    lastEntryWasScan = true;
+    return { ok: true, value };
   } catch (err) {
     await stopFieldScan();
-    if (err && err.name === 'AbortError') return null;
+    if (err && err.name === 'AbortError') {
+      // Manuell / Abbrechen / Stop / Schließen → Tastatur-Eingabe erlauben
+      return { manual: true };
+    }
     console.error(err);
     showToast(err?.message || 'Scan fehlgeschlagen');
     return null;
@@ -3157,11 +3176,12 @@ export function initFill() {
     el.fieldEntryScan.addEventListener('click', async (e) => {
       e.preventDefault();
       const scanned = await scanIntoField();
-      if (scanned != null) {
-        if (el.fieldEntryInput) el.fieldEntryInput.value = scanned;
+      if (scanned && scanned.ok) {
+        if (el.fieldEntryInput) el.fieldEntryInput.value = scanned.value;
         lastEntryWasScan = true;
-        closeFieldEntryDialog(scanned);
+        closeFieldEntryDialog(scanned.value);
       }
+      // manual/null: Dialog bleibt offen (wurde in finally ggf. wieder geöffnet)
     });
   }
   const stopScanUi = async (e) => {
@@ -3169,11 +3189,22 @@ export function initFill() {
       e.preventDefault();
       e.stopPropagation();
     }
+    fieldScanWantManual = true;
     await stopFieldScan();
   };
-  // Schließen / Stop / Abbrechen — same hard stop; pointer-events ensured in CSS
+  const manualScanUi = async (e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    fieldScanWantManual = true;
+    await stopFieldScan();
+  };
+  // Schließen / Stop / Abbrechen / Manuell — hard stop → manuelle Eingabe
   el.fieldScanStop?.addEventListener('click', stopScanUi);
   el.fieldScanCancel?.addEventListener('click', stopScanUi);
+  el.fieldScanManual?.addEventListener('click', manualScanUi);
+  el.fieldScanManual?.addEventListener('pointerup', manualScanUi);
   el.fieldScanOverlay?.querySelectorAll('.scan-mode-btn').forEach((btn) => {
     btn.addEventListener('click', () => {
       applyFieldScanMode(btn.getAttribute('data-scan-mode') || 'datamatrix');
