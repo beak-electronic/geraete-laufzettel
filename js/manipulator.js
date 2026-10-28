@@ -3,15 +3,15 @@
  * Eigene Ansicht, eigener Datei-Input: läuft NICHT über die Feldvorlagen-Prüfung
  * des Laufzettel-Öffnens (PDFs ohne Feldvorlage werden hier normal geteilt).
  */
-import * as pdfjsLib from '../vendor/pdf.min.mjs?v=1.58';
-import { buildSplitZip, sanitizeFilename } from './split.js?v=1.58';
-import { xpsToPdf, isXpsFile } from './xps2pdf.js?v=1.58';
-import { callPickerInPdfFolder } from './catalog.js?v=1.58';
-import { readLogFromPdfJs, attachLogToPdfLib, derivedLog } from './protokoll.js?v=1.58';
-import { readFeldwerteFromPdfJs, attachFeldwerteToPdfLib, mergeFeldwerte } from './feldwerte.js?v=1.58';
+import * as pdfjsLib from '../vendor/pdf.min.mjs?v=1.59';
+import { buildSplitZip, sanitizeFilename } from './split.js?v=1.59';
+import { xpsToPdf, isXpsFile } from './xps2pdf.js?v=1.59';
+import { callPickerInPdfFolder } from './catalog.js?v=1.59';
+import { readLogFromPdfJs, attachLogToPdfLib, derivedLog } from './protokoll.js?v=1.59';
+import { readFeldwerteFromPdfJs, attachFeldwerteToPdfLib, mergeFeldwerte } from './feldwerte.js?v=1.59';
 
 if (!pdfjsLib.GlobalWorkerOptions.workerSrc) {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs?v=1.58', import.meta.url).href;
+  pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs?v=1.59', import.meta.url).href;
 }
 
 const $ = (sel) => document.querySelector(sel);

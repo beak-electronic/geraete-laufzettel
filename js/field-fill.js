@@ -15,10 +15,11 @@ import {
   stampInitialsForSettings,
   stampLagerClerkForSettings,
   normalizeStampDateYY,
-} from './fields.js?v=1.58';
-import { colorCss, colorRgb01 } from './settings.js?v=1.58';
+} from './fields.js?v=1.59';
+import { colorCss, colorRgb01 } from './settings.js?v=1.59';
+import { createPdfFontBag } from './pdf-fonts.js?v=1.59';
 
-const { rgb, StandardFonts } = PDFLib;
+const { rgb } = PDFLib;
 
 /**
  * @param {object} ctx
@@ -550,8 +551,9 @@ async function onFieldTap(field, pageIndex, api, wrap) {
  * Write field values into pdf-lib document (no blue overlays).
  */
 export async function embedFieldValuesInPdf(pdfDoc, pages, fieldValues, settings, fieldCovers = null, storedValues = null) {
-  const helvetica = await pdfDoc.embedFont(StandardFonts.Helvetica);
-  const helveticaBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+  const fonts = await createPdfFontBag(pdfDoc);
+  // Preload Liberation Sans only when at least one value needs non-WinAnsi glyphs.
+  await fonts.preloadFor([...fieldValues.values()].map((v) => v?.text).filter(Boolean));
 
   const whiteRect = (pageNo, rect) => {
     const page = pages[(pageNo || 1) - 1];
@@ -588,29 +590,28 @@ export async function embedFieldValuesInPdf(pdfDoc, pages, fieldValues, settings
     const textColor = rgb(c.r, c.g, c.b);
     const text = String(val.text);
     if (val.multiline || val.single_line) {
-      const fit = fitMultilineText(text, val.rect_pt, val.font_size_pt, (s, pt) => helvetica.widthOfTextAtSize(s, pt), !!val.single_line);
+      const fit = fitMultilineText(text, val.rect_pt, val.font_size_pt, (s, pt) => fonts.widthOf(s, pt, false), !!val.single_line);
       fit.lines.forEach((ln, i) => {
         if (!ln) return; // empty line from Enter: keep spacing, nothing to draw
-        page.drawText(ln, {
+        fonts.drawText(page, ln, {
           x: x0 + fit.pad,
           y: pageHeight - (y0 + fit.padY + i * fit.lineH + fit.lineH * 0.5 + fit.size * 0.35),
           size: fit.size,
-          font: helvetica,
           color: textColor,
-        });
+        }, false);
       });
       continue;
     }
     const isInitials = val.type === 'tap_initials_stamp';
     // OK / serials / dates share regular weight — only initials stamps stay bold.
-    const font = isInitials ? helveticaBold : helvetica;
+    const { font, text: drawStr } = fonts.prepare(text, isInitials);
 
     let size = Math.min(h * 0.72, val.font_size_pt || 14);
     const maxW = Math.max(2, w - 2);
-    while (size > 4 && font.widthOfTextAtSize(text, size) > maxW) {
+    while (size > 4 && font.widthOfTextAtSize(drawStr, size) > maxW) {
       size -= 0.25;
     }
-    const tw = font.widthOfTextAtSize(text, size);
+    const tw = font.widthOfTextAtSize(drawStr, size);
 
     if (isInitials) {
       // White plate + colored stroke box (Umrandung) around initials
@@ -643,13 +644,12 @@ export async function embedFieldValuesInPdf(pdfDoc, pages, fieldValues, settings
     // Vertical center approx: baseline ~ mid - size*0.35
     const tx = x + Math.max(0, (w - tw) / 2);
     const ty = y + h / 2 - size * 0.35;
-    page.drawText(text, {
+    fonts.drawText(page, drawStr, {
       x: tx,
       y: ty,
       size,
-      font,
       color: textColor,
-    });
+    }, isInitials);
   }
 }
 

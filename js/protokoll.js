@@ -5,6 +5,8 @@
  * Kein GPS. Bestehendes Protokoll wird beim Öffnen gelesen und beim Speichern ergänzt.
  */
 
+import { createPdfFontBag, sanitizeForFont } from './pdf-fonts.js?v=1.59';
+
 export const LOG_FILENAME = 'aenderungsprotokoll.json';
 /** Human-readable copy, regenerated from the JSON on every save (JSON stays the source of truth). */
 export const LOG_PDF_FILENAME = 'aenderungsprotokoll.pdf';
@@ -652,7 +654,7 @@ function entryPlace(e) {
 }
 
 /**
- * Readable protocol as its own small PDF (A4 landscape, Helvetica/WinAnsi, no external resources).
+ * Readable protocol as its own small PDF (A4 landscape, Liberation Sans subset for Unicode).
  * Sessions newest first, header + table per session; long tables continue on new pages with the
  * table header repeated. The JSON stays the source of truth.
  * @returns {Promise<Uint8Array>}
@@ -664,28 +666,32 @@ export async function renderLogPdf(log, PDFLib = window.PDFLib) {
   doc.setCreator(`Geräte Laufzettel ${APP_VERSION}`);
   doc.setProducer('Geräte Laufzettel');
   doc.setLanguage('de-DE');
+  // Liberation Sans (subset) for the whole protocol so Greek/Ohm in field values
+  // stay readable; Helvetica Oblique only for the rare undo-style row label.
+  const fonts = await createPdfFontBag(doc);
+  await fonts.ensureUnicode();
   const F = {
-    reg: await doc.embedFont(StandardFonts.Helvetica),
-    bold: await doc.embedFont(StandardFonts.HelveticaBold),
+    reg: fonts.unicode,
+    bold: fonts.unicodeBold,
     ital: await doc.embedFont(StandardFonts.HelveticaOblique),
   };
-  // WinAnsi covers äöüß · › „ “ ” – … ; anything else is replaced safely.
-  const charset = new Set(F.reg.getCharacterSet());
-  const SUBST = { '→': '->', '←': '<-', '‚': ',', '‘': "'", '’': "'", '\u00a0': ' ', '\u2009': ' ', '\u202f': ' ' };
-  const clean = (v) => {
-    let out = '';
-    for (const ch of String(v ?? '').replace(/[\r\n\t]+/g, ' ')) {
-      const cp = ch.codePointAt(0);
-      if (charset.has(cp)) out += ch;
-      else if (SUBST[ch]) out += SUBST[ch];
-      else if (cp < 32) continue;
-      else {
-        const base = ch.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-        out += base && [...base].every((c) => charset.has(c.codePointAt(0))) ? base : '?';
-      }
-    }
-    return out;
+  const SUBST = {
+    '\u2192': '->',
+    '\u2190': '<-',
+    '\u201A': ',',
+    '\u2018': "'",
+    '\u2019': "'",
+    '\u00A0': ' ',
+    '\u2009': ' ',
+    '\u202F': ' ',
   };
+  const clean = (v, font = F.reg) => {
+    let raw = String(v ?? '').replace(/[\r\n\t]+/g, ' ');
+    for (const [a, b] of Object.entries(SUBST)) raw = raw.split(a).join(b);
+    // Characters still missing in the chosen font -> '?' (never throw).
+    return sanitizeForFont(font, raw).text;
+  };
+
   const C = {
     pink: rgb(221 / 255, 0, 122 / 255),
     ink: rgb(29 / 255, 29 / 255, 31 / 255),
@@ -703,7 +709,7 @@ export async function renderLogPdf(log, PDFLib = window.PDFLib) {
 
   /** Word wrap with hard breaks for over-long words. */
   const wrap = (text, font, size, width) => {
-    const t = clean(text);
+    const t = clean(text, font);
     if (!t) return [''];
     const lines = [];
     let cur = '';
@@ -726,8 +732,15 @@ export async function renderLogPdf(log, PDFLib = window.PDFLib) {
     return lines;
   };
   const text = (pg, s, x, y, font, size, color) => {
-    const t = clean(s);
-    if (t) pg.drawText(t, { x, y, font, size, color });
+    const t = clean(s, font);
+    if (t) {
+      try { pg.drawText(t, { x, y, font, size, color }); }
+      catch (err) {
+        console.warn('[protokoll] drawText failed', err);
+        const fb = sanitizeForFont(font, t).text;
+        if (fb) try { pg.drawText(fb, { x, y, font, size, color }); } catch (_) {}
+      }
+    }
   };
 
   let page = null, y = 0;

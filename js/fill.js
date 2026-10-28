@@ -1,5 +1,5 @@
-import * as pdfjsLib from '../vendor/pdf.min.mjs?v=1.58';
-import { callPickerInPdfFolder, getCachedPdfFolderHandle, getPdfFolderHandle } from './catalog.js?v=1.58';
+import * as pdfjsLib from '../vendor/pdf.min.mjs?v=1.59';
+import { callPickerInPdfFolder, getCachedPdfFolderHandle, getPdfFolderHandle } from './catalog.js?v=1.59';
 import {
   emptyCells,
   headerCells,
@@ -12,7 +12,7 @@ import {
   PAGE_HEIGHT,
   INSET,
   FILL_WHITE,
-} from './grid.js?v=1.58';
+} from './grid.js?v=1.59';
 import {
   loadSettings,
   saveInitials,
@@ -32,7 +32,7 @@ import {
   colorRgb01,
   DARK_COLORS,
   LAST_COLUMN_INDEX,
-} from './settings.js?v=1.58';
+} from './settings.js?v=1.59';
 import {
   KNOWN_TEMPLATES,
   resolveTemplateId,
@@ -41,7 +41,7 @@ import {
   extractArticleFromFilename,
   fieldKey,
   stampDateForSettings,
-} from './fields.js?v=1.58';
+} from './fields.js?v=1.59';
 import {
   drawGeraetePage,
   embedFieldValuesInPdf,
@@ -53,8 +53,9 @@ import {
   isInlineField,
   restoreStoredFieldValues,
   feldwerteRows,
-} from './field-fill.js?v=1.58';
-import { readFeldwerteFromPdfJs, attachFeldwerteToPdfLib, makeFeldwerte } from './feldwerte.js?v=1.58';
+} from './field-fill.js?v=1.59';
+import { readFeldwerteFromPdfJs, attachFeldwerteToPdfLib, makeFeldwerte } from './feldwerte.js?v=1.59';
+import { createPdfFontBag } from './pdf-fonts.js?v=1.59';
 import {
   isoLocal,
   newSession,
@@ -69,7 +70,7 @@ import {
   showLogDialog,
   getDeviceName,
   setDeviceName,
-} from './protokoll.js?v=1.58';
+} from './protokoll.js?v=1.59';
 import {
   decodeBarcodeFromBlob,
   decodeBarcodeFromElement,
@@ -78,11 +79,11 @@ import {
   stopCamera,
   releaseAllCameras,
   releaseAllCamerasAsync,
-} from './scan.js?v=1.58';
+} from './scan.js?v=1.59';
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs?v=1.58', import.meta.url).href;
+pdfjsLib.GlobalWorkerOptions.workerSrc = new URL('../vendor/pdf.worker.min.mjs?v=1.59', import.meta.url).href;
 
-const { PDFDocument, rgb, StandardFonts, LineCapStyle } = PDFLib;
+const { PDFDocument, rgb, LineCapStyle } = PDFLib;
 
 const state = {
   settings: loadSettings(),
@@ -554,7 +555,7 @@ function clearDocument() {
     releaseAllCameras();
   } catch (_) {}
   // Release home + field cameras so the next home scan can start (iOS).
-  import('./app.js?v=1.58')
+  import('./app.js?v=1.59')
     .then((mod) => {
       if (typeof mod.ensureCamerasReleased === 'function') return mod.ensureCamerasReleased();
     })
@@ -661,7 +662,7 @@ function parseFilledFromKeywords(keywords) {
  */
 export async function openFile(file, fileHandle = null) {
   try {
-    const mod = await import('./app.js?v=1.58');
+    const mod = await import('./app.js?v=1.59');
     if (typeof mod.ensureCamerasReleased === 'function') await mod.ensureCamerasReleased();
   } catch (_) {}
 
@@ -2296,11 +2297,11 @@ function preferDownloadSave() {
 
 async function syncCatalogAfterSave(blob, name) {
   try {
-    const cat = await import('./catalog.js?v=1.58');
+    const cat = await import('./catalog.js?v=1.59');
     if (typeof cat.upsertSavedPdf === 'function') {
       await cat.upsertSavedPdf(blob, name);
     }
-    const mod = await import('./app.js?v=1.58');
+    const mod = await import('./app.js?v=1.59');
     if (typeof mod.onPdfCatalogUpdated === 'function') {
       await mod.onPdfCatalogUpdated();
     }
@@ -2314,7 +2315,7 @@ async function notifyStampSaved() {
   state.pendingQty = 0;
   if (!qty) return;
   try {
-    const mod = await import('./app.js?v=1.58');
+    const mod = await import('./app.js?v=1.59');
     if (typeof mod.onStampSaved === 'function') mod.onStampSaved(qty);
   } catch (err) {
     console.warn('onStampSaved failed', err);
@@ -2639,9 +2640,8 @@ async function saveDocument() {
   try {
     showToast('PDF wird gespeichert…');
     const pdfDoc = await PDFDocument.load(state.pdfBytes, { ignoreEncryption: true });
-    // Helvetica kept only as fallback if PNG embed fails.
-    const helvetica = await pdfDoc.embedFont(StandardFonts.Helvetica);
-    const helveticaBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+    // Helvetica for WinAnsi; Liberation Sans (subset) when stamps need special chars.
+    const fonts = await createPdfFontBag(pdfDoc);
     const pages = pdfDoc.getPages();
 
     if (usesGeraeteFields()) {
@@ -2768,16 +2768,15 @@ async function saveDocument() {
         });
         const c = colorRgb01(stamp.colorIndex);
         const textColor = rgb(c.r, c.g, c.b);
-        const measure = (text, size, bold) =>
-          (bold ? helveticaBold : helvetica).widthOfTextAtSize(text, size);
+        await fonts.preloadFor([stamp.date, stamp.initials]);
+        const measure = (text, size, bold) => fonts.widthOf(text, size, !!bold);
         const layout = computeStampLayout(inset, stamp.date, stamp.initials, measure);
-        page.drawText(stamp.date, {
+        fonts.drawText(page, stamp.date, {
           x: inset.x + Math.max(0, (inset.width - layout.dateWidth) / 2),
           y: layout.dateBaseline,
           size: layout.dateSize,
-          font: helvetica,
           color: textColor,
-        });
+        }, false);
         if (!layout.dateOnly && layout.box && stamp.initials) {
           page.drawRectangle({
             x: layout.box.x,
@@ -2787,13 +2786,12 @@ async function saveDocument() {
             borderColor: textColor,
             borderWidth: 1,
           });
-          page.drawText(stamp.initials, {
+          fonts.drawText(page, stamp.initials, {
             x: inset.x + Math.max(0, (inset.width - layout.initWidth) / 2),
             y: layout.initBaseline,
             size: layout.initSize,
-            font: helveticaBold,
             color: textColor,
-          });
+          }, true);
         }
       }
     }
