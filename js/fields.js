@@ -14,6 +14,7 @@ export const KNOWN_TEMPLATES = [
   { id: '200.433', label: '200.433', dataUrl: '../data/template-200.433.json' },
   { id: '200.434', label: '200.434', dataUrl: '../data/template-200.434.json' },
   { id: '200.436', label: '200.436', dataUrl: '../data/template-200.436.json' },
+  { id: '200.439', label: '200.439', dataUrl: '../data/template-200.439.json' },
   { id: '200.447', label: '200.447', dataUrl: '../data/template-200.447.json' },
   { id: '200.455', label: '200.455', dataUrl: '../data/template-200.455.json' },
   { id: '200.461', label: '200.461', dataUrl: '../data/template-200.461.json' },
